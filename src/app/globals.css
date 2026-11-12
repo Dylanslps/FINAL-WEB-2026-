@@ -2,6 +2,9 @@
 
 :root {
   color-scheme: dark;
+  --btr-red: #FF1E27;
+  --vitality-yellow: #FFD000;
+  --arena-bg: #0A0D14;
 }
 
 body {
@@ -13,7 +16,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Tournament scrollbar */
+/* BTR x Vitality Tournament scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -26,10 +29,10 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00F0FF;
+  background: #FF1E27;
 }
 
 ::selection {
-  background-color: rgba(0, 240, 255, 0.25);
+  background-color: rgba(255, 30, 39, 0.35);
   color: #FFFFFF;
 }

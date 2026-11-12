@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flame, Clock } from 'lucide-react';
+import { Flame } from 'lucide-react';
 
 export default function DropCountdown() {
   const [timeLeft, setTimeLeft] = useState({
@@ -30,21 +30,21 @@ export default function DropCountdown() {
   const format = (n) => String(n).padStart(2, '0');
 
   return (
-    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-[#151A23]/90 border border-[#FF5E00]/40 backdrop-blur-md">
-      <div className="flex items-center gap-1.5 text-[#FF5E00] text-xs font-mono font-bold uppercase tracking-wider">
-        <Flame className="w-4 h-4 animate-bounce" />
-        <span>Drop Eksklusif Berakhir:</span>
+    <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-[#121722] border border-[#FF1E27]/40">
+      <div className="flex items-center gap-1.5 text-[#FF1E27] text-xs font-mono font-bold uppercase tracking-wider">
+        <Flame className="w-3.5 h-3.5 animate-bounce" />
+        <span>Drop Eksklusif Pro Kit:</span>
       </div>
-      <div className="flex items-center gap-1 font-mono text-xs font-extrabold text-white">
-        <span className="px-2 py-1 rounded bg-[#0B0E14] border border-[#262E3D] text-[#00F0FF]">
+      <div className="flex items-center gap-1 font-mono text-xs font-black text-white">
+        <span className="px-2 py-0.5 rounded bg-[#0A0D14] border border-[#20293A] text-[#FFD000]">
           {format(timeLeft.hours)}j
         </span>
         <span className="text-gray-500">:</span>
-        <span className="px-2 py-1 rounded bg-[#0B0E14] border border-[#262E3D] text-[#00F0FF]">
+        <span className="px-2 py-0.5 rounded bg-[#0A0D14] border border-[#20293A] text-[#FFD000]">
           {format(timeLeft.minutes)}m
         </span>
         <span className="text-gray-500">:</span>
-        <span className="px-2 py-1 rounded bg-[#0B0E14] border border-[#262E3D] text-[#FF5E00]">
+        <span className="px-2 py-0.5 rounded bg-[#0A0D14] border border-[#20293A] text-[#FF1E27]">
           {format(timeLeft.seconds)}s
         </span>
       </div>

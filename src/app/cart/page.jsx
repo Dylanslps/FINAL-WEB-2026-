@@ -361,16 +361,16 @@ export default function CartPage() {
         <div className="lg:col-span-5">
           <form
             onSubmit={handleCheckout}
-            className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-6 sticky top-24"
+            className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6 sticky top-24"
           >
-            <h2 className="text-base font-bold text-white border-b border-[#262E3D] pb-3">
-              Ringkasan & Informasi Pengiriman
+            <h2 className="text-base font-bold text-white border-b border-[#20293A] pb-3 uppercase tracking-wider font-mono">
+              Ringkasan & Pengiriman
             </h2>
 
             {/* Input Alamat Pengiriman */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#00F0FF]" /> Alamat Pengiriman *
+                <MapPin className="w-3.5 h-3.5 text-[#FF1E27]" /> Alamat Pengiriman Lengkap *
               </label>
               <textarea
                 required
@@ -378,7 +378,7 @@ export default function CartPage() {
                 value={shippingAddress}
                 onChange={(e) => setShippingAddress(e.target.value)}
                 placeholder="Masukkan alamat lengkap rumah, nomor jalan, kota, dan kode pos..."
-                className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+                className="w-full p-2.5 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
               />
             </div>
 
@@ -391,24 +391,24 @@ export default function CartPage() {
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Contoh: Titipkan di pos satpam / packing ekstra"
-                className="w-full p-2 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+                placeholder="Contoh: Packing ekstra jersey BTR / titip di pos"
+                className="w-full p-2 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
               />
             </div>
 
             {/* Kalkulasi Ringkasan */}
-            <div className="space-y-2 pt-4 border-t border-[#262E3D] text-xs">
+            <div className="space-y-2 pt-4 border-t border-[#20293A] text-xs">
               <div className="flex justify-between text-gray-400">
                 <span>Subtotal ({cart.totalItems} barang)</span>
                 <span className="font-mono text-gray-200">{formatIDR(cart.totalAmount)}</span>
               </div>
               <div className="flex justify-between text-gray-400">
-                <span>Ongkos Kirim Standar</span>
+                <span>Ongkos Kirim BTR Official</span>
                 <span className="font-mono text-emerald-400 font-bold">GRATIS</span>
               </div>
-              <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-[#262E3D]">
+              <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-[#20293A]">
                 <span>Total Tagihan</span>
-                <span className="text-[#00F0FF] font-mono text-base">
+                <span className="text-[#FF1E27] font-mono font-black text-base">
                   {formatIDR(cart.totalAmount)}
                 </span>
               </div>
@@ -416,7 +416,7 @@ export default function CartPage() {
 
             {/* Error Banner jika ada */}
             {errorMsg && (
-              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -426,15 +426,15 @@ export default function CartPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#00F0FF] text-black font-extrabold text-sm hover:bg-[#00F0FF]/90 transition-all shadow-lg shadow-[#00F0FF]/25 hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-[#FF1E27] text-white font-black uppercase tracking-wider text-xs hover:bg-[#FFD000] hover:text-black transition-all shadow-lg shadow-[#FF1E27]/25 hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {submitting ? 'Memproses Pesanan...' : 'Konfirmasi Checkout & Buat Pesanan'}
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 text-center">
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 text-center font-mono">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Tanpa payment gateway pihak ketiga (Langsung tercatat di database).</span>
+              <span>Transaksi atomik PostgreSQL (Langsung tercatat di database).</span>
             </div>
           </form>
         </div>

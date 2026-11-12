@@ -80,7 +80,7 @@ export default function AddToCartSection({ product }) {
   const subtotal = product.price * quantity;
 
   return (
-    <div className="p-5 rounded-xl bg-[#151A23] border border-[#262E3D] space-y-4">
+    <div className="p-5 rounded-2xl bg-[#121722] border border-[#20293A] space-y-4">
       {/* Kuantitas Selector */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-gray-300">Jumlah Beli:</span>
@@ -89,7 +89,7 @@ export default function AddToCartSection({ product }) {
             type="button"
             onClick={decrement}
             disabled={quantity <= 1 || product.stock < 1}
-            className="w-8 h-8 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-gray-300 hover:text-white hover:border-[#00F0FF] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-8 h-8 rounded-lg bg-[#0A0D14] border border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -100,7 +100,7 @@ export default function AddToCartSection({ product }) {
             type="button"
             onClick={increment}
             disabled={quantity >= product.stock || product.stock < 1}
-            className="w-8 h-8 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-gray-300 hover:text-white hover:border-[#00F0FF] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-8 h-8 rounded-lg bg-[#0A0D14] border border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
@@ -108,16 +108,16 @@ export default function AddToCartSection({ product }) {
       </div>
 
       {/* Kalkulasi Subtotal */}
-      <div className="flex items-baseline justify-between pt-2 border-t border-[#262E3D]/60 text-xs">
+      <div className="flex items-baseline justify-between pt-2 border-t border-[#20293A] text-xs">
         <span className="text-gray-400">Subtotal Belanja:</span>
-        <span className="font-extrabold text-[#00F0FF] font-mono text-base">
+        <span className="font-black text-[#FF1E27] font-mono text-base">
           {formatIDR(subtotal)}
         </span>
       </div>
 
       {/* Alert Error */}
       {errorMsg && (
-        <div className="flex items-center gap-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -128,12 +128,12 @@ export default function AddToCartSection({ product }) {
         type="button"
         onClick={handleAddToCart}
         disabled={adding || product.stock < 1}
-        className={`w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${
+        className={`w-full py-3.5 px-4 rounded-xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all shadow-lg ${
           success
-            ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+            ? 'bg-emerald-600 text-white shadow-emerald-500/20'
             : product.stock < 1
-            ? 'bg-[#262E3D] text-gray-500 cursor-not-allowed shadow-none'
-            : 'bg-[#00F0FF] text-black hover:bg-[#00F0FF]/90 shadow-[#00F0FF]/20 hover:scale-[1.02]'
+            ? 'bg-[#182030] text-gray-500 cursor-not-allowed shadow-none border border-[#20293A]'
+            : 'bg-[#FF1E27] text-white hover:bg-[#FFD000] hover:text-black shadow-[#FF1E27]/25 hover:scale-[1.02]'
         }`}
       >
         {success ? (
@@ -150,9 +150,9 @@ export default function AddToCartSection({ product }) {
         )}
       </button>
 
-      <p className="text-[11px] text-gray-400 text-center">
+      <p className="text-[11px] text-gray-400 text-center font-mono">
         {user?.role === 'buyer'
-          ? '✓ Pengiriman cepat standar turnamen.'
+          ? '✓ Pengiriman cepat standar turnamen BTR x Vitality.'
           : 'Catatan: Anda sedang dalam mode penjelajahan.'}
       </p>
     </div>

@@ -28,23 +28,23 @@ export default async function CatalogPage({ searchParams }) {
     <div className="space-y-8 py-4">
       
       {/* Header & Judul */}
-      <div className="space-y-2 border-b border-[#262E3D] pb-5">
-        <div className="flex items-center gap-2 text-xs font-mono text-[#00F0FF]">
+      <div className="space-y-2 border-b border-[#20293A] pb-5">
+        <div className="flex items-center gap-2 text-xs font-mono text-[#FFD000]">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>KATALOG RESMI ESPORTS 2026</span>
+          <span>KATALOG RESMI BTR VITALITY 2026</span>
         </div>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {activeCategory ? activeCategory.name : 'Semua Perlengkapan Turnamen'}
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
+              {activeCategory ? activeCategory.name : 'Semua Perlengkapan BTR x Vitality'}
             </h1>
             <p className="text-xs text-gray-400 mt-1">
               {activeCategory
                 ? activeCategory.description
-                : 'Temukan gear gaming nirkabel, jersey pro kit, dan hardware kompetisi.'}
+                : 'Temukan gear gaming nirkabel, jersey Robot Merah Pro Kit, dan hardware standar turnamen.'}
             </p>
           </div>
-          <span className="text-xs font-mono text-gray-400 bg-[#151A23] px-3 py-1.5 rounded-lg border border-[#262E3D]">
+          <span className="text-xs font-mono text-gray-400 bg-[#121722] px-3 py-1.5 rounded-xl border border-[#20293A]">
             Total: <strong className="text-white">{total}</strong> Produk
           </span>
         </div>
@@ -59,8 +59,8 @@ export default async function CatalogPage({ searchParams }) {
             href={`/katalog?sort=${currentSort}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}`}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
               !currentCategory
-                ? 'bg-[#00F0FF] text-black border-[#00F0FF] shadow-lg shadow-[#00F0FF]/20'
-                : 'bg-[#151A23] text-gray-300 border-[#262E3D] hover:border-gray-500 hover:text-white'
+                ? 'bg-[#FF1E27] text-white border-[#FF1E27] shadow-lg shadow-[#FF1E27]/25'
+                : 'bg-[#121722] text-gray-300 border-[#20293A] hover:border-gray-500 hover:text-white'
             }`}
           >
             Semua ({categories.reduce((acc, c) => acc + Number(c.product_count), 0)})
@@ -74,8 +74,8 @@ export default async function CatalogPage({ searchParams }) {
               }`}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 currentCategory === cat.slug
-                  ? 'bg-[#00F0FF] text-black border-[#00F0FF] shadow-lg shadow-[#00F0FF]/20'
-                  : 'bg-[#151A23] text-gray-300 border-[#262E3D] hover:border-gray-500 hover:text-white'
+                  ? 'bg-[#FF1E27] text-white border-[#FF1E27] shadow-lg shadow-[#FF1E27]/25'
+                  : 'bg-[#121722] text-gray-300 border-[#20293A] hover:border-gray-500 hover:text-white'
               }`}
             >
               {cat.name} ({cat.product_count})
@@ -84,7 +84,7 @@ export default async function CatalogPage({ searchParams }) {
         </div>
 
         {/* Pencarian & Pengurutan Bar */}
-        <div className="p-4 rounded-xl bg-[#151A23] border border-[#262E3D] flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl bg-[#121722] border border-[#20293A] flex flex-col md:flex-row items-center justify-between gap-4">
           
           {/* Form Pencarian */}
           <form method="GET" action="/katalog" className="w-full md:w-80 relative">
@@ -94,8 +94,8 @@ export default async function CatalogPage({ searchParams }) {
               type="text"
               name="q"
               defaultValue={searchQuery}
-              placeholder="Cari mouse, keyboard, jersey..."
-              className="w-full bg-[#0B0E14] border border-[#262E3D] rounded-lg pl-9 pr-4 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+              placeholder="Cari pro kit, mouse, jersey..."
+              className="w-full bg-[#0A0D14] border border-[#20293A] rounded-xl pl-9 pr-4 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
             />
             <Search className="w-4 h-4 text-gray-500 absolute left-3 top-2.5" />
           </form>
@@ -117,10 +117,10 @@ export default async function CatalogPage({ searchParams }) {
                   href={`/katalog?${currentCategory ? `kategori=${currentCategory}&` : ''}${
                     searchQuery ? `q=${encodeURIComponent(searchQuery)}&` : ''
                   }sort=${s.val}`}
-                  className={`px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-xl font-medium transition-colors ${
                     currentSort === s.val
-                      ? 'bg-[#262E3D] text-[#00F0FF] border border-[#00F0FF]/40 font-bold'
-                      : 'text-gray-400 hover:text-white hover:bg-[#262E3D]/50'
+                      ? 'bg-[#FF1E27]/20 text-[#FF1E27] border border-[#FF1E27]/40 font-bold'
+                      : 'text-gray-400 hover:text-white hover:bg-[#182030]'
                   }`}
                 >
                   {s.label}

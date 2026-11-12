@@ -1,4 +1,4 @@
-# APEX ESPORTS // Official Tournament Gear Marketplace
+# BTR VITALITY // Bigetron by Vitality Official Tournament Gear Marketplace
 > **Tugas Akhir Praktikum Pemrograman Web 2026**  
 > Aplikasi E-Commerce Multi-Role Berbasis Next.js App Router, PostgreSQL (Raw SQL), dan Tailwind CSS.
 
@@ -6,7 +6,7 @@
 
 ## 🎯 Gambaran Umum Proyek
 
-**APEX ESPORTS** adalah platform e-commerce perlengkapan turnamen esports (*apparel, mechanical keyboards, gaming mice, audio gear*). Proyek ini dibangun dari nol (*from scratch*) tanpa ORM guna memenuhi kriteria praktikum: performa query tinggi menggunakan PostgreSQL raw parameterized SQL, penanganan transaksi stok atomik, serta alur otentikasi multi-peran (*Multi-Role Lifecycle*).
+**BTR VITALITY** adalah platform e-commerce perlengkapan turnamen esports bertema kolaborasi resmi **Bigetron by Vitality (BTR x Vitality)** (*Robot Merah pro kit apparel, mechanical keyboards, ultra-light gaming mice, audio gear*). Proyek ini dibangun dari nol (*from scratch*) tanpa ORM guna memenuhi kriteria praktikum: performa query tinggi menggunakan PostgreSQL raw parameterized SQL, penanganan transaksi stok atomik, serta alur otentikasi multi-peran (*Multi-Role Lifecycle*).
 
 Katalog produk secara otomatis ditarik dan diselaraskan dari internet public API (**DummyJSON Products API**) dengan visual gambar riil berkualitas tinggi.
 

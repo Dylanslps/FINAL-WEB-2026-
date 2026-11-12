@@ -53,7 +53,7 @@ export default async function ProductDetailPage({ params }) {
         
         {/* Kolom Kiri: Gambar Produk (5/12) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="relative aspect-square w-full rounded-2xl bg-[#151A23] border border-[#262E3D] overflow-hidden">
+          <div className="relative aspect-square w-full rounded-2xl bg-[#0A0D14] border border-[#20293A] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={product.image_url}
@@ -61,28 +61,28 @@ export default async function ProductDetailPage({ params }) {
               className="w-full h-full object-cover object-center"
             />
             {product.is_featured && (
-              <span className="absolute top-3 left-3 px-2.5 py-1 rounded bg-[#FF5E00] text-white text-[11px] font-extrabold uppercase tracking-wider shadow-lg">
-                Featured Drop
+              <span className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-[#FF1E27] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
+                BTR OFFICIAL DROP
               </span>
             )}
-            <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded bg-[#0B0E14]/90 backdrop-blur-md text-[11px] font-mono text-[#00F0FF] border border-[#262E3D]">
+            <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-[#0A0D14]/90 backdrop-blur-md text-[10px] font-mono text-[#FFD000] border border-[#20293A]">
               Live API Internet
             </span>
           </div>
 
           {/* Value Badges */}
           <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-400">
-            <div className="p-3 rounded-xl bg-[#151A23]/60 border border-[#262E3D]">
-              <Truck className="w-4 h-4 mx-auto mb-1 text-[#00F0FF]" />
-              <p className="text-[11px]">Kirim Cepat</p>
+            <div className="p-3 rounded-xl bg-[#121722] border border-[#20293A]">
+              <Truck className="w-4 h-4 mx-auto mb-1 text-[#FF1E27]" />
+              <p className="text-[11px] font-mono">Kirim Cepat</p>
             </div>
-            <div className="p-3 rounded-xl bg-[#151A23]/60 border border-[#262E3D]">
-              <Package className="w-4 h-4 mx-auto mb-1 text-[#FF5E00]" />
-              <p className="text-[11px]">Safety Packing</p>
+            <div className="p-3 rounded-xl bg-[#121722] border border-[#20293A]">
+              <Package className="w-4 h-4 mx-auto mb-1 text-[#FFD000]" />
+              <p className="text-[11px] font-mono">Official Box</p>
             </div>
-            <div className="p-3 rounded-xl bg-[#151A23]/60 border border-[#262E3D]">
+            <div className="p-3 rounded-xl bg-[#121722] border border-[#20293A]">
               <RotateCcw className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-              <p className="text-[11px]">Garansi Resmi</p>
+              <p className="text-[11px] font-mono">Garansi BTR</p>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default async function ProductDetailPage({ params }) {
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#00F0FF]/10 border border-[#00F0FF]/30 text-[#00F0FF] text-xs font-mono font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#FF1E27]/15 border border-[#FF1E27]/40 text-[#FF1E27] text-xs font-mono font-bold">
                 {product.category_name}
               </span>
               {product.brand && (
@@ -102,7 +102,7 @@ export default async function ProductDetailPage({ params }) {
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight uppercase font-sans">
               {product.name}
             </h1>
 
@@ -114,7 +114,7 @@ export default async function ProductDetailPage({ params }) {
                   {ratingSummary.averageRating.toFixed(1)}
                 </span>
               </div>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 font-mono">
                 • {ratingSummary.totalReviews} Ulasan Pembeli
               </span>
               <span className="text-xs text-emerald-400 font-mono">
@@ -124,39 +124,39 @@ export default async function ProductDetailPage({ params }) {
           </div>
 
           {/* Harga Utama */}
-          <div className="p-4 rounded-xl bg-[#151A23]/80 border border-[#262E3D] flex items-baseline justify-between">
+          <div className="p-4 rounded-2xl bg-[#121722] border border-[#20293A] flex items-baseline justify-between">
             <div>
-              <p className="text-xs text-gray-400 uppercase font-mono">Harga Resmi</p>
-              <p className="text-3xl font-black text-[#00F0FF] tracking-tight mt-0.5">
+              <p className="text-[10px] text-gray-400 uppercase font-mono">Harga Resmi Official Store</p>
+              <p className="text-3xl font-black text-[#FF1E27] tracking-tight mt-0.5 font-mono">
                 {formatIDR(product.price)}
               </p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center gap-1 text-xs text-emerald-400 font-semibold">
+              <span className="inline-flex items-center gap-1 text-xs text-emerald-400 font-semibold font-mono">
                 <ShieldCheck className="w-3.5 h-3.5" /> 100% Produk Original
               </span>
             </div>
           </div>
 
           {/* Deskripsi Produk */}
-          <div className="space-y-2 text-sm text-gray-300 leading-relaxed border-t border-[#262E3D] pt-4">
-            <h3 className="font-bold text-white text-sm">Deskripsi & Spesifikasi:</h3>
+          <div className="space-y-2 text-xs text-gray-300 leading-relaxed border-t border-[#20293A] pt-4">
+            <h3 className="font-bold text-white text-xs uppercase tracking-wider font-mono">Deskripsi & Spesifikasi Turnamen:</h3>
             <p className="whitespace-pre-line text-gray-400">{product.description}</p>
           </div>
 
           {/* Kartu Profil Toko Penjual */}
-          <div className="p-4 rounded-xl bg-[#151A23] border border-[#262E3D] flex items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-[#121722] border border-[#20293A] flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-[#00F0FF] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#0A0D14] border border-[#20293A] text-[#FFD000] flex items-center justify-center">
                 <Store className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] text-gray-400 font-mono">Penjual Terverifikasi:</p>
+                <p className="text-[10px] text-gray-400 font-mono">Official Merchant Partner:</p>
                 <h4 className="font-bold text-white text-sm">{product.store_name}</h4>
               </div>
             </div>
-            <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[11px] font-mono font-bold">
-              Official Store
+            <span className="px-2.5 py-1 rounded-lg bg-[#FFD000]/15 text-[#FFD000] border border-[#FFD000]/30 text-[10px] font-mono font-bold uppercase tracking-wider">
+              Verified Seller
             </span>
           </div>
 
