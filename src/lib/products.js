@@ -1,16 +1,5 @@
 import { query } from './db.js';
 
-/**
- * Mengambil daftar produk esports dengan dukungan filter, pencarian, dan pengurutan (Raw SQL).
- * @param {Object} options
- * @param {string} [options.categorySlug] - Filter berdasarkan slug kategori
- * @param {string} [options.search] - Kata kunci pencarian nama/brand/deskripsi
- * @param {string} [options.sortBy] - 'price_asc' | 'price_desc' | 'rating' | 'newest'
- * @param {boolean} [options.isFeatured] - Hanya ambil produk featured
- * @param {number} [options.storeId] - Filter berdasarkan toko tertentu
- * @param {number} [options.limit=20]
- * @param {number} [options.offset=0]
- */
 export async function getProducts({
   categorySlug,
   search,
@@ -91,7 +80,6 @@ export async function getProducts({
 
   const res = await query(sql, params);
 
-  // Ambil juga total count untuk pagination jika dibutuhkan
   const countSql = `
     SELECT COUNT(*)::int AS total
     FROM products p
@@ -108,10 +96,6 @@ export async function getProducts({
   };
 }
 
-/**
- * Mengambil detail lengkap 1 produk berdasarkan slug (Raw SQL).
- * @param {string} slug
- */
 export async function getProductBySlug(slug) {
   const sql = `
     SELECT 
@@ -148,10 +132,6 @@ export async function getProductBySlug(slug) {
   return res.rows[0] || null;
 }
 
-/**
- * Mengambil detail 1 produk berdasarkan ID (Raw SQL).
- * @param {number} id
- */
 export async function getProductById(id) {
   const sql = `
     SELECT 
@@ -171,10 +151,6 @@ export async function getProductById(id) {
   return res.rows[0] || null;
 }
 
-/**
- * Mengambil produk unggulan (Featured Products) untuk Hero Banner & Rekomendasi Utama.
- * @param {number} [limit=4]
- */
 export async function getFeaturedProducts(limit = 4) {
   const { products } = await getProducts({ isFeatured: true, limit });
   return products;

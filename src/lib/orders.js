@@ -1,18 +1,5 @@
 import pool, { query } from './db.js';
 
-/**
- * Melakukan proses checkout belanja dalam sebuah Raw SQL Transaction atomik.
- * Langkah atomik:
- * 1. Validasi keranjang & stok terkini.
- * 2. Hitung total dan buat order baru (status default: 'Menunggu Pembayaran').
- * 3. Masukkan item ke order_items.
- * 4. Kurangi stok produk secara langsung di database.
- * 5. Kosongkan keranjang belanja buyer.
- * @param {Object} params
- * @param {number} params.buyerId
- * @param {string} params.shippingAddress
- * @param {string} [params.notes]
- */
 export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
   if (!shippingAddress || shippingAddress.trim() === '') {
     throw new Error('Alamat pengiriman wajib diisi.');
@@ -23,7 +10,6 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
   try {
     await client.query('BEGIN');
 
-    // 1. Ambil seluruh item di keranjang belanja
     const cartSql = `
       SELECT 
         ci.id AS cart_item_id,
@@ -45,7 +31,6 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
       throw new Error('Keranjang belanja Anda kosong.');
     }
 
-    // 2. Validasi stok setiap produk
     let totalAmount = 0;
     for (const item of cartItems) {
       if (item.quantity > item.stock) {
@@ -56,11 +41,9 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
       totalAmount += Number(item.price) * item.quantity;
     }
 
-    // 3. Generate nomor pesanan unik
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `ORD-2026-ESP${Date.now().toString().slice(-5)}${randomSuffix}`;
 
-    // 4. Buat record di tabel orders
     const insertOrderSql = `
       INSERT INTO orders (order_number, buyer_id, total_amount, shipping_address, notes, status)
       VALUES ($1, $2, $3, $4, $5, 'Menunggu Pembayaran')
@@ -75,7 +58,6 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
     ]);
     const newOrder = orderRes.rows[0];
 
-    // 5. Masukkan item pesanan dan kurangi stok produk
     for (const item of cartItems) {
       const subtotal = Number(item.price) * item.quantity;
       await client.query(
@@ -92,10 +74,8 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
       );
     }
 
-    // 6. Kosongkan keranjang belanja buyer
     await client.query('DELETE FROM cart_items WHERE buyer_id = $1;', [buyerId]);
 
-    // Commit transaksi
     await client.query('COMMIT');
     return newOrder;
   } catch (error) {
@@ -106,10 +86,6 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
   }
 }
 
-/**
- * Mengambil riwayat pesanan milik Buyer (Raw SQL).
- * @param {number} buyerId
- */
 export async function getBuyerOrders(buyerId) {
   const sql = `
     SELECT 
@@ -134,10 +110,6 @@ export async function getBuyerOrders(buyerId) {
   return res.rows;
 }
 
-/**
- * Mengambil detail lengkap 1 pesanan beserta rincian item barang dan status review (Raw SQL).
- * @param {number} orderId
- */
 export async function getOrderDetail(orderId) {
   const orderSql = `
     SELECT 
@@ -190,12 +162,6 @@ export async function getOrderDetail(orderId) {
   return order;
 }
 
-/**
- * Memperbarui status pesanan (Fitur Seller / Admin).
- * Status yang valid: 'Menunggu Pembayaran' | 'Diproses' | 'Selesai' | 'Dibatalkan'.
- * @param {number} orderId
- * @param {string} newStatus
- */
 export async function updateOrderStatus(orderId, newStatus) {
   const validStatuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai', 'Dibatalkan'];
   if (!validStatuses.includes(newStatus)) {
@@ -212,10 +178,6 @@ export async function updateOrderStatus(orderId, newStatus) {
   return res.rows[0] || null;
 }
 
-/**
- * Mengambil daftar pesanan masuk untuk toko Seller tertentu (Raw SQL).
- * @param {number} sellerId
- */
 export async function getSellerOrders(sellerId) {
   const sql = `
     SELECT DISTINCT

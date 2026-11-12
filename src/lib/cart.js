@@ -1,9 +1,5 @@
 import { query } from './db.js';
 
-/**
- * Mengambil isi keranjang belanja buyer beserta kalkulasi subtotal dan total harga (Raw SQL).
- * @param {number} buyerId
- */
 export async function getCart(buyerId) {
   const sql = `
     SELECT 
@@ -41,19 +37,11 @@ export async function getCart(buyerId) {
   };
 }
 
-/**
- * Menambahkan produk ke dalam keranjang dengan validasi ketersediaan stok (Raw SQL).
- * @param {Object} params
- * @param {number} params.buyerId
- * @param {number} params.productId
- * @param {number} [params.quantity=1]
- */
 export async function addToCart({ buyerId, productId, quantity = 1 }) {
   if (quantity < 1) {
     throw new Error('Jumlah pembelian minimal 1 item.');
   }
 
-  // Cek ketersediaan produk dan stoknya
   const prodRes = await query('SELECT id, name, stock, price FROM products WHERE id = $1;', [productId]);
   const product = prodRes.rows[0];
 
@@ -65,7 +53,6 @@ export async function addToCart({ buyerId, productId, quantity = 1 }) {
     throw new Error(`Stok produk "${product.name}" sedang habis.`);
   }
 
-  // Cek apakah item sudah ada di keranjang untuk membatasi sesuai stok maksimum
   const existingRes = await query(
     'SELECT id, quantity FROM cart_items WHERE buyer_id = $1 AND product_id = $2;',
     [buyerId, productId]
@@ -92,19 +79,11 @@ export async function addToCart({ buyerId, productId, quantity = 1 }) {
   return res.rows[0];
 }
 
-/**
- * Memperbarui kuantitas produk di keranjang (Raw SQL).
- * Jika kuantitas 0 atau negatif, item otomatis dihapus dari keranjang.
- * @param {number} cartItemId
- * @param {number} buyerId
- * @param {number} quantity
- */
 export async function updateCartQuantity(cartItemId, buyerId, quantity) {
   if (quantity <= 0) {
     return await removeFromCart(cartItemId, buyerId);
   }
 
-  // Validasi stok produk
   const checkSql = `
     SELECT ci.id, ci.quantity, p.stock, p.name 
     FROM cart_items ci
@@ -133,11 +112,6 @@ export async function updateCartQuantity(cartItemId, buyerId, quantity) {
   return res.rows[0];
 }
 
-/**
- * Menghapus satu item dari keranjang (Raw SQL).
- * @param {number} cartItemId
- * @param {number} buyerId
- */
 export async function removeFromCart(cartItemId, buyerId) {
   const sql = `
     DELETE FROM cart_items 
@@ -148,10 +122,6 @@ export async function removeFromCart(cartItemId, buyerId) {
   return res.rows[0] || null;
 }
 
-/**
- * Mengosongkan seluruh keranjang belanja milik buyer (misalnya setelah checkout berhasil).
- * @param {number} buyerId
- */
 export async function clearCart(buyerId) {
   const sql = `DELETE FROM cart_items WHERE buyer_id = $1 RETURNING id;`;
   const res = await query(sql, [buyerId]);
