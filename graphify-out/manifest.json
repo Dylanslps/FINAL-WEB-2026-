@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "src/app/layout.jsx": {
-    "mtime": 1794487034.736982,
-    "seen": 1794488980.0160859,
-    "ast_hash": "ebe4ab3199f96c8ee43b28def0aaefa2",
+    "mtime": 1794490269.9576738,
+    "seen": 1794490385.545614,
+    "ast_hash": "de4971fafa907af97db29cfd63b8bd90",
     "semantic_hash": ""
   },
   "src/app/login/page.jsx": {
@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "src/app/page.jsx": {
-    "mtime": 1794487274.7822754,
-    "seen": 1794488980.0160909,
-    "ast_hash": "304ddb7683e1ba6604a985ad1f519977",
+    "mtime": 1794490249.9130228,
+    "seen": 1794490385.5459747,
+    "ast_hash": "613777bafdf63e58cc19f73652a1b385",
     "semantic_hash": ""
   },
   "src/app/produk/[slug]/page.jsx": {
@@ -144,15 +144,15 @@
     "semantic_hash": ""
   },
   "src/components/Footer.jsx": {
-    "mtime": 1794487028.8803031,
-    "seen": 1794488980.0161014,
-    "ast_hash": "4c29fb712573f04ffdc5ea7b6dc9d427",
+    "mtime": 1794490273.9169579,
+    "seen": 1794490385.5466332,
+    "ast_hash": "4cc00764604d6a6f0747bb21e3ea11b9",
     "semantic_hash": ""
   },
   "src/components/Navbar.jsx": {
-    "mtime": 1794487014.4957893,
-    "seen": 1794488980.0161026,
-    "ast_hash": "a7b8fb2e7476a7375c64965df997d9aa",
+    "mtime": 1794490281.5458112,
+    "seen": 1794490385.5466347,
+    "ast_hash": "0fd3582d97d6d096d76ff045bee009fe",
     "semantic_hash": ""
   },
   "src/components/OrderDetailTracker.jsx": {
@@ -267,6 +267,12 @@
     "mtime": 1794488943.408665,
     "seen": 1794488980.016131,
     "ast_hash": "f6aaba883ccaed7a3c7e8b0953ca5cb2",
+    "semantic_hash": ""
+  },
+  "postcss.config.mjs": {
+    "mtime": 1794490087.6476748,
+    "seen": 1794490385.5443013,
+    "ast_hash": "e9d66e1263ec6f84f9c7f4b88b00e4f9",
     "semantic_hash": ""
   },
   "package-lock.json": {
