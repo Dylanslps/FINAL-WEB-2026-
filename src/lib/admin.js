@@ -1,0 +1,133 @@
+import { query } from './db.js';
+
+export async function getAdminStats() {
+  const sql = `
+    SELECT 
+      (SELECT COUNT(*)::int FROM users) AS total_users,
+      (SELECT COUNT(*)::int FROM users WHERE role = 'buyer') AS total_buyers,
+      (SELECT COUNT(*)::int FROM users WHERE role = 'seller' AND status = 'approved') AS total_active_sellers,
+      (SELECT COUNT(*)::int FROM users WHERE role = 'seller' AND status = 'pending') AS total_pending_sellers,
+      (SELECT COUNT(*)::int FROM products) AS total_products,
+      (SELECT COUNT(*)::int FROM orders) AS total_orders,
+      (SELECT COALESCE(SUM(total_amount), 0)::numeric(14, 2) FROM orders WHERE status = 'Selesai') AS total_completed_revenue;
+  `;
+  const res = await query(sql);
+  return res.rows[0];
+}
+
+export async function getAdminUsers({ role = null } = {}) {
+  const conditions = [];
+  const params = [];
+
+  if (role) {
+    conditions.push('u.role = $1');
+    params.push(role);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const sql = `
+    SELECT 
+      u.id,
+      u.name,
+      u.email,
+      u.role,
+      u.status,
+      u.phone,
+      u.address,
+      u.created_at,
+      s.id AS store_id,
+      s.name AS store_name,
+      COUNT(DISTINCT o.id)::int AS total_orders
+    FROM users u
+    LEFT JOIN stores s ON u.id = s.seller_id
+    LEFT JOIN orders o ON u.id = o.buyer_id
+    ${whereClause}
+    GROUP BY u.id, s.id, s.name
+    ORDER BY u.created_at DESC;
+  `;
+
+  const res = await query(sql, params);
+  return res.rows;
+}
+
+export async function getPendingSellers() {
+  const sql = `
+    SELECT 
+      u.id,
+      u.name,
+      u.email,
+      u.phone,
+      u.address,
+      u.status,
+      u.created_at,
+      s.id AS store_id,
+      s.name AS store_name,
+      s.slug AS store_slug,
+      s.description AS store_description
+    FROM users u
+    LEFT JOIN stores s ON u.id = s.seller_id
+    WHERE u.role = 'seller' AND u.status = 'pending'
+    ORDER BY u.created_at ASC;
+  `;
+  const res = await query(sql);
+  return res.rows;
+}
+
+export async function approveSeller(sellerId) {
+  const sql = `
+    UPDATE users
+    SET status = 'approved', updated_at = NOW()
+    WHERE id = $1 AND role = 'seller'
+    RETURNING id, name, email, role, status;
+  `;
+  const res = await query(sql, [sellerId]);
+
+  if (res.rows.length === 0) {
+    throw new Error('Seller tidak ditemukan atau bukan akun dengan peran seller.');
+  }
+
+  return res.rows[0];
+}
+
+export async function rejectSeller(sellerId) {
+  const sql = `
+    UPDATE users
+    SET status = 'rejected', updated_at = NOW()
+    WHERE id = $1 AND role = 'seller'
+    RETURNING id, name, email, role, status;
+  `;
+  const res = await query(sql, [sellerId]);
+
+  if (res.rows.length === 0) {
+    throw new Error('Seller tidak ditemukan atau bukan akun dengan peran seller.');
+  }
+
+  return res.rows[0];
+}
+
+export async function deleteUser(adminId, targetUserId) {
+  if (Number(adminId) === Number(targetUserId)) {
+    throw new Error('Admin tidak dapat menghapus akunnya sendiri.');
+  }
+
+  const sql = 'DELETE FROM users WHERE id = $1 RETURNING id, name, email, role;';
+  const res = await query(sql, [targetUserId]);
+
+  if (res.rows.length === 0) {
+    throw new Error('User yang akan dihapus tidak ditemukan.');
+  }
+
+  return res.rows[0];
+}
+
+export async function deleteInfringingProduct(productId) {
+  const sql = 'DELETE FROM products WHERE id = $1 RETURNING id, name;';
+  const res = await query(sql, [productId]);
+
+  if (res.rows.length === 0) {
+    throw new Error('Produk yang akan dihapus tidak ditemukan.');
+  }
+
+  return res.rows[0];
+}
