@@ -84,7 +84,7 @@ export default function ProductCard({ product }) {
         {/* Featured Badge */}
         {product.is_featured && (
           <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-[#FF1E27] text-white text-[10px] font-black uppercase tracking-wider shadow">
-            BTR DROP
+            FEATURED DROP
           </span>
         )}
 

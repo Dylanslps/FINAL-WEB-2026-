@@ -1,12 +1,12 @@
-# BTR VITALITY // Bigetron by Vitality Official Tournament Gear Marketplace
+# VALIANT PRO // Official Tournament Gear Marketplace
 > **Tugas Akhir Praktikum Pemrograman Web 2026**  
-> Aplikasi E-Commerce Multi-Role Berbasis Next.js App Router, PostgreSQL (Raw SQL), dan Tailwind CSS.
+> Aplikasi E-Commerce Multi-Role Berbasis Next.js App Router, PostgreSQL (Raw SQL), dan Tailwind CSS (BTR Red & Vitality Hornet Gold Aesthetic).
 
 ---
 
 ## 🎯 Gambaran Umum Proyek
 
-**BTR VITALITY** adalah platform e-commerce perlengkapan turnamen esports bertema kolaborasi resmi **Bigetron by Vitality (BTR x Vitality)** (*Robot Merah pro kit apparel, mechanical keyboards, ultra-light gaming mice, audio gear*). Proyek ini dibangun dari nol (*from scratch*) tanpa ORM guna memenuhi kriteria praktikum: performa query tinggi menggunakan PostgreSQL raw parameterized SQL, penanganan transaksi stok atomik, serta alur otentikasi multi-peran (*Multi-Role Lifecycle*).
+**VALIANT PRO** adalah platform e-commerce marketplace perlengkapan turnamen esports multi-katalog (*mechanical keyboards, gaming mice, audio gear, apparel jersey, dan rig hardware*). Desain antarmuka mengadopsi nuansa visual turnamen khas **BTR (Bigetron by Vitality)**: perpaduan warna Crimson Red (`#FF1E27`) khas Robot Merah dan aksen Hornet Gold (`#FFD000`). Proyek ini dibangun dari nol (*from scratch*) tanpa ORM guna memenuhi kriteria praktikum: performa query tinggi menggunakan PostgreSQL raw parameterized SQL, penanganan transaksi stok atomik, serta alur otentikasi multi-peran (*Multi-Role Lifecycle*).
 
 Katalog produk secara otomatis ditarik dan diselaraskan dari internet public API (**DummyJSON Products API**) dengan visual gambar riil berkualitas tinggi.
 

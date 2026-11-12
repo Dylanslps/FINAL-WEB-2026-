@@ -3,7 +3,7 @@ import { getProducts, getFeaturedProducts } from '@/lib/products';
 import { getCategories } from '@/lib/categories';
 import ProductCard from '@/components/ProductCard';
 import DropCountdown from '@/components/DropCountdown';
-import { ArrowRight, Trophy, Zap, ShieldCheck, Sparkles, Gamepad2, Shirt, Cpu, Disc, Flame } from 'lucide-react';
+import { ArrowRight, Trophy, Zap, ShieldCheck, Sparkles, Gamepad2, Shirt, Cpu, Disc } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,40 +24,40 @@ export default async function HomePage() {
   return (
     <div className="space-y-16 py-4">
       
-      {/* 1. Hero Section: Bigetron by Vitality (BTR x Vitality) */}
+      {/* 1. Hero Section: VALIANT PRO with BTR Red & Vitality Yellow Aesthetic */}
       <section className="relative rounded-2xl overflow-hidden border border-[#20293A] bg-[#0E131F] p-8 md:p-12 text-center md:text-left">
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF1E27]/10 border border-[#FF1E27]/30 text-[#FF1E27] text-xs font-mono font-bold tracking-wider">
-              <Flame className="w-3.5 h-3.5" />
-              BIGETRON BY VITALITY // 2026
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              VALIANT ARENA // OFFICIAL ESPORTS 2026
             </div>
             <DropCountdown />
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase leading-tight font-sans">
-            Robot Merah. <br />
+            Dominasi Turnamen. <br />
             <span className="text-[#FF1E27]">
-              The Hive Champions.
+              Gear Standar Juara.
             </span>
           </h1>
 
           <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-            Toko merchandise resmi <strong className="text-white">Bigetron by Vitality</strong>: Jersey Pro Kit atlet Robot Merah, mouse gaming 8KHz, keyboard optical switch, dan perlengkapan turnamen standar juara dunia. Seluruh data spesifikasi & visual langsung terhubung ke live e-commerce API.
+            Marketplace resmi perlengkapan esports: mouse gaming ultralight 8KHz, keyboard optical switch, jersey pro kit, headset turnamen, dan rig kompetisi. Gambar dan spesifikasi ditarik langsung via live API internet.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start pt-2">
             <Link
               href="/katalog"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FF1E27] text-white font-extrabold text-xs uppercase tracking-wider hover:bg-[#FFD000] hover:text-black transition-all shadow-md shadow-[#FF1E27]/25"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#FF1E27] text-white font-black text-xs uppercase tracking-wider hover:bg-[#FFD000] hover:text-black transition-all shadow-md shadow-[#FF1E27]/25"
             >
-              Belanja Pro Kit Sekarang <ArrowRight className="w-4 h-4" />
+              Belanja Gear Sekarang <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/katalog?kategori=esports-apparel"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#121722] hover:bg-[#1A2232] text-white border border-[#20293A] hover:border-[#FFD000]/60 font-bold text-xs uppercase tracking-wider transition-all"
             >
-              Jersey Official BTR
+              Lihat Pro Kit Jersey
             </Link>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default async function HomePage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-white flex items-center gap-2 uppercase tracking-wider font-mono">
-            <Sparkles className="w-4 h-4 text-[#FFD000]" /> Kategori Produk Resmi
+            <Sparkles className="w-4 h-4 text-[#FFD000]" /> Kategori Perlengkapan
           </h2>
           <Link href="/katalog" className="text-xs text-[#FFD000] hover:underline font-mono">
             Semua Kategori →
@@ -106,7 +106,7 @@ export default async function HomePage() {
           <div className="flex items-end justify-between border-b border-[#20293A] pb-3">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs text-[#FFD000] font-mono font-bold tracking-wider uppercase mb-1">
-                <Trophy className="w-4 h-4" /> BTR VITALITY DROP HIGHLIGHT
+                <Trophy className="w-4 h-4" /> TOURNAMENT DROP HIGHLIGHT
               </div>
               <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase">
                 Featured Drop Koleksi Terkini
@@ -154,16 +154,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5. Tournament Trust Badges (BTR x Vitality Pillars) */}
+      {/* 5. Tournament Trust Badges */}
       <section className="rounded-2xl border border-[#20293A] bg-[#121722] p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
           <div className="space-y-2">
             <div className="w-10 h-10 rounded-xl bg-[#FF1E27]/10 text-[#FF1E27] flex items-center justify-center mx-auto md:mx-0">
-              <Flame className="w-5 h-5" />
+              <Zap className="w-5 h-5 fill-current" />
             </div>
-            <h3 className="font-bold text-white text-sm uppercase font-mono">Red Aliens Pro Standard</h3>
+            <h3 className="font-bold text-white text-sm uppercase font-mono">Ultralight 8KHz Sensor</h3>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Peralatan yang telah diuji langsung dalam skrim dan panggung turnamen atlet Bigetron Esports.
+              Respon optik 0.125ms untuk akurasi aim tertinggi di panggung turnamen kompetitif.
             </p>
           </div>
 
@@ -171,9 +171,9 @@ export default async function HomePage() {
             <div className="w-10 h-10 rounded-xl bg-[#FFD000]/10 text-[#FFD000] flex items-center justify-center mx-auto md:mx-0">
               <Trophy className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-white text-sm uppercase font-mono">Vitality Paris Hive Tech</h3>
+            <h3 className="font-bold text-white text-sm uppercase font-mono">Pro Kit Tournament Standard</h3>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Arsitektur e-commerce terinspirasi Avex Shopify Plus V.Hive Paris dengan countdown drop konversi tinggi.
+              Jersey atlet esports berstandar Dry-Fit pro player dengan material breathable anti-keringat.
             </p>
           </div>
 

@@ -31,17 +31,17 @@ export default async function CatalogPage({ searchParams }) {
       <div className="space-y-2 border-b border-[#20293A] pb-5">
         <div className="flex items-center gap-2 text-xs font-mono text-[#FFD000]">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>KATALOG RESMI BTR VITALITY 2026</span>
+          <span>KATALOG RESMI VALIANT PRO 2026</span>
         </div>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
-              {activeCategory ? activeCategory.name : 'Semua Perlengkapan BTR x Vitality'}
+              {activeCategory ? activeCategory.name : 'Semua Perlengkapan Gaming Turnamen'}
             </h1>
             <p className="text-xs text-gray-400 mt-1">
               {activeCategory
                 ? activeCategory.description
-                : 'Temukan gear gaming nirkabel, jersey Robot Merah Pro Kit, dan hardware standar turnamen.'}
+                : 'Temukan mouse gaming nirkabel 8KHz, keyboard optical switch, jersey pro kit, dan hardware turnamen.'}
             </p>
           </div>
           <span className="text-xs font-mono text-gray-400 bg-[#121722] px-3 py-1.5 rounded-xl border border-[#20293A]">

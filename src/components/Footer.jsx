@@ -13,8 +13,8 @@ export default function Footer() {
               <Flame className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-white font-bold text-xs">Red Aliens Championship</h4>
-              <p className="text-[11px] text-gray-400">Peralatan standar juara dunia Bigetron Esports.</p>
+              <h4 className="text-white font-bold text-xs">Tournament Grade Gear</h4>
+              <p className="text-[11px] text-gray-400">Peralatan gaming standar kompetisi esports turnamen.</p>
             </div>
           </div>
 
@@ -23,8 +23,8 @@ export default function Footer() {
               <Trophy className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-white font-bold text-xs">Vitality Paris Hive Tech</h4>
-              <p className="text-[11px] text-gray-400">Kolaborasi resmi Team Vitality Eropa 2025/2026.</p>
+              <h4 className="text-white font-bold text-xs">Official Pro Kits</h4>
+              <p className="text-[11px] text-gray-400">Jersey apparel dan aksesoris resmi berbagai tim turnamen.</p>
             </div>
           </div>
 
@@ -34,7 +34,7 @@ export default function Footer() {
             </div>
             <div>
               <h4 className="text-white font-bold text-xs">Live API E-Commerce</h4>
-              <p className="text-[11px] text-gray-400">Katalog dan gambar disinkronkan langsung via API publik.</p>
+              <p className="text-[11px] text-gray-400">Katalog dan visual gambar tersinkronisasi via internet API.</p>
             </div>
           </div>
         </div>
@@ -43,13 +43,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-white font-black tracking-wider text-sm font-mono">
-              <span className="w-6 h-6 rounded-lg bg-[#FF1E27] flex items-center justify-center text-white text-[11px] font-black">
-                B
-              </span>
-              <span>BTR <strong className="text-[#FFD000]">VITALITY</strong></span>
+              <Shield className="w-5 h-5 text-[#FF1E27] fill-current" />
+              <span>VALIANT <strong className="text-[#FF1E27]">PRO</strong></span>
             </div>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Toko resmi merchandise & pro kit Bigetron by Vitality. Didesain untuk Trooper BTR dan komunitas esports Indonesia dengan standar kompetisi tertinggi.
+              Platform e-commerce esports resmi untuk gear gaming, peripheral kompetisi, jersey pro kit, dan hardware performa tinggi.
             </p>
           </div>
 
@@ -63,7 +61,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/katalog?kategori=esports-apparel" className="hover:text-[#FFD000] transition-colors">
-                  Jersey & Pro Kit Robot Merah
+                  Jersey & Pro Kit Apparel
                 </Link>
               </li>
               <li>
@@ -94,7 +92,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/seller/pending" className="hover:text-[#FFD000] transition-colors">
-                  Daftar Jadi Merchant BTR
+                  Daftar Jadi Merchant Seller
                 </Link>
               </li>
               <li>
@@ -111,7 +109,7 @@ export default function Footer() {
               Tugas Akhir Praktikum Pemrograman Web 2026.
             </p>
             <p className="text-xs font-mono text-[#FFD000]">
-              Tema: E-Commerce Esports (BTR x Vitality)
+              Tema: E-Commerce Gaming Gear (BTR Aesthetic)
             </p>
             <p className="text-[11px] font-mono text-gray-500 mt-1">
               Stack: Next.js + PostgreSQL (Raw SQL)
@@ -120,9 +118,9 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-[#20293A] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© 2026 Bigetron by Vitality Store. All rights reserved.</p>
+          <p>© 2026 VALIANT Esports Store. All rights reserved.</p>
           <p className="flex items-center gap-1 font-mono text-[11px]">
-            <span>#BTRWIN</span> • <span>#VFORVICTORY</span>
+            <span>TOURNAMENT GRADE</span> • <span className="text-[#FF1E27]">PRO GEAR</span>
           </p>
         </div>
       </div>

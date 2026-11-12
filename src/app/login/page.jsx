@@ -75,10 +75,10 @@ function LoginFormContent() {
           <Shield className="w-6 h-6" />
         </div>
         <h1 className="text-2xl font-black text-white tracking-tight uppercase font-mono">
-          BTR <span className="text-[#FFD000]">VITALITY</span>
+          VALIANT <span className="text-[#FF1E27]">PRO</span>
         </h1>
         <p className="text-xs text-gray-400">
-          Masuk untuk akses transaksi official pro kit BTR, toko merchant, atau root admin.
+          Masuk untuk akses transaksi gear turnamen, toko penjual, atau panel admin.
         </p>
       </div>
 

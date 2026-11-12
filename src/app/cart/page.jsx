@@ -403,7 +403,7 @@ export default function CartPage() {
                 <span className="font-mono text-gray-200">{formatIDR(cart.totalAmount)}</span>
               </div>
               <div className="flex justify-between text-gray-400">
-                <span>Ongkos Kirim BTR Official</span>
+                <span>Ongkos Kirim Standar Turnamen</span>
                 <span className="font-mono text-emerald-400 font-bold">GRATIS</span>
               </div>
               <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-[#20293A]">

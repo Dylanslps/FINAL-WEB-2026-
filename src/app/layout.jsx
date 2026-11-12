@@ -5,8 +5,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata = {
-  title: 'BTR VITALITY // Bigetron by Vitality Official Esports Store',
-  description: 'Toko e-commerce resmi Bigetron by Vitality (BTR). Gear standar turnamen pro, jersey Robot Merah Pro Kit, dan perlengkapan gaming kelas dunia.',
+  title: 'VALIANT PRO // Official Tournament Gaming Gear Marketplace',
+  description: 'Platform e-commerce esports resmi untuk pro player dan gamers turnamen. Menyediakan mouse ultralight, keyboard switch optik, jersey turnamen, dan rig kompetisi.',
 };
 
 export default function RootLayout({ children }) {

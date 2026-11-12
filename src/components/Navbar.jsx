@@ -28,22 +28,22 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
-          {/* Brand Logo: Bigetron by Vitality (BTR x Vitality) */}
+          {/* Brand Logo: VALIANT PRO with BTR Red & Vitality Gold Theme */}
           <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF1E27]/20 via-[#FFD000]/10 to-transparent border border-[#FF1E27]/50 flex items-center justify-center text-[#FF1E27] group-hover:border-[#FFD000] group-hover:text-[#FFD000] transition-all">
-              <Zap className="w-5 h-5 fill-current" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF1E27]/25 via-[#FFD000]/15 to-transparent border border-[#FF1E27]/60 flex items-center justify-center text-[#FF1E27] group-hover:border-[#FFD000] group-hover:text-[#FFD000] transition-all">
+              <Shield className="w-5 h-5 fill-current" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-lg tracking-wider text-white font-mono">
-                  BTR <span className="text-[#FFD000]">VITALITY</span>
+                  VALIANT <span className="text-[#FF1E27]">PRO</span>
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#FF1E27]/20 text-[#FF1E27] border border-[#FF1E27]/40 font-bold uppercase tracking-wider">
-                  OFFICIAL
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#FFD000]/15 text-[#FFD000] border border-[#FFD000]/30 font-bold uppercase tracking-wider">
+                  ESPORTS
                 </span>
               </div>
               <p className="text-[9px] text-gray-400 tracking-widest uppercase font-mono">
-                Bigetron by Vitality Store
+                Esports Gear & Gaming Store
               </p>
             </div>
           </Link>
@@ -53,7 +53,7 @@ export default function Navbar() {
             <div className="relative w-full">
               <input
                 type="text"
-                placeholder="Cari pro kit, mouse, keyboard, jersey Robot Merah..."
+                placeholder="Cari mouse, keyboard, headset, jersey turnamen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#121722] border border-[#20293A] rounded-xl pl-10 pr-4 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#FF1E27] focus:ring-1 focus:ring-[#FF1E27] transition-colors"

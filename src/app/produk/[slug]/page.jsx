@@ -62,7 +62,7 @@ export default async function ProductDetailPage({ params }) {
             />
             {product.is_featured && (
               <span className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-[#FF1E27] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
-                BTR OFFICIAL DROP
+                TOURNAMENT DROP
               </span>
             )}
             <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-[#0A0D14]/90 backdrop-blur-md text-[10px] font-mono text-[#FFD000] border border-[#20293A]">
@@ -82,7 +82,7 @@ export default async function ProductDetailPage({ params }) {
             </div>
             <div className="p-3 rounded-xl bg-[#121722] border border-[#20293A]">
               <RotateCcw className="w-4 h-4 mx-auto mb-1 text-emerald-400" />
-              <p className="text-[11px] font-mono">Garansi BTR</p>
+              <p className="text-[11px] font-mono">Garansi Resmi</p>
             </div>
           </div>
         </div>
