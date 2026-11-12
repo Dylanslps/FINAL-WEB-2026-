@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata = {
-  title: 'VALIANT Esports Store - Tournament Grade Gear & Merchandise',
+  title: 'APEX ESPORTS // Official Tournament Gear Marketplace',
   description: 'Toko e-commerce esports resmi untuk pro player dan gamers turnamen.',
 };
 

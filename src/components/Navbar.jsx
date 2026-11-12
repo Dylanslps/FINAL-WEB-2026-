@@ -24,9 +24,9 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0B0E14]/90 backdrop-blur-md border-b border-[#262E3D]">
+    <header className="sticky top-0 z-50 bg-[#0A0D14]/90 backdrop-blur-md border-b border-[#20293A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18 gap-4">
+        <div className="flex items-center justify-between h-16 gap-4">
           
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
@@ -34,8 +34,8 @@ export default function Navbar() {
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-extrabold text-lg tracking-wider text-white flex items-center gap-1.5">
-                VALIANT <span className="text-[#00F0FF] text-xs font-mono px-1.5 py-0.5 rounded bg-[#00F0FF]/10 border border-[#00F0FF]/30">PRO</span>
+              <span className="font-extrabold text-lg tracking-wider text-white flex items-center gap-1.5 font-mono">
+                APEX <span className="text-[#00F0FF] text-xs font-mono px-1.5 py-0.5 rounded bg-[#00F0FF]/10 border border-[#00F0FF]/30">PRO</span>
               </span>
               <p className="text-[10px] text-gray-400 tracking-widest uppercase font-mono">Esports Gear & Merch</p>
             </div>

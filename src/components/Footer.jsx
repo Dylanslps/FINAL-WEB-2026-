@@ -44,7 +44,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-white font-extrabold tracking-wider text-base">
               <Shield className="w-5 h-5 text-[#00F0FF]" />
-              VALIANT ESPORTS
+              APEX ESPORTS
             </div>
             <p className="text-xs text-gray-400 leading-relaxed">
               Platform e-commerce esports Indonesia untuk gear turnamen, jersey pro kit tim besar, dan rig gaming berkualitas tinggi.

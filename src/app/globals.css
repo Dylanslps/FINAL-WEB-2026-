@@ -1,21 +1,35 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --bg-main: #0B0E14;
-    --bg-card: #151A23;
-    --bg-card-hover: #1D2432;
-    --border-subtle: #262E3D;
-    --accent-primary: #00F0FF;
-    --accent-orange: #FF5E00;
-    --text-primary: #F3F4F6;
-    --text-muted: #9CA3AF;
-  }
+:root {
+  color-scheme: dark;
+}
 
-  body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    min-height: 100vh;
-  }
+body {
+  background-color: #0A0D14;
+  color: #F1F5F9;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tournament scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0D14;
+}
+::-webkit-scrollbar-thumb {
+  background: #20293A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00F0FF;
+}
+
+::selection {
+  background-color: rgba(0, 240, 255, 0.25);
+  color: #FFFFFF;
 }
