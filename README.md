@@ -44,9 +44,8 @@ Tersedia fitur **1-Click Test Account Switcher** di bagian navigasi atas (Navbar
 | Role | Email | Password | Kegunaan Uji Coba |
 | :--- | :--- | :--- | :--- |
 | **Super Admin** | `admin@esports.com` | `admin123` | Uji coba verifikasi seller, moderasi produk & user |
-| **Seller Approved** | `seller1@apexgear.com` | `seller123` | Toko Apex Gear (Kelola produk & order masuk) |
-| **Seller Pending** | `seller3@pending.com` | `seller123` | Toko Budi Esports (Melihat status menunggu admin) |
-| **Buyer** | `buyer@gmail.com` | `buyer123` | Keranjang belanja, checkout, beri ulasan bintang |
+| **Seller** | `seller1@apexgear.com` | `seller123` | Toko Apex Pro Gear (Kelola CRUD produk & pesanan masuk) |
+| **Buyer** | `buyer@gmail.com` | `buyer123` | Keranjang belanja, checkout transaksi, dan ulasan bintang |
 
 ---
 

@@ -137,23 +137,13 @@ export default function Navbar() {
                       </Link>
                     )}
 
-                    {user?.role === 'seller' && user?.status === 'approved' && (
+                    {user?.role === 'seller' && (
                       <Link
-                        href="/seller/dashboard"
+                        href={user?.status === 'approved' ? '/seller/dashboard' : '/seller/pending'}
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-[#FFD000] hover:bg-[#1A2232]"
                       >
                         <Store className="w-4 h-4" /> Dashboard Seller Toko
-                      </Link>
-                    )}
-
-                    {user?.role === 'seller' && user?.status !== 'approved' && (
-                      <Link
-                        href="/seller/pending"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-amber-400 hover:bg-[#1A2232]"
-                      >
-                        <Store className="w-4 h-4" /> Status Pengajuan Toko
                       </Link>
                     )}
 
@@ -168,34 +158,28 @@ export default function Navbar() {
                     )}
                   </div>
 
-                  {/* Switcher Cepat Akun Uji Coba (Untuk Aslab / Dosen Penguji) */}
+                  {/* Switcher Cepat Akun Uji Coba (3 Akun Utama: Buyer, Seller, Admin) */}
                   <div className="px-4 py-2.5 bg-[#0A0D14]/60 border-b border-[#20293A]">
                     <p className="text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-2 font-bold flex items-center justify-between">
                       <span>Quick Test Switcher:</span>
                       <span className="text-[#FFD000]">1-Click</span>
                     </p>
-                    <div className="grid grid-cols-2 gap-1.5 text-xs">
+                    <div className="grid grid-cols-3 gap-1.5 text-xs">
                       <button
                         onClick={() => { switchAccount('buyer'); setDropdownOpen(false); }}
-                        className="px-2 py-1.5 rounded-lg bg-[#182030] hover:bg-[#FF1E27]/20 hover:text-[#FF1E27] text-left transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-[#FF1E27]/20 hover:text-[#FF1E27] text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
                       >
                         🛒 Buyer
                       </button>
                       <button
                         onClick={() => { switchAccount('seller'); setDropdownOpen(false); }}
-                        className="px-2 py-1.5 rounded-lg bg-[#182030] hover:bg-[#FFD000]/20 hover:text-[#FFD000] text-left transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-[#FFD000]/20 hover:text-[#FFD000] text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
                       >
                         🏪 Seller
                       </button>
                       <button
-                        onClick={() => { switchAccount('seller_pending'); setDropdownOpen(false); }}
-                        className="px-2 py-1.5 rounded-lg bg-[#182030] hover:bg-amber-400/20 hover:text-amber-400 text-left transition-colors font-medium text-gray-200 border border-[#20293A]"
-                      >
-                        ⏳ Pending
-                      </button>
-                      <button
                         onClick={() => { switchAccount('admin'); setDropdownOpen(false); }}
-                        className="px-2 py-1.5 rounded-lg bg-[#182030] hover:bg-purple-500/20 hover:text-purple-300 text-left transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-purple-500/20 hover:text-purple-300 text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
                       >
                         🛡️ Admin
                       </button>

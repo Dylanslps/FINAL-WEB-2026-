@@ -140,48 +140,42 @@ function LoginFormContent() {
 
       </div>
 
-      {/* Kotak Akun Pengujian Demo (Fitur Khusus untuk Pengujian Aslab / Dosen) */}
-      <div className="p-5 rounded-2xl bg-[#0B0E14] border border-[#262E3D] space-y-3">
-        <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-gray-300">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>Akun Pengujian Demo (Klik untuk Isi):</span>
+      {/* Kotak Akun Pengujian Demo (3 Peran Utama: Buyer, Seller, Admin) */}
+      <div className="p-5 rounded-2xl bg-[#0A0D14] border border-[#20293A] space-y-3">
+        <div className="flex items-center justify-between text-xs font-mono font-bold text-gray-300">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#FFD000]" />
+            <span>Akun Pengujian Demo (Klik untuk Isi):</span>
+          </div>
+          <span className="text-[10px] text-[#FF1E27]">1-Click Demo</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
           <button
             type="button"
             onClick={() => fillAndLogin('buyer@gmail.com', 'buyer123')}
-            className="p-2.5 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-[#00F0FF] text-left transition-colors space-y-0.5"
+            className="p-3 rounded-xl bg-[#121722] border border-[#20293A] hover:border-[#FF1E27] text-left transition-colors space-y-1"
           >
             <p className="font-bold text-white flex items-center gap-1">🛒 Buyer</p>
-            <p className="text-[10px] text-gray-400 font-mono">buyer@gmail.com</p>
+            <p className="text-[10px] text-gray-400 font-mono truncate">buyer@gmail.com</p>
           </button>
 
           <button
             type="button"
             onClick={() => fillAndLogin('seller1@apexgear.com', 'seller123')}
-            className="p-2.5 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-[#FF5E00] text-left transition-colors space-y-0.5"
+            className="p-3 rounded-xl bg-[#121722] border border-[#20293A] hover:border-[#FFD000] text-left transition-colors space-y-1"
           >
-            <p className="font-bold text-white flex items-center gap-1">🏪 Seller Approved</p>
-            <p className="text-[10px] text-gray-400 font-mono">seller1@apexgear.com</p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => fillAndLogin('seller3@pending.com', 'seller123')}
-            className="p-2.5 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-amber-400 text-left transition-colors space-y-0.5"
-          >
-            <p className="font-bold text-white flex items-center gap-1">⏳ Seller Pending</p>
-            <p className="text-[10px] text-gray-400 font-mono">seller3@pending.com</p>
+            <p className="font-bold text-white flex items-center gap-1">🏪 Seller</p>
+            <p className="text-[10px] text-gray-400 font-mono truncate">seller1@apexgear.com</p>
           </button>
 
           <button
             type="button"
             onClick={() => fillAndLogin('admin@esports.com', 'admin123')}
-            className="p-2.5 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-purple-400 text-left transition-colors space-y-0.5"
+            className="p-3 rounded-xl bg-[#121722] border border-[#20293A] hover:border-purple-400 text-left transition-colors space-y-1"
           >
             <p className="font-bold text-white flex items-center gap-1">🛡️ Super Admin</p>
-            <p className="text-[10px] text-gray-400 font-mono">admin@esports.com</p>
+            <p className="text-[10px] text-gray-400 font-mono truncate">admin@esports.com</p>
           </button>
         </div>
       </div>
