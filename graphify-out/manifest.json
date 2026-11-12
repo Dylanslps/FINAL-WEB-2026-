@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "scripts/seed-esports.mjs": {
-    "mtime": 1794484383.5147727,
-    "seen": 1794488980.0160704,
-    "ast_hash": "a700f2ace75c96c66b242810583f26be",
+    "mtime": 1794497928.0530908,
+    "seen": 1794498052.5077536,
+    "ast_hash": "9ca1c60cc83e4f3805fb6dfca0be7803",
     "semantic_hash": ""
   },
   "src/app/admin/dashboard/page.jsx": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "src/components/Footer.jsx": {
-    "mtime": 1794497502.687318,
-    "seen": 1794497577.936681,
-    "ast_hash": "bd36022fcaac63c6549a2dcb4db10c13",
+    "mtime": 1794497990.0383542,
+    "seen": 1794498052.5107582,
+    "ast_hash": "7a5f377ac6a4b9633309818c40dc5c55",
     "semantic_hash": ""
   },
   "src/components/Navbar.jsx": {

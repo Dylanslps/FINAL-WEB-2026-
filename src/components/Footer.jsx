@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import { Shield, ShoppingBag, Package, Store, LayoutDashboard, MapPin, Phone, Clock } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -7,13 +7,13 @@ export default function Footer() {
       <footer className="bg-[#070A0F] border-t border-[#20293A] text-gray-400 text-xs mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           
-          {/* Main Footer Row: Slogan & Socials (Left) + Links Columns (Right) */}
+          {/* Main Footer Row: Slogan & Socials (Left) + Real Functional Links (Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-12 border-b border-[#20293A]">
             
-            {/* Left Column: Slogan & Social Media (6/12) */}
-            <div className="lg:col-span-6 space-y-6">
+            {/* Left Column: Slogan & Social Media (5/12) */}
+            <div className="lg:col-span-5 space-y-6">
               
-              {/* Brand Slogan Sesuai Referensi Gaming Shop */}
+              {/* Brand Slogan */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-white font-black tracking-wider text-sm font-mono mb-3">
                   <Shield className="w-5 h-5 text-[#FF1E27] fill-current" />
@@ -24,11 +24,11 @@ export default function Footer() {
                   <span className="text-[#FF1E27]">GAME LIKE A PRO.</span>
                 </h2>
                 <p className="text-xs text-gray-400 max-w-md leading-relaxed">
-                  Pusat perlengkapan gaming dan peripheral kompetisi nomor satu di Indonesia. Keyboard mekanikal kustom, mouse ultralight 8KHz, jersey dry-fit pro kit resmi, dan rig turnamen.
+                  Pusat perlengkapan gaming dan peripheral kompetisi turnamen resmi di Indonesia. Keyboard mekanikal kustom, mouse ultralight 8KHz, jersey dry-fit pro kit, dan rig hardware.
                 </p>
               </div>
 
-              {/* Social Media Circular Buttons Sesuai Referensi */}
+              {/* Social Media Circular Buttons */}
               <div className="flex items-center gap-3 pt-2">
                 
                 {/* Instagram */}
@@ -63,7 +63,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-[#121722] border border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27] hover:bg-[#FF1E27]/15 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
-                  title="Facebook"
+                  title="Facebook Bigetron Esports"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -99,90 +99,118 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Right Column: Links (OUR SERVICE & OTHER) (6/12) */}
-            <div className="lg:col-span-6 grid grid-cols-2 gap-8">
+            {/* Right Column: Real Functional Pages (7/12) */}
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
               
-              {/* OUR SERVICE Links Sesuai Referensi */}
+              {/* Kolom 1: Kategori Produk Real */}
               <div>
                 <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
-                  OUR SERVICE
+                  Kategori Gear
                 </h5>
-                <ul className="space-y-2.5 text-xs">
+                <ul className="space-y-2 text-xs">
                   <li>
                     <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      About Us
+                      Semua Produk
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      Contact Us
+                    <Link href="/katalog?kategori=gaming-gear" className="hover:text-[#FFD000] transition-colors">
+                      Gaming Gear & Mouse
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      FAQ
+                    <Link href="/katalog?kategori=esports-apparel" className="hover:text-[#FF1E27] transition-colors">
+                      Jersey & Pro Kit
                     </Link>
                   </li>
                   <li>
-                    <Link href="/orders" className="hover:text-[#FF1E27] transition-colors">
-                      Return and Warranty
+                    <Link href="/katalog?kategori=gaming-hardware" className="hover:text-[#FFD000] transition-colors">
+                      Hardware & Rig
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      Delivery Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      Privacy Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/orders" className="hover:text-[#FF1E27] transition-colors">
-                      Refund & Return Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      Terms & Conditions
+                    <Link href="/katalog?kategori=accessories" className="hover:text-[#FF1E27] transition-colors">
+                      Accessories & Mat
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* OTHER Links Sesuai Referensi */}
+              {/* Kolom 2: Area Akun & Portal Real */}
               <div>
                 <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
-                  OTHER
+                  Area Akun
                 </h5>
-                <ul className="space-y-2.5 text-xs">
+                <ul className="space-y-2 text-xs">
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FFD000] transition-colors">
-                      RMA Page
+                    <Link href="/cart" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
+                      <ShoppingBag className="w-3.5 h-3.5 text-[#FF1E27]" />
+                      <span>Keranjang Belanja</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FFD000] transition-colors">
-                      Driver & Firmware
+                    <Link href="/orders" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-[#FFD000]" />
+                      <span>Lacak Pesanan</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/seller/dashboard" className="hover:text-[#FFD000] transition-colors">
-                      Merchant Portal
+                    <Link href="/seller/dashboard" className="hover:text-[#FFD000] transition-colors flex items-center gap-1.5">
+                      <Store className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Portal Toko Seller</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/admin/dashboard" className="hover:text-[#FFD000] transition-colors">
-                      Tournament Admin
+                    <Link href="/admin/dashboard" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
+                      <LayoutDashboard className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Panel Admin</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog?kategori=gaming-gear" className="hover:text-[#FFD000] transition-colors">
-                      Official Arena Locations
+                    <Link href="/login" className="hover:text-white transition-colors">
+                      Halaman Login / Demo
                     </Link>
                   </li>
                 </ul>
+              </div>
+
+              {/* Kolom 3: Layanan Pelanggan & Hub Resmi */}
+              <div>
+                <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
+                  Customer Support
+                </h5>
+                <div className="space-y-2.5 text-xs text-gray-400">
+                  <div className="flex items-start gap-2">
+                    <Phone className="w-3.5 h-3.5 text-[#FF1E27] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-gray-200 font-semibold">WhatsApp CS Resmi</p>
+                      <a
+                        href="https://wa.me/6281234567890"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-400 hover:underline font-mono"
+                      >
+                        +62 812-3456-7890
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <Clock className="w-3.5 h-3.5 text-[#FFD000] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-gray-200 font-semibold">Jam Operasional</p>
+                      <p className="text-[11px] font-mono">Setiap Hari, 09:00 - 22:00 WIB</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-gray-200 font-semibold">Arena Warehouse</p>
+                      <p className="text-[11px]">Mangga Dua Mall Lt. 3, Jakarta</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -206,7 +234,7 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Floating WhatsApp Quick Action Button (Sesuai Referensi Screenshot) */}
+      {/* Floating WhatsApp Quick Action Button */}
       <a
         href="https://wa.me/6281234567890?text=Halo%20VALIANT%20PRO%20Esports%20Store%2C%20saya%20ingin%20tanya%20tentang%20gear%20gaming%20dan%20varian%20produk."
         target="_blank"

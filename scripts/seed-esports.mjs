@@ -232,7 +232,7 @@ async function runSeed() {
         esportsCatalog.push({
           storeId: isGear ? store1Id : store2Id,
           catSlug: isGear ? 'gaming-hardware' : 'esports-apparel',
-          name: `[API] ${item.title}`,
+          name: item.title,
           slug: `api-${item.id}-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
           desc: item.description,
           price: Math.round(item.price * 16000), // konversi USD ke IDR
