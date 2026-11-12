@@ -15,6 +15,8 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
         ci.id AS cart_item_id,
         ci.product_id,
         ci.quantity,
+        ci.selected_variant,
+        ci.selected_color,
         p.name AS product_name,
         p.price,
         p.stock,
@@ -61,9 +63,9 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
     for (const item of cartItems) {
       const subtotal = Number(item.price) * item.quantity;
       await client.query(
-        `INSERT INTO order_items (order_id, product_id, store_id, quantity, price, subtotal)
-         VALUES ($1, $2, $3, $4, $5, $6);`,
-        [newOrder.id, item.product_id, item.store_id, item.quantity, item.price, subtotal]
+        `INSERT INTO order_items (order_id, product_id, store_id, quantity, price, subtotal, selected_variant, selected_color)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
+        [newOrder.id, item.product_id, item.store_id, item.quantity, item.price, subtotal, item.selected_variant, item.selected_color]
       );
 
       await client.query(
@@ -143,6 +145,8 @@ export async function getOrderDetail(orderId) {
       oi.quantity,
       oi.price,
       oi.subtotal,
+      oi.selected_variant,
+      oi.selected_color,
       p.name AS product_name,
       p.slug AS product_slug,
       p.image_url AS product_image,

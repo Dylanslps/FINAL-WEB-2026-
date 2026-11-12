@@ -137,8 +137,8 @@ export default function CartPage() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#151A23] border border-[#262E3D]">
-        <div className="w-12 h-12 rounded-full bg-[#262E3D] flex items-center justify-center mx-auto text-[#00F0FF]">
+      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
+        <div className="w-12 h-12 rounded-full bg-[#1A2232] flex items-center justify-center mx-auto text-[#FF1E27]">
           <ShoppingBag className="w-6 h-6" />
         </div>
         <h2 className="text-xl font-bold text-white">Anda Belum Masuk Akun</h2>
@@ -148,13 +148,13 @@ export default function CartPage() {
         <div className="flex flex-col gap-2 pt-2">
           <button
             onClick={() => switchAccount('buyer')}
-            className="w-full py-2.5 rounded-xl bg-[#00F0FF] text-black font-bold text-xs hover:bg-[#00F0FF]/90 transition-all"
+            className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
           >
             Masuk Cepat sebagai Buyer (Dylan)
           </button>
           <Link
             href="/login"
-            className="w-full py-2.5 rounded-xl bg-[#0B0E14] text-gray-300 border border-[#262E3D] font-bold text-xs hover:text-white transition-all"
+            className="w-full py-2.5 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] font-bold text-xs hover:text-white transition-all"
           >
             Halaman Login / Register
           </Link>
@@ -165,7 +165,7 @@ export default function CartPage() {
 
   if (user.role !== 'buyer') {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#151A23] border border-[#262E3D]">
+      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
         <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
           <AlertCircle className="w-6 h-6" />
         </div>
@@ -175,7 +175,7 @@ export default function CartPage() {
         </p>
         <button
           onClick={() => switchAccount('buyer')}
-          className="w-full py-2.5 rounded-xl bg-[#00F0FF] text-black font-bold text-xs hover:bg-[#00F0FF]/90 transition-all"
+          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
         >
           Beralih ke Akun Buyer (Dylan)
         </button>
@@ -185,7 +185,7 @@ export default function CartPage() {
 
   if (successOrder) {
     return (
-      <div className="max-w-lg mx-auto py-12 text-center space-y-6 p-8 rounded-2xl bg-[#151A23] border border-[#00F0FF]/40 shadow-2xl">
+      <div className="max-w-lg mx-auto py-12 text-center space-y-6 p-8 rounded-2xl bg-[#121722] border border-[#FF1E27]/40 shadow-2xl">
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
           <CheckCircle2 className="w-8 h-8" />
         </div>
@@ -193,20 +193,20 @@ export default function CartPage() {
         <div className="space-y-1">
           <h2 className="text-2xl font-black text-white">Pesanan Berhasil Dibuat!</h2>
           <p className="text-xs text-gray-400 font-mono">
-            Nomor Pesanan: <strong className="text-[#00F0FF]">{successOrder.order_number}</strong>
+            Nomor Pesanan: <strong className="text-[#FF1E27]">{successOrder.order_number}</strong>
           </p>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#0B0E14] border border-[#262E3D] text-left text-xs space-y-2">
+        <div className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] text-left text-xs space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-400">Status Pesanan:</span>
             <span className="font-bold text-amber-400">{successOrder.status}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Total Pembayaran:</span>
-            <span className="font-bold text-[#00F0FF]">{formatIDR(successOrder.total_amount)}</span>
+            <span className="font-bold text-[#FF1E27]">{formatIDR(successOrder.total_amount)}</span>
           </div>
-          <div className="pt-2 border-t border-[#262E3D] text-gray-400">
+          <div className="pt-2 border-t border-[#20293A] text-gray-400">
             Alamat Pengiriman: <br />
             <span className="text-gray-200">{shippingAddress}</span>
           </div>
@@ -215,13 +215,13 @@ export default function CartPage() {
         <div className="flex gap-3 pt-2">
           <Link
             href="/orders"
-            className="flex-1 py-3 rounded-xl bg-[#00F0FF] text-black font-extrabold text-xs hover:bg-[#00F0FF]/90 transition-colors"
+            className="flex-1 py-3 rounded-xl bg-[#FF1E27] text-white font-extrabold text-xs hover:bg-[#FFD000] hover:text-black transition-colors"
           >
             Lihat Riwayat & Lacak Pesanan →
           </Link>
           <Link
             href="/katalog"
-            className="px-4 py-3 rounded-xl bg-[#0B0E14] text-gray-300 border border-[#262E3D] text-xs font-bold hover:text-white"
+            className="px-4 py-3 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] text-xs font-bold hover:text-white"
           >
             Belanja Lagi
           </Link>
@@ -240,8 +240,8 @@ export default function CartPage() {
 
   if (cart.items.length === 0) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#151A23] border border-[#262E3D]">
-        <div className="w-14 h-14 rounded-full bg-[#0B0E14] border border-[#262E3D] text-gray-500 flex items-center justify-center mx-auto">
+      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
+        <div className="w-14 h-14 rounded-full bg-[#0A0D14] border border-[#20293A] text-gray-500 flex items-center justify-center mx-auto">
           <ShoppingBag className="w-6 h-6" />
         </div>
         <h2 className="text-xl font-bold text-white">Keranjang Belanja Kosong</h2>
@@ -251,7 +251,7 @@ export default function CartPage() {
         <div className="pt-2">
           <Link
             href="/katalog"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#00F0FF] text-black font-bold text-xs hover:bg-[#00F0FF]/90 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
           >
             Jelajahi Katalog Turnamen <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -264,10 +264,10 @@ export default function CartPage() {
     <div className="space-y-8 py-4">
       
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#262E3D] pb-4">
+      <div className="flex items-center justify-between border-b border-[#20293A] pb-4">
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-            <ShoppingBag className="w-6 h-6 text-[#00F0FF]" />
+            <ShoppingBag className="w-6 h-6 text-[#FF1E27]" />
             Keranjang Belanja ({cart.totalItems} Item)
           </h1>
           <p className="text-xs text-gray-400 mt-1">
@@ -289,12 +289,12 @@ export default function CartPage() {
           {cart.items.map((item) => (
             <div
               key={item.cart_item_id}
-              className="p-4 rounded-xl bg-[#151A23] border border-[#262E3D] flex gap-4 items-center"
+              className="p-4 rounded-xl bg-[#121722] border border-[#20293A] flex gap-4 items-center"
             >
               {/* Gambar Item */}
               <Link
                 href={`/produk/${item.product_slug}`}
-                className="w-20 h-20 rounded-lg bg-[#0B0E14] border border-[#262E3D] overflow-hidden flex-shrink-0"
+                className="w-20 h-20 rounded-lg bg-[#0A0D14] border border-[#20293A] overflow-hidden flex-shrink-0"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -310,18 +310,35 @@ export default function CartPage() {
                   Toko: {item.store_name}
                 </p>
                 <Link href={`/produk/${item.product_slug}`}>
-                  <h3 className="text-sm font-bold text-white hover:text-[#00F0FF] truncate">
+                  <h3 className="text-sm font-bold text-white hover:text-[#FF1E27] truncate">
                     {item.product_name}
                   </h3>
                 </Link>
-                <p className="text-xs font-mono font-bold text-[#00F0FF]">
+
+                {/* Variant & Color Badges */}
+                {(item.selected_variant || item.selected_color) && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    {item.selected_variant && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#0A0D14] border border-[#20293A] text-[10px] font-mono text-gray-300">
+                        Varian: <strong className="text-white">{item.selected_variant}</strong>
+                      </span>
+                    )}
+                    {item.selected_color && (
+                      <span className="px-2 py-0.5 rounded-md bg-[#0A0D14] border border-[#20293A] text-[10px] font-mono text-gray-300">
+                        Warna: <strong className="text-[#FFD000]">{item.selected_color}</strong>
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <p className="text-xs font-mono font-bold text-[#FF1E27]">
                   {formatIDR(item.product_price)}
                 </p>
               </div>
 
               {/* Kontrol Kuantitas & Subtotal */}
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                <div className="flex items-center gap-1.5 bg-[#0B0E14] border border-[#262E3D] rounded-lg p-1">
+                <div className="flex items-center gap-1.5 bg-[#0A0D14] border border-[#20293A] rounded-lg p-1">
                   <button
                     onClick={() => updateQty(item.cart_item_id, item.quantity - 1)}
                     className="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-white"

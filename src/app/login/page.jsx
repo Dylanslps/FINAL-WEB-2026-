@@ -178,6 +178,15 @@ function LoginFormContent() {
             <p className="text-[10px] text-gray-400 font-mono truncate">admin@esports.com</p>
           </button>
         </div>
+
+        <div className="pt-2 text-center border-t border-[#20293A]/60">
+          <Link
+            href="/"
+            className="text-xs text-gray-400 hover:text-[#FF1E27] font-mono inline-flex items-center gap-1"
+          >
+            <span>🌐 Atau jelajahi store sebagai <strong>Public User (Tamu)</strong> tanpa login →</span>
+          </Link>
+        </div>
       </div>
 
     </div>

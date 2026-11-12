@@ -20,7 +20,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { buyerId, productId, quantity } = body;
+    const { buyerId, productId, quantity, selectedVariant, selectedColor } = body;
 
     if (!buyerId || !productId) {
       return NextResponse.json({ error: 'buyerId dan productId wajib diisi' }, { status: 400 });
@@ -30,6 +30,8 @@ export async function POST(request) {
       buyerId: Number(buyerId),
       productId: Number(productId),
       quantity: Number(quantity) || 1,
+      selectedVariant: selectedVariant || null,
+      selectedColor: selectedColor || null,
     });
 
     return NextResponse.json(item, { status: 201 });

@@ -95,6 +95,8 @@ CREATE TABLE cart_items (
     buyer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     quantity INT NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    selected_variant VARCHAR(100),
+    selected_color VARCHAR(100),
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     CONSTRAINT unique_buyer_product UNIQUE (buyer_id, product_id)
@@ -129,7 +131,9 @@ CREATE TABLE order_items (
     store_id INT NOT NULL REFERENCES stores(id) ON DELETE RESTRICT,
     quantity INT NOT NULL CHECK (quantity > 0),
     price NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
-    subtotal NUMERIC(12, 2) NOT NULL CHECK (subtotal >= 0)
+    subtotal NUMERIC(12, 2) NOT NULL CHECK (subtotal >= 0),
+    selected_variant VARCHAR(100),
+    selected_color VARCHAR(100)
 );
 
 -- =============================================================================

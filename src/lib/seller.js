@@ -209,6 +209,8 @@ export async function getSellerIncomingOrders(sellerId) {
       oi.quantity,
       oi.price,
       oi.subtotal,
+      oi.selected_variant,
+      oi.selected_color,
       p.name AS product_name,
       p.image_url AS product_image
     FROM orders o
@@ -247,6 +249,8 @@ export async function getSellerIncomingOrders(sellerId) {
       quantity: row.quantity,
       price: row.price,
       subtotal: row.subtotal,
+      selected_variant: row.selected_variant,
+      selected_color: row.selected_color,
     });
     order.seller_subtotal += Number(row.subtotal);
   }

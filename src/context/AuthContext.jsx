@@ -22,13 +22,6 @@ export const TEST_ACCOUNTS = {
     store_name: 'Apex Pro Gaming Gear',
     store_slug: 'apex-pro-gaming-gear',
   },
-  seller_pending: {
-    id: 4,
-    name: 'Budi Calon Seller',
-    email: 'seller3@pending.com',
-    role: 'seller',
-    status: 'pending',
-  },
   admin: {
     id: 1,
     name: 'Super Admin Esports',
@@ -69,7 +62,7 @@ export function AuthProvider({ children }) {
   };
 
   const switchAccount = (key) => {
-    if (key === 'guest') {
+    if (key === 'guest' || key === 'publicuser') {
       logout();
       return;
     }

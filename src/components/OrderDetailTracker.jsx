@@ -41,15 +41,15 @@ export default function OrderDetailTracker({ order }) {
       {/* Back button */}
       <Link
         href="/orders"
-        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#00F0FF] transition-colors font-mono"
+        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#FF1E27] transition-colors font-mono"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Riwayat Pesanan
       </Link>
 
       {/* Header Detail */}
-      <div className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono text-[#00F0FF]">RINCIAN & PELACAKAN PESANAN</span>
+          <span className="text-xs font-mono text-[#FFD000]">RINCIAN & PELACAKAN PESANAN</span>
           <h1 className="text-2xl font-black text-white tracking-tight mt-1 font-mono">
             {order.order_number}
           </h1>
@@ -65,14 +65,14 @@ export default function OrderDetailTracker({ order }) {
         </div>
         <div className="text-right">
           <p className="text-xs text-gray-400 font-mono">Total Tagihan:</p>
-          <p className="text-2xl font-black text-[#00F0FF] font-mono">
+          <p className="text-2xl font-black text-[#FF1E27] font-mono">
             {formatIDR(order.total_amount)}
           </p>
         </div>
       </div>
 
       {/* Stepper Timeline Pelacakan (Baymard UX Order Tracking) */}
-      <div className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-6">
+      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6">
         <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
           Timeline Pelacakan Status:
         </h2>
@@ -94,20 +94,20 @@ export default function OrderDetailTracker({ order }) {
                   key={step.title}
                   className={`p-4 rounded-xl border transition-all ${
                     isCurrent
-                      ? 'bg-[#00F0FF]/10 border-[#00F0FF] shadow-lg shadow-[#00F0FF]/10'
+                      ? 'bg-[#FF1E27]/10 border-[#FF1E27] shadow-lg shadow-[#FF1E27]/10'
                       : isPastOrCurrent
-                      ? 'bg-[#151A23] border-emerald-500/40 text-emerald-400'
-                      : 'bg-[#0B0E14] border-[#262E3D] opacity-40'
+                      ? 'bg-[#121722] border-emerald-500/40 text-emerald-400'
+                      : 'bg-[#0A0D14] border-[#20293A] opacity-40'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                         isCurrent
-                          ? 'bg-[#00F0FF] text-black font-bold'
+                          ? 'bg-[#FF1E27] text-white font-bold'
                           : isPastOrCurrent
                           ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-[#262E3D] text-gray-500'
+                          : 'bg-[#20293A] text-gray-500'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function OrderDetailTracker({ order }) {
       </div>
 
       {/* Rincian Produk & Tombol Ulasan */}
-      <div className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-6">
+      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6">
         <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
           Barang yang Dipesan ({order.items.length}):
         </h2>
@@ -136,25 +136,42 @@ export default function OrderDetailTracker({ order }) {
           {order.items.map((item) => (
             <div
               key={item.order_item_id}
-              className="p-4 rounded-xl bg-[#0B0E14] border border-[#262E3D] flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="flex items-center gap-3.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.product_image}
                   alt={item.product_name}
-                  className="w-16 h-16 rounded-lg object-cover border border-[#262E3D] flex-shrink-0"
+                  className="w-16 h-16 rounded-lg object-cover border border-[#20293A] flex-shrink-0"
                 />
                 <div className="space-y-1">
                   <p className="text-[11px] text-gray-400 font-mono flex items-center gap-1">
-                    <Store className="w-3 h-3 text-[#00F0FF]" /> {item.store_name}
+                    <Store className="w-3 h-3 text-[#FFD000]" /> {item.store_name}
                   </p>
                   <Link
                     href={`/produk/${item.product_slug}`}
-                    className="font-bold text-sm text-white hover:text-[#00F0FF] transition-colors block"
+                    className="font-bold text-sm text-white hover:text-[#FF1E27] transition-colors block"
                   >
                     {item.product_name}
                   </Link>
+
+                  {/* Varian & Warna */}
+                  {(item.selected_variant || item.selected_color) && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      {item.selected_variant && (
+                        <span className="px-2 py-0.5 rounded-md bg-[#121722] border border-[#20293A] text-[10px] font-mono text-gray-300">
+                          Varian: <strong className="text-white">{item.selected_variant}</strong>
+                        </span>
+                      )}
+                      {item.selected_color && (
+                        <span className="px-2 py-0.5 rounded-md bg-[#121722] border border-[#20293A] text-[10px] font-mono text-gray-300">
+                          Warna: <strong className="text-[#FFD000]">{item.selected_color}</strong>
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <p className="text-xs text-gray-400 font-mono">
                     {item.quantity} x {formatIDR(item.price)}
                   </p>
@@ -165,7 +182,7 @@ export default function OrderDetailTracker({ order }) {
               <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
                 <div className="text-right">
                   <p className="text-[10px] text-gray-400 uppercase font-mono">Subtotal</p>
-                  <p className="text-sm font-extrabold text-[#00F0FF] font-mono">
+                  <p className="text-sm font-extrabold text-[#FF1E27] font-mono">
                     {formatIDR(item.subtotal)}
                   </p>
                 </div>
@@ -180,7 +197,7 @@ export default function OrderDetailTracker({ order }) {
                   ) : (
                     <button
                       onClick={() => openReview(item)}
-                      className="px-3 py-1.5 rounded-lg bg-[#FF5E00] hover:bg-[#FF5E00]/90 text-white font-bold text-xs flex items-center gap-1.5 shadow transition-all hover:scale-105"
+                      className="px-3 py-1.5 rounded-lg bg-[#FF1E27] hover:bg-[#FFD000] hover:text-black text-white font-bold text-xs flex items-center gap-1.5 shadow transition-all hover:scale-105"
                     >
                       <Star className="w-3.5 h-3.5 fill-white" /> Beri Ulasan Bintang
                     </button>
@@ -197,11 +214,11 @@ export default function OrderDetailTracker({ order }) {
       </div>
 
       {/* Info Pengiriman */}
-      <div className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-3">
+      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-3">
         <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider flex items-center gap-1.5">
-          <MapPin className="w-4 h-4 text-[#00F0FF]" /> Alamat Tujuan Pengiriman:
+          <MapPin className="w-4 h-4 text-[#FF1E27]" /> Alamat Tujuan Pengiriman:
         </h2>
-        <div className="p-4 rounded-xl bg-[#0B0E14] border border-[#262E3D] text-xs text-gray-300 leading-relaxed">
+        <div className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-gray-300 leading-relaxed">
           <p className="font-bold text-white mb-1">{order.buyer_name} ({order.buyer_email})</p>
           <p>{order.shipping_address}</p>
           {order.notes && (
@@ -218,7 +235,9 @@ export default function OrderDetailTracker({ order }) {
           orderId={order.id}
           product={selectedProduct}
           buyerId={user?.id || order.buyer_id}
-          onReviewSuccess={() => router.refresh()}
+          onSuccess={() => {
+            router.refresh();
+          }}
         />
       )}
 

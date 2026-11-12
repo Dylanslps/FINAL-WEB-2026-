@@ -7,6 +7,8 @@ export async function getCart(buyerId) {
       ci.buyer_id,
       ci.product_id,
       ci.quantity,
+      ci.selected_variant,
+      ci.selected_color,
       ci.created_at,
       p.name AS product_name,
       p.slug AS product_slug,
@@ -37,7 +39,7 @@ export async function getCart(buyerId) {
   };
 }
 
-export async function addToCart({ buyerId, productId, quantity = 1 }) {
+export async function addToCart({ buyerId, productId, quantity = 1, selectedVariant = null, selectedColor = null }) {
   if (quantity < 1) {
     throw new Error('Jumlah pembelian minimal 1 item.');
   }
@@ -66,16 +68,18 @@ export async function addToCart({ buyerId, productId, quantity = 1 }) {
   }
 
   const upsertSql = `
-    INSERT INTO cart_items (buyer_id, product_id, quantity)
-    VALUES ($1, $2, $3)
+    INSERT INTO cart_items (buyer_id, product_id, quantity, selected_variant, selected_color)
+    VALUES ($1, $2, $3, $4, $5)
     ON CONFLICT (buyer_id, product_id)
     DO UPDATE SET 
       quantity = cart_items.quantity + EXCLUDED.quantity,
+      selected_variant = COALESCE(EXCLUDED.selected_variant, cart_items.selected_variant),
+      selected_color = COALESCE(EXCLUDED.selected_color, cart_items.selected_color),
       updated_at = NOW()
-    RETURNING id, buyer_id, product_id, quantity;
+    RETURNING id, buyer_id, product_id, quantity, selected_variant, selected_color;
   `;
 
-  const res = await query(upsertSql, [buyerId, productId, quantity]);
+  const res = await query(upsertSql, [buyerId, productId, quantity, selectedVariant, selectedColor]);
   return res.rows[0];
 }
 

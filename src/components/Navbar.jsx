@@ -158,30 +158,56 @@ export default function Navbar() {
                     )}
                   </div>
 
-                  {/* Switcher Cepat Akun Uji Coba (3 Akun Utama: Buyer, Seller, Admin) */}
-                  <div className="px-4 py-2.5 bg-[#0A0D14]/60 border-b border-[#20293A]">
+                  {/* Switcher Cepat 4 Peran Kanonikal (Sesuai Spesifikasi PDF) */}
+                  <div className="px-3.5 py-2.5 bg-[#0A0D14]/80 border-b border-[#20293A]">
                     <p className="text-[10px] font-mono uppercase tracking-wider text-gray-400 mb-2 font-bold flex items-center justify-between">
-                      <span>Quick Test Switcher:</span>
+                      <span>4 Peran Kanonikal (PDF):</span>
                       <span className="text-[#FFD000]">1-Click</span>
                     </p>
-                    <div className="grid grid-cols-3 gap-1.5 text-xs">
+                    <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+                      <button
+                        onClick={() => { switchAccount('guest'); setDropdownOpen(false); }}
+                        className={`px-2.5 py-2 rounded-xl text-left transition-colors font-semibold border flex items-center justify-between ${
+                          !user
+                            ? 'bg-[#FF1E27]/15 border-[#FF1E27] text-white shadow-sm'
+                            : 'bg-[#182030] border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27]/50'
+                        }`}
+                      >
+                        <span>🌐 Guest</span>
+                        {!user && <span className="w-1.5 h-1.5 rounded-full bg-[#FF1E27] animate-pulse" />}
+                      </button>
                       <button
                         onClick={() => { switchAccount('buyer'); setDropdownOpen(false); }}
-                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-[#FF1E27]/20 hover:text-[#FF1E27] text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className={`px-2.5 py-2 rounded-xl text-left transition-colors font-semibold border flex items-center justify-between ${
+                          user?.role === 'buyer'
+                            ? 'bg-[#FF1E27]/15 border-[#FF1E27] text-white shadow-sm'
+                            : 'bg-[#182030] border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27]/50'
+                        }`}
                       >
-                        🛒 Buyer
+                        <span>🛒 Buyer</span>
+                        {user?.role === 'buyer' && <span className="w-1.5 h-1.5 rounded-full bg-[#FF1E27] animate-pulse" />}
                       </button>
                       <button
                         onClick={() => { switchAccount('seller'); setDropdownOpen(false); }}
-                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-[#FFD000]/20 hover:text-[#FFD000] text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className={`px-2.5 py-2 rounded-xl text-left transition-colors font-semibold border flex items-center justify-between ${
+                          user?.role === 'seller'
+                            ? 'bg-[#FFD000]/15 border-[#FFD000] text-[#FFD000] shadow-sm'
+                            : 'bg-[#182030] border-[#20293A] text-gray-300 hover:text-[#FFD000] hover:border-[#FFD000]/50'
+                        }`}
                       >
-                        🏪 Seller
+                        <span>🏪 Seller</span>
+                        {user?.role === 'seller' && <span className="w-1.5 h-1.5 rounded-full bg-[#FFD000] animate-pulse" />}
                       </button>
                       <button
                         onClick={() => { switchAccount('admin'); setDropdownOpen(false); }}
-                        className="px-2 py-2 rounded-xl bg-[#182030] hover:bg-purple-500/20 hover:text-purple-300 text-center transition-colors font-medium text-gray-200 border border-[#20293A]"
+                        className={`px-2.5 py-2 rounded-xl text-left transition-colors font-semibold border flex items-center justify-between ${
+                          user?.role === 'admin'
+                            ? 'bg-purple-500/15 border-purple-500 text-purple-300 shadow-sm'
+                            : 'bg-[#182030] border-[#20293A] text-gray-300 hover:text-purple-300 hover:border-purple-500/50'
+                        }`}
                       >
-                        🛡️ Admin
+                        <span>🛡️ Admin</span>
+                        {user?.role === 'admin' && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />}
                       </button>
                     </div>
                   </div>

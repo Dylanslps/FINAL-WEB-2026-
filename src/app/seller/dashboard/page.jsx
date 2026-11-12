@@ -413,12 +413,12 @@ export default function SellerDashboardPage() {
                 <div key={ord.id} className="p-5 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#262E3D] pb-3">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono font-bold text-sm text-[#00F0FF]">{ord.order_number}</span>
+                      <span className="font-mono font-bold text-sm text-[#FF1E27]">{ord.order_number}</span>
                       <span className="text-xs text-gray-400">Pembeli: <strong className="text-white">{ord.buyer_name}</strong> ({ord.buyer_email})</span>
                     </div>
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
                       ord.status === 'Selesai' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' :
-                      ord.status === 'Diproses' ? 'bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/30' :
+                      ord.status === 'Diproses' ? 'bg-[#FFD000]/10 text-[#FFD000] border border-[#FFD000]/30' :
                       'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                     }`}>
                       {ord.status}
@@ -428,14 +428,26 @@ export default function SellerDashboardPage() {
                   {/* List Barang Milik Toko Ini */}
                   <div className="space-y-2">
                     {ord.items.map((it) => (
-                      <div key={it.order_item_id} className="flex items-center justify-between text-xs p-2 rounded-lg bg-[#0B0E14]">
-                        <div className="flex items-center gap-2">
+                      <div key={it.order_item_id} className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-[#0A0D14] border border-[#20293A]">
+                        <div className="flex items-center gap-2.5">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={it.product_image} alt="" className="w-8 h-8 rounded object-cover" />
-                          <span className="text-white font-medium">{it.product_name}</span>
-                          <span className="text-gray-400">({it.quantity}x)</span>
+                          <img src={it.product_image} alt="" className="w-9 h-9 rounded object-cover border border-[#20293A]" />
+                          <div>
+                            <span className="text-white font-medium">{it.product_name}</span>
+                            <span className="text-gray-400 ml-1">({it.quantity}x)</span>
+                            {(it.selected_variant || it.selected_color) && (
+                              <div className="flex items-center gap-2 text-[10px] font-mono text-gray-400 mt-0.5">
+                                {it.selected_variant && (
+                                  <span>Varian: <strong className="text-gray-200">{it.selected_variant}</strong></span>
+                                )}
+                                {it.selected_color && (
+                                  <span>Warna: <strong className="text-[#FFD000]">{it.selected_color}</strong></span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <span className="font-mono font-bold text-[#00F0FF]">{formatIDR(it.subtotal)}</span>
+                        <span className="font-mono font-bold text-[#FF1E27]">{formatIDR(it.subtotal)}</span>
                       </div>
                     ))}
                   </div>
