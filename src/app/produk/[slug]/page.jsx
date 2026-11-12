@@ -1,11 +1,80 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getProductBySlug } from '@/lib/products';
+import { getProductBySlug, getRelatedProducts } from '@/lib/products';
 import { getProductReviews, getProductRatingSummary } from '@/lib/reviews';
 import AddToCartSection from '@/components/AddToCartSection';
-import { Star, Store, ShieldCheck, ArrowLeft, Truck, Package, RotateCcw } from 'lucide-react';
+import { Star, Store, ArrowLeft, Truck, Package, RotateCcw } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+function getProductSpecifications(product) {
+  const catSlug = (product.category_slug || '').toLowerCase();
+  const name = (product.name || '').toLowerCase();
+
+  if (catSlug.includes('keyboard') || name.includes('keyboard') || name.includes('ok-1')) {
+    return [
+      { feature: 'Layout', detail: name.includes('68') ? '68% Ultra Compact' : '75% Tournament Compact' },
+      { feature: 'Connection', detail: 'Tri-Mode (2.4GHz Wireless, Bluetooth 5.3, Type-C Wired)' },
+      { feature: 'Knob', detail: 'CNC Aluminum Rotary Volume / Media Knob' },
+      { feature: 'Screen', detail: name.includes('pro') ? '1.14" TFT OLED Smart Display' : 'None' },
+      { feature: 'PCB', detail: '1.2mm Flex-Cut Hot-Swappable (3-Pin & 5-Pin Compatible)' },
+      { feature: 'Switch Direction', detail: 'South Facing RGB LED (Cherry Profile Friendly)' },
+      { feature: 'Hotswappable', detail: 'Yes (Universal Kailh Hot-Swap Sockets)' },
+      { feature: 'Switch', detail: 'Akko Prism Magnetic / Factory Pre-Lubed Optical Linear' },
+      { feature: 'Assembly', detail: 'Pre-Built Gasket Mounted with Poron Foam & IXPE Pad' },
+      { feature: 'Polling Rate', detail: '1,000Hz Ultra-Low Latency (1ms Response)' },
+      { feature: 'Battery', detail: '4,000mAh High Capacity Li-ion (Up to 200 Hrs)' },
+    ];
+  }
+
+  if (catSlug.includes('mouse') || name.includes('mouse')) {
+    return [
+      { feature: 'Sensor', detail: 'PixArt PAW3395 High-Precision Optical Sensor' },
+      { feature: 'DPI Range', detail: '50 – 26,000 DPI (Configurable in 50 DPI steps)' },
+      { feature: 'Polling Rate', detail: '8,000Hz (8K Ultra Polling Rate / 0.125ms Delay)' },
+      { feature: 'Connection', detail: 'Dual-Mode 2.4GHz Wireless & Paracord USB-C' },
+      { feature: 'Switches', detail: 'Optical Micro Switches (Rated for 90 Million Clicks)' },
+      { feature: 'Weight', detail: '49g Superlight Solid Chassis' },
+      { feature: 'Skates / Feet', detail: '100% Virgin Grade PTFE Curved Glide Skates' },
+      { feature: 'Battery Life', detail: 'Up to 80 Hours (1KHz) / 24 Hours (8KHz)' },
+      { feature: 'Software', detail: 'VALIANT Cloud Web Driver with On-Board Memory' },
+    ];
+  }
+
+  if (catSlug.includes('apparel') || catSlug.includes('jersey') || name.includes('jersey')) {
+    return [
+      { feature: 'Material', detail: 'Dry-Fit Aerocool Microfiber Polyester 100%' },
+      { feature: 'Print Technology', detail: 'Full High-Definition Sublimation (Anti-Fade)' },
+      { feature: 'Sleeve Construction', detail: 'Ergonomic Raglan Sleeve for Unrestricted Aim' },
+      { feature: 'Ventilation', detail: 'Underarm Breathable Hex-Mesh Airflow Panels' },
+      { feature: 'Fit Profile', detail: 'Athletic Tournament Pro Cut' },
+      { feature: 'Collar Style', detail: 'Reinforced Ribbed V-Neck Esports Collar' },
+      { feature: 'Authenticity Tag', detail: 'Official BTR x Vitality Tournament Tag with Hologram' },
+      { feature: 'Care Instructions', detail: 'Machine Wash Cold, Hang Dry, Do Not Iron on Print' },
+    ];
+  }
+
+  if (catSlug.includes('headset') || catSlug.includes('audio') || name.includes('headset') || name.includes('iem')) {
+    return [
+      { feature: 'Acoustic Driver', detail: '50mm Neodymium Dual-Chamber Hi-Res Drivers' },
+      { feature: 'Frequency Range', detail: '12Hz – 28,000Hz (Hi-Res Audio Certified)' },
+      { feature: 'Connection', detail: '2.4GHz Ultra-Low Latency + Bluetooth 5.3 + 3.5mm' },
+      { feature: 'Microphone', detail: 'Detachable Broadcast-Grade 9.7mm Cardioid Mic' },
+      { feature: 'Spatial Audio', detail: '7.1 Virtual Surround Sound Gaming Engine' },
+      { feature: 'Ear Cushion', detail: 'Memory Foam with Cooling-Gel Layer & Protein Leather' },
+      { feature: 'Battery Life', detail: 'Up to 60 Hours Playback Time' },
+    ];
+  }
+
+  return [
+    { feature: 'Material', detail: 'Esports Tournament Grade High-Density Compound' },
+    { feature: 'Surface', detail: 'Precision Micro-Woven Texture for Speed & Control' },
+    { feature: 'Base', detail: '4mm Anti-Slip Natural Rubber / Silicone Grip' },
+    { feature: 'Stitching', detail: 'Ultra-Dense Flat Anti-Fray Edge Stitching' },
+    { feature: 'Compatibility', detail: 'Optimized for All Low & High DPI Optical Sensors' },
+    { feature: 'Certification', detail: 'Esports Arena Tournament Approved' },
+  ];
+}
 
 export default async function ProductDetailPage({ params }) {
   const { slug } = await params;
@@ -15,10 +84,13 @@ export default async function ProductDetailPage({ params }) {
     notFound();
   }
 
-  const [ratingSummary, reviews] = await Promise.all([
+  const [ratingSummary, reviews, relatedProducts] = await Promise.all([
     getProductRatingSummary(product.id),
     getProductReviews(product.id),
+    getRelatedProducts(product.id, product.category_id, 4),
   ]);
+
+  const specs = getProductSpecifications(product);
 
   const formatIDR = (num) => {
     return new Intl.NumberFormat('id-ID', {
@@ -33,15 +105,15 @@ export default async function ProductDetailPage({ params }) {
       
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-2 text-xs text-gray-400 font-mono">
-        <Link href="/" className="hover:text-[#00F0FF] transition-colors flex items-center gap-1">
+        <Link href="/" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1">
           <ArrowLeft className="w-3.5 h-3.5" /> Beranda
         </Link>
         <span>/</span>
-        <Link href="/katalog" className="hover:text-[#00F0FF] transition-colors">
+        <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
           Katalog
         </Link>
         <span>/</span>
-        <Link href={`/katalog?kategori=${product.category_slug}`} className="hover:text-[#00F0FF] transition-colors">
+        <Link href={`/katalog?kategori=${product.category_slug}`} className="hover:text-[#FFD000] transition-colors">
           {product.category_name}
         </Link>
         <span>/</span>
@@ -148,8 +220,48 @@ export default async function ProductDetailPage({ params }) {
         </div>
       </div>
 
+      {/* Product Specification Section (Matching Good Gaming Shop Reference) */}
+      <section className="space-y-4 pt-8 border-t border-[#20293A]">
+        <div>
+          <h2 className="text-xl font-bold text-white tracking-tight">
+            Product Specification
+          </h2>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Rincian teknis dan spesifikasi perangkat keras standar kompetisi.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-[#121722] border border-[#20293A] overflow-hidden">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-[#20293A] bg-[#0A0D14]/70 text-gray-400 font-mono text-[11px] uppercase tracking-wider">
+                <th className="py-3 px-5 font-semibold w-1/3">Features</th>
+                <th className="py-3 px-5 font-semibold w-2/3">Detail</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#20293A]/60">
+              {specs.map((item, idx) => (
+                <tr
+                  key={item.feature}
+                  className={`hover:bg-[#182030]/60 transition-colors ${
+                    idx % 2 === 1 ? 'bg-[#0E131C]/40' : ''
+                  }`}
+                >
+                  <td className="py-3 px-5 font-semibold text-gray-300">
+                    {item.feature}
+                  </td>
+                  <td className="py-3 px-5 font-mono text-gray-200">
+                    {item.detail}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* Bagian Ulasan Pembeli (Penerapan Riset UX Baymard & Smashing Magazine) */}
-      <section className="space-y-8 pt-8 border-t border-[#262E3D]">
+      <section className="space-y-8 pt-8 border-t border-[#20293A]">
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
@@ -161,10 +273,10 @@ export default async function ProductDetailPage({ params }) {
         </div>
 
         {/* Ringkasan Skor & Grafik Distribusi Rating 1-5 Bintang */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#121722] border border-[#20293A] items-center">
           
           {/* Skor Rata-Rata */}
-          <div className="text-center md:border-r border-[#262E3D] md:pr-6 space-y-2">
+          <div className="text-center md:border-r border-[#20293A] md:pr-6 space-y-2">
             <p className="text-5xl font-black text-white">
               {ratingSummary.averageRating.toFixed(1)}
             </p>
@@ -185,7 +297,7 @@ export default async function ProductDetailPage({ params }) {
             </p>
           </div>
 
-          {/* Grafik Batang Distribusi Bintang (Baymard & Smashing Magazine Pattern) */}
+          {/* Grafik Batang Distribusi Bintang */}
           <div className="md:col-span-2 space-y-2">
             {ratingSummary.distribution.map((item) => (
               <div key={item.star} className="flex items-center gap-3 text-xs">
@@ -194,7 +306,7 @@ export default async function ProductDetailPage({ params }) {
                 </span>
                 
                 {/* Bar Progres */}
-                <div className="flex-1 h-2 rounded-full bg-[#0B0E14] overflow-hidden border border-[#262E3D]">
+                <div className="flex-1 h-2 rounded-full bg-[#0A0D14] overflow-hidden border border-[#20293A]">
                   <div
                     className="h-full bg-amber-400 transition-all duration-500 rounded-full"
                     style={{ width: `${item.percentage}%` }}
@@ -217,13 +329,13 @@ export default async function ProductDetailPage({ params }) {
           </h3>
 
           {reviews.length === 0 ? (
-            <div className="p-8 rounded-xl bg-[#151A23]/50 border border-[#262E3D] text-center text-gray-400 text-sm">
+            <div className="p-8 rounded-xl bg-[#121722]/60 border border-[#20293A] text-center text-gray-400 text-sm">
               Belum ada ulasan untuk produk ini. Jadilah yang pertama memberikan ulasan setelah pesanan Anda selesai!
             </div>
           ) : (
             <div className="space-y-3">
               {reviews.map((rev) => (
-                <div key={rev.id} className="p-4 rounded-xl bg-[#151A23] border border-[#262E3D] space-y-2">
+                <div key={rev.id} className="p-4 rounded-xl bg-[#121722] border border-[#20293A] space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white text-sm">{rev.buyer_name}</span>
@@ -259,6 +371,78 @@ export default async function ProductDetailPage({ params }) {
         </div>
 
       </section>
+
+      {/* OTHER RECOMMENDED Section (Matching Good Gaming Shop Reference) */}
+      {relatedProducts && relatedProducts.length > 0 && (
+        <section className="space-y-6 pt-12 border-t border-[#20293A]">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black italic uppercase tracking-wider text-white font-sans">
+              OTHER <span className="text-[#FF1E27]">RECOMMENDED</span>
+            </h2>
+            <Link
+              href="/katalog"
+              className="text-xs text-[#FFD000] hover:text-[#FF1E27] font-mono font-bold transition-colors"
+            >
+              Lihat Semua Gear →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {relatedProducts.map((rel) => {
+              const relOriginalPrice = Math.round(Number(rel.price) * 1.25);
+              return (
+                <Link
+                  key={rel.id}
+                  href={`/produk/${rel.slug}`}
+                  className="group flex flex-col bg-[#121722] border border-[#20293A] hover:border-[#FF1E27]/60 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FF1E27]/10"
+                >
+                  <div className="relative aspect-square w-full bg-[#0A0D14] overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={rel.image_url}
+                      alt={rel.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {rel.is_featured && (
+                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-[#FF1E27] text-white text-[9px] font-black uppercase tracking-wider shadow">
+                        HOT
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-4 flex-1 flex flex-col justify-between space-y-2.5">
+                    {/* Color Dots Indicator Sesuai Good Gaming Shop */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-black border border-gray-600" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-white border border-gray-400" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#FF1E27] border border-[#FF1E27]" />
+                      <span className="text-[10px] text-gray-500 font-mono ml-1">+1</span>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-white text-xs line-clamp-1 group-hover:text-[#FF1E27] transition-colors">
+                        {rel.name}
+                      </h3>
+                      <p className="text-[10px] text-gray-400 font-mono mt-0.5">
+                        Brand: {rel.brand || 'VALIANT PRO'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-baseline gap-2 pt-1 border-t border-[#20293A]/60">
+                      <span className="font-black text-[#FF1E27] font-mono text-sm">
+                        {formatIDR(rel.price)}
+                      </span>
+                      <span className="text-[11px] text-gray-500 font-mono line-through">
+                        {formatIDR(relOriginalPrice)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
     </div>
   );

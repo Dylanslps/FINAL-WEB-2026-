@@ -1,17 +1,17 @@
 # Graph Report - FINAL WEB 2026  (2026-11-12)
 
 ## Corpus Check
-- 47 files · ~28,716 words
+- 47 files · ~30,435 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
 ## Summary
-- 223 nodes · 485 edges · 17 communities (14 shown, 3 thin omitted)
+- 225 nodes · 490 edges · 17 communities (14 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f24ef062`
+- Built from commit: `32989d29`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -34,7 +34,7 @@
 - seller/route.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `query()` - 50 edges
+1. `query()` - 51 edges
 2. `useAuth()` - 25 edges
 3. `next` - 24 edges
 4. `lucide-react` - 19 edges
@@ -42,20 +42,20 @@
 6. `Referensi Desain: E-Commerce Esports` - 12 edges
 7. `getCategories()` - 10 edges
 8. `Rules` - 10 edges
-9. `useCart()` - 9 edges
-10. `getProducts()` - 9 edges
+9. `getProducts()` - 9 edges
+10. `useCart()` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `updateOrderStatus()` --calls--> `query()`  [EXTRACTED]
-  src/lib/orders.js → src/lib/db.js
 - `getProductById()` --calls--> `query()`  [EXTRACTED]
   src/lib/products.js → src/lib/db.js
+- `updateOrderStatus()` --calls--> `query()`  [EXTRACTED]
+  src/lib/orders.js → src/lib/db.js
 - `checkCanReview()` --calls--> `query()`  [EXTRACTED]
   src/lib/reviews.js → src/lib/db.js
-- `PATCH()` --calls--> `updateCartQuantity()`  [EXTRACTED]
-  src/app/api/cart/route.js → src/lib/cart.js
-- `OrdersPage()` --calls--> `useAuth()`  [EXTRACTED]
-  src/app/orders/page.jsx → src/context/AuthContext.jsx
+- `ProductDetailPage()` --calls--> `AddToCartSection()`  [EXTRACTED]
+  src/app/produk/[slug]/page.jsx → src/components/AddToCartSection.jsx
+- `GET()` --calls--> `getProducts()`  [EXTRACTED]
+  src/app/api/admin/route.js → src/lib/products.js
 
 ## Import Cycles
 - None detected.
@@ -63,8 +63,8 @@
 ## Communities (17 total, 3 thin omitted)
 
 ### Community 0 - "useAuth"
-Cohesion: 0.16
-Nodes (22): lucide-react, next, react, AdminDashboardPage(), CartPage(), metadata, RootLayout(), LoginFormContent() (+14 more)
+Cohesion: 0.15
+Nodes (24): lucide-react, next, react, AdminDashboardPage(), CartPage(), metadata, RootLayout(), LoginFormContent() (+16 more)
 
 ### Community 1 - "package.json"
 Cohesion: 0.08
@@ -83,8 +83,8 @@ Cohesion: 0.12
 Nodes (15): 1. Prasyarat Sistem, 2. Kloning Repositori, 3. Konfigurasi Database (pgAdmin 4), 4. Konfigurasi Variabel Lingkungan (`.env.local`), 5. Seeding Data Awal dari Internet API, 6. Menjalankan Server Pengembangan, 📋 Akun Uji Coba Cepat (Demo Testing Accounts), ⚡ Fitur Utama & Arsitektur Multi-Role (+7 more)
 
 ### Community 5 - "app/page.jsx"
-Cohesion: 0.30
-Nodes (10): CatalogPage(), dynamic, dynamic, HomePage(), DropCountdown(), ProductCard(), getCategories(), getFeaturedProducts() (+2 more)
+Cohesion: 0.33
+Nodes (9): CatalogPage(), dynamic, dynamic, HomePage(), DropCountdown(), ProductCard(), getCategories(), getFeaturedProducts() (+1 more)
 
 ### Community 6 - "Referensi Desain: E-Commerce Esports"
 Cohesion: 0.15
@@ -95,8 +95,8 @@ Cohesion: 0.24
 Nodes (11): GET(), POST(), dynamic, OrderDetailPage(), OrderDetailTracker(), ReviewModal(), checkoutOrder(), getBuyerOrders() (+3 more)
 
 ### Community 8 - "[slug]/page.jsx"
-Cohesion: 0.25
-Nodes (11): GET(), POST(), dynamic, ProductDetailPage(), AddToCartSection(), getProductOptions(), getProductBySlug(), checkCanReview() (+3 more)
+Cohesion: 0.23
+Nodes (12): GET(), POST(), dynamic, getProductSpecifications(), ProductDetailPage(), getProductById(), getProductBySlug(), getRelatedProducts() (+4 more)
 
 ### Community 10 - "cart/route.js"
 Cohesion: 0.38
@@ -125,14 +125,16 @@ Nodes (11): DELETE(), GET(), POST(), createSellerProduct(), deleteSellerProduct(
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `useAuth` to `package.json`, `query`, `app/page.jsx`, `orders.js`, `[slug]/page.jsx`, `cart/route.js`, `auth/route.js`, `seller/route.js`?**
-  _High betweenness centrality (0.222) - this node is a cross-community bridge._
+  _High betweenness centrality (0.221) - this node is a cross-community bridge._
+- **Should `useAuth` be split into smaller, more focused modules?**
+  _Cohesion score 0.1475609756097561 - nodes in this community are weakly interconnected._
+- **Why does `query()` connect `query` to `app/page.jsx`, `orders.js`, `[slug]/page.jsx`, `cart/route.js`, `auth/route.js`, `seller/route.js`?**
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.07741935483870968 - nodes in this community are weakly interconnected._
-- **Why does `query()` connect `query` to `app/page.jsx`, `orders.js`, `[slug]/page.jsx`, `cart/route.js`, `auth/route.js`, `seller/route.js`?**
-  _High betweenness centrality (0.113) - this node is a cross-community bridge._
+- **Why does `lucide-react` connect `useAuth` to `[slug]/page.jsx`, `package.json`, `app/page.jsx`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Should `Rules` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
-- **Why does `lucide-react` connect `useAuth` to `[slug]/page.jsx`, `package.json`, `app/page.jsx`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Should `APEX ESPORTS // Official Tournament Gear Marketplace` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._

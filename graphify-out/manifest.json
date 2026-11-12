@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "src/app/produk/[slug]/page.jsx": {
-    "mtime": 1794496636.042495,
-    "seen": 1794496862.1392324,
-    "ast_hash": "aca1ec5ffd7c7214264233c3fff36d3f",
+    "mtime": 1794497410.1894348,
+    "seen": 1794497577.935926,
+    "ast_hash": "b7c5994a31ba3e56af7ddc68619d4e88",
     "semantic_hash": ""
   },
   "src/app/register/page.jsx": {
@@ -144,9 +144,9 @@
     "semantic_hash": ""
   },
   "src/components/Footer.jsx": {
-    "mtime": 1794493840.5024514,
-    "seen": 1794493986.142609,
-    "ast_hash": "457d388501e7b236b8cbd6a464ed776b",
+    "mtime": 1794497502.687318,
+    "seen": 1794497577.936681,
+    "ast_hash": "bd36022fcaac63c6549a2dcb4db10c13",
     "semantic_hash": ""
   },
   "src/components/Navbar.jsx": {
@@ -222,9 +222,9 @@
     "semantic_hash": ""
   },
   "src/lib/products.js": {
-    "mtime": 1794485371.5060983,
-    "seen": 1794488980.0161207,
-    "ast_hash": "511eadffa740a11a80f308ab082fd9a9",
+    "mtime": 1794497257.886701,
+    "seen": 1794497577.9384031,
+    "ast_hash": "b51acacdd1c5b592f2888cb75dc7b0e4",
     "semantic_hash": ""
   },
   "src/lib/reviews.js": {

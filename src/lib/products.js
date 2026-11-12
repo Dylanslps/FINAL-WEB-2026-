@@ -155,3 +155,56 @@ export async function getFeaturedProducts(limit = 4) {
   const { products } = await getProducts({ isFeatured: true, limit });
   return products;
 }
+
+export async function getRelatedProducts(productId, categoryId, limit = 4) {
+  const sql = `
+    SELECT 
+      p.id,
+      p.name,
+      p.slug,
+      p.price,
+      p.stock,
+      p.image_url,
+      p.brand,
+      p.rating_avg,
+      p.rating_count,
+      p.is_featured,
+      c.name AS category_name,
+      c.slug AS category_slug,
+      s.name AS store_name
+    FROM products p
+    JOIN categories c ON p.category_id = c.id
+    JOIN stores s ON p.store_id = s.id
+    WHERE p.id != $1 AND p.category_id = $2
+    ORDER BY p.rating_avg DESC, p.created_at DESC
+    LIMIT $3;
+  `;
+  const res = await query(sql, [productId, categoryId, limit]);
+  if (res.rows.length < 3) {
+    const backfillSql = `
+      SELECT 
+        p.id,
+        p.name,
+        p.slug,
+        p.price,
+        p.stock,
+        p.image_url,
+        p.brand,
+        p.rating_avg,
+        p.rating_count,
+        p.is_featured,
+        c.name AS category_name,
+        c.slug AS category_slug,
+        s.name AS store_name
+      FROM products p
+      JOIN categories c ON p.category_id = c.id
+      JOIN stores s ON p.store_id = s.id
+      WHERE p.id != $1
+      ORDER BY p.is_featured DESC, p.rating_avg DESC, p.created_at DESC
+      LIMIT $2;
+    `;
+    const backfillRes = await query(backfillSql, [productId, limit]);
+    return backfillRes.rows;
+  }
+  return res.rows;
+}
