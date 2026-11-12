@@ -1,7 +1,7 @@
 # Graph Report - FINAL WEB 2026  (2026-11-12)
 
 ## Corpus Check
-- 47 files · ~27,779 words
+- 47 files · ~27,696 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f16eb3a8`
+- Built from commit: `a85ff0e5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -51,10 +51,10 @@
   src/lib/products.js → src/lib/db.js
 - `checkCanReview()` --calls--> `query()`  [EXTRACTED]
   src/lib/reviews.js → src/lib/db.js
-- `CatalogPage()` --calls--> `getCategories()`  [EXTRACTED]
-  src/app/katalog/page.jsx → src/lib/categories.js
-- `HomePage()` --calls--> `DropCountdown()`  [EXTRACTED]
-  src/app/page.jsx → src/components/DropCountdown.jsx
+- `AdminDashboardPage()` --calls--> `useAuth()`  [EXTRACTED]
+  src/app/admin/dashboard/page.jsx → src/context/AuthContext.jsx
+- `OrdersPage()` --calls--> `useAuth()`  [EXTRACTED]
+  src/app/orders/page.jsx → src/context/AuthContext.jsx
 
 ## Import Cycles
 - None detected.
