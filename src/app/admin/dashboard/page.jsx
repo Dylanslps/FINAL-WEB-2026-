@@ -296,16 +296,23 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const filteredUsers = data.users.filter((u) => {
+  const usersList = Array.isArray(data?.users) ? data.users : [];
+  const productsList = Array.isArray(data?.products)
+    ? data.products
+    : (Array.isArray(data?.products?.products) ? data.products.products : []);
+  const pendingSellersList = Array.isArray(data?.pendingSellers) ? data.pendingSellers : [];
+  const categoriesList = Array.isArray(data?.categories) ? data.categories : [];
+
+  const filteredUsers = usersList.filter((u) => {
     if (userRoleFilter === 'all') return true;
     return u.role === userRoleFilter;
   });
 
-  const filteredProducts = data.products.filter((p) => {
+  const filteredProducts = productsList.filter((p) => {
     if (!productSearch) return true;
     const term = productSearch.toLowerCase();
     return (
-      p.name.toLowerCase().includes(term) ||
+      p.name?.toLowerCase().includes(term) ||
       p.store_name?.toLowerCase().includes(term) ||
       p.category_name?.toLowerCase().includes(term)
     );
@@ -444,9 +451,9 @@ export default function AdminDashboardPage() {
           >
             <Clock className="w-4 h-4" />
             <span>Verifikasi Seller</span>
-            {data.pendingSellers.length > 0 && (
+            {pendingSellersList.length > 0 && (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                {data.pendingSellers.length}
+                {pendingSellersList.length}
               </span>
             )}
           </button>
@@ -461,7 +468,7 @@ export default function AdminDashboardPage() {
           >
             <Users className="w-4 h-4" />
             <span>Manajemen Pengguna</span>
-            <span className="text-[10px] text-gray-500">({data.users.length})</span>
+            <span className="text-[10px] text-gray-500">({usersList.length})</span>
           </button>
 
           <button
@@ -474,7 +481,7 @@ export default function AdminDashboardPage() {
           >
             <FolderTree className="w-4 h-4" />
             <span>Kategori Produk</span>
-            <span className="text-[10px] text-gray-500">({data.categories.length})</span>
+            <span className="text-[10px] text-gray-500">({categoriesList.length})</span>
           </button>
 
           <button
@@ -487,7 +494,7 @@ export default function AdminDashboardPage() {
           >
             <Package className="w-4 h-4" />
             <span>Moderasi Katalog</span>
-            <span className="text-[10px] text-gray-500">({data.products.length})</span>
+            <span className="text-[10px] text-gray-500">({productsList.length})</span>
           </button>
         </div>
 
@@ -504,7 +511,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {data.pendingSellers.length === 0 ? (
+            {pendingSellersList.length === 0 ? (
               <div className="p-12 rounded-2xl bg-[#10141D] border border-[#1C2331] text-center space-y-3">
                 <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
                 <h3 className="text-sm font-bold text-white">Semua Bersih & Terverifikasi</h3>
@@ -514,7 +521,7 @@ export default function AdminDashboardPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {data.pendingSellers.map((seller) => (
+                {pendingSellersList.map((seller) => (
                   <div
                     key={seller.id}
                     className="p-5 rounded-2xl bg-[#10141D] border border-amber-500/30 space-y-4 relative overflow-hidden"
@@ -759,7 +766,7 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {data.categories.map((cat) => (
+              {categoriesList.map((cat) => (
                 <div
                   key={cat.id}
                   className="p-4 rounded-2xl bg-[#10141D] border border-[#1C2331] space-y-3 flex flex-col justify-between"

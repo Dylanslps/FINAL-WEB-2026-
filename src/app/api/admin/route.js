@@ -25,7 +25,7 @@ export async function GET(request) {
   }
 
   try {
-    const [stats, pendingSellers, users, categories, products] = await Promise.all([
+    const [stats, pendingSellers, users, categories, productsResult] = await Promise.all([
       getAdminStats(),
       getPendingSellers(),
       getAdminUsers(),
@@ -35,10 +35,10 @@ export async function GET(request) {
 
     return NextResponse.json({
       stats,
-      pendingSellers,
-      users,
-      categories,
-      products,
+      pendingSellers: pendingSellers || [],
+      users: users || [],
+      categories: categories || [],
+      products: productsResult?.products || [],
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
