@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, MapPin, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, ArrowRight, AlertCircle } from 'lucide-react';
+import CartItemList from '@/components/cart/CartItemList';
+import CartSummary from '@/components/cart/CartSummary';
+import CartOrderSuccess from '@/components/cart/CartOrderSuccess';
 
 export default function CartPage() {
-  const router = useRouter();
   const { user, switchAccount } = useAuth();
   const { refreshCart } = useCart();
 
@@ -141,20 +142,20 @@ export default function CartPage() {
         <div className="w-12 h-12 rounded-full bg-[#1A2232] flex items-center justify-center mx-auto text-[#FF1E27]">
           <ShoppingBag className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-white">Anda Belum Masuk Akun</h2>
+        <h2 className="text-xl font-bold text-white font-sans">Anda Belum Masuk Akun</h2>
         <p className="text-xs text-gray-400">
           Silakan masuk atau gunakan akun pengujian Buyer untuk melihat dan memproses keranjang belanja.
         </p>
         <div className="flex flex-col gap-2 pt-2">
           <button
             onClick={() => switchAccount('buyer')}
-            className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
+            className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider"
           >
             Masuk Cepat sebagai Buyer (Dylan)
           </button>
           <Link
             href="/login"
-            className="w-full py-2.5 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] font-bold text-xs hover:text-white transition-all"
+            className="w-full py-2.5 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] font-bold text-xs hover:text-white transition-all uppercase tracking-wider"
           >
             Halaman Login / Register
           </Link>
@@ -169,13 +170,13 @@ export default function CartPage() {
         <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-white">Akses Keranjang Khusus Buyer</h2>
+        <h2 className="text-xl font-bold text-white font-sans">Akses Keranjang Khusus Buyer</h2>
         <p className="text-xs text-gray-400">
           Anda saat ini masuk sebagai <strong>{user.role.toUpperCase()}</strong> ({user.name}). Untuk melakukan pembelian, beralihlah ke akun Buyer.
         </p>
         <button
           onClick={() => switchAccount('buyer')}
-          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
+          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider"
         >
           Beralih ke Akun Buyer (Dylan)
         </button>
@@ -185,48 +186,11 @@ export default function CartPage() {
 
   if (successOrder) {
     return (
-      <div className="max-w-lg mx-auto py-12 text-center space-y-6 p-8 rounded-2xl bg-[#121722] border border-[#FF1E27]/40 shadow-2xl">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
-          <CheckCircle2 className="w-8 h-8" />
-        </div>
-
-        <div className="space-y-1">
-          <h2 className="text-2xl font-black text-white">Pesanan Berhasil Dibuat!</h2>
-          <p className="text-xs text-gray-400 font-mono">
-            Nomor Pesanan: <strong className="text-[#FF1E27]">{successOrder.order_number}</strong>
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] text-left text-xs space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-400">Status Pesanan:</span>
-            <span className="font-bold text-amber-400">{successOrder.status}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Total Pembayaran:</span>
-            <span className="font-bold text-[#FF1E27]">{formatIDR(successOrder.total_amount)}</span>
-          </div>
-          <div className="pt-2 border-t border-[#20293A] text-gray-400">
-            Alamat Pengiriman: <br />
-            <span className="text-gray-200">{shippingAddress}</span>
-          </div>
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <Link
-            href="/orders"
-            className="flex-1 py-3 rounded-xl bg-[#FF1E27] text-white font-extrabold text-xs hover:bg-[#FFD000] hover:text-black transition-colors"
-          >
-            Lihat Riwayat & Lacak Pesanan →
-          </Link>
-          <Link
-            href="/katalog"
-            className="px-4 py-3 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] text-xs font-bold hover:text-white"
-          >
-            Belanja Lagi
-          </Link>
-        </div>
-      </div>
+      <CartOrderSuccess
+        order={successOrder}
+        shippingAddress={shippingAddress}
+        formatIDR={formatIDR}
+      />
     );
   }
 
@@ -244,14 +208,14 @@ export default function CartPage() {
         <div className="w-14 h-14 rounded-full bg-[#0A0D14] border border-[#20293A] text-gray-500 flex items-center justify-center mx-auto">
           <ShoppingBag className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-white">Keranjang Belanja Kosong</h2>
+        <h2 className="text-xl font-bold text-white font-sans">Keranjang Belanja Kosong</h2>
         <p className="text-xs text-gray-400 max-w-xs mx-auto">
           Belum ada item gear atau jersey yang Anda tambahkan ke keranjang.
         </p>
         <div className="pt-2">
           <Link
             href="/katalog"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider shadow-md shadow-[#FF1E27]/20"
           >
             Jelajahi Katalog Turnamen <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -262,16 +226,14 @@ export default function CartPage() {
 
   return (
     <div className="space-y-8 py-4">
-      
-      {/* Header */}
       <div className="flex items-center justify-between border-b border-[#20293A] pb-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5 font-sans">
             <ShoppingBag className="w-6 h-6 text-[#FF1E27]" />
             Keranjang Belanja ({cart.totalItems} Item)
           </h1>
-          <p className="text-xs text-gray-400 mt-1">
-            Periksa item pilihan Anda sebelum menyelesaikan checkout.
+          <p className="text-xs text-gray-400 mt-1 font-mono">
+            Periksa item pilihan Anda sebelum menyelesaikan checkout turnamen.
           </p>
         </div>
         <button
@@ -283,181 +245,30 @@ export default function CartPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Kolom Kiri: Daftar Item Keranjang (7/12) */}
-        <div className="lg:col-span-7 space-y-4">
-          {cart.items.map((item) => (
-            <div
-              key={item.cart_item_id}
-              className="p-4 rounded-xl bg-[#121722] border border-[#20293A] flex gap-4 items-center"
-            >
-              {/* Gambar Item */}
-              <Link
-                href={`/produk/${item.product_slug}`}
-                className="w-20 h-20 rounded-lg bg-[#0A0D14] border border-[#20293A] overflow-hidden flex-shrink-0"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.product_image}
-                  alt={item.product_name}
-                  className="w-full h-full object-cover"
-                />
-              </Link>
-
-              {/* Rincian Item */}
-              <div className="flex-1 min-w-0 space-y-1">
-                <p className="text-[10px] text-gray-400 font-mono truncate">
-                  Toko: {item.store_name}
-                </p>
-                <Link href={`/produk/${item.product_slug}`}>
-                  <h3 className="text-sm font-bold text-white hover:text-[#FF1E27] truncate">
-                    {item.product_name}
-                  </h3>
-                </Link>
-
-                {/* Variant & Color Badges */}
-                {(item.selected_variant || item.selected_color) && (
-                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    {item.selected_variant && (
-                      <span className="px-2 py-0.5 rounded-md bg-[#0A0D14] border border-[#20293A] text-[10px] font-mono text-gray-300">
-                        Varian: <strong className="text-white">{item.selected_variant}</strong>
-                      </span>
-                    )}
-                    {item.selected_color && (
-                      <span className="px-2 py-0.5 rounded-md bg-[#0A0D14] border border-[#20293A] text-[10px] font-mono text-gray-300">
-                        Warna: <strong className="text-[#FFD000]">{item.selected_color}</strong>
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <p className="text-xs font-mono font-bold text-[#FF1E27]">
-                  {formatIDR(item.product_price)}
-                </p>
-              </div>
-
-              {/* Kontrol Kuantitas & Subtotal */}
-              <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                <div className="flex items-center gap-1.5 bg-[#0A0D14] border border-[#20293A] rounded-lg p-1">
-                  <button
-                    onClick={() => updateQty(item.cart_item_id, item.quantity - 1)}
-                    className="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-white"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <span className="w-6 text-center text-xs font-mono font-bold text-white">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => updateQty(item.cart_item_id, item.quantity + 1)}
-                    disabled={item.quantity >= item.product_stock}
-                    className="w-6 h-6 rounded flex items-center justify-center text-gray-400 hover:text-white disabled:opacity-30"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono font-extrabold text-white">
-                    {formatIDR(item.subtotal)}
-                  </span>
-                  <button
-                    onClick={() => removeItem(item.cart_item_id)}
-                    className="text-gray-500 hover:text-rose-400 transition-colors"
-                    title="Hapus barang"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="lg:col-span-7">
+          <CartItemList
+            items={cart.items}
+            updateQty={updateQty}
+            removeItem={removeItem}
+            formatIDR={formatIDR}
+          />
         </div>
 
-        {/* Kolom Kanan: Form Alamat & Checkout Box (5/12) */}
         <div className="lg:col-span-5">
-          <form
+          <CartSummary
+            totalItems={cart.totalItems}
+            totalAmount={cart.totalAmount}
+            shippingAddress={shippingAddress}
+            setShippingAddress={setShippingAddress}
+            notes={notes}
+            setNotes={setNotes}
             onSubmit={handleCheckout}
-            className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6 sticky top-24"
-          >
-            <h2 className="text-base font-bold text-white border-b border-[#20293A] pb-3 uppercase tracking-wider font-mono">
-              Ringkasan & Pengiriman
-            </h2>
-
-            {/* Input Alamat Pengiriman */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#FF1E27]" /> Alamat Pengiriman Lengkap *
-              </label>
-              <textarea
-                required
-                rows={3}
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                placeholder="Masukkan alamat lengkap rumah, nomor jalan, kota, dan kode pos..."
-                className="w-full p-2.5 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
-              />
-            </div>
-
-            {/* Catatan Tambahan */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-400 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5" /> Catatan Pesanan (Opsional)
-              </label>
-              <input
-                type="text"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Contoh: Packing ekstra jersey BTR / titip di pos"
-                className="w-full p-2 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
-              />
-            </div>
-
-            {/* Kalkulasi Ringkasan */}
-            <div className="space-y-2 pt-4 border-t border-[#20293A] text-xs">
-              <div className="flex justify-between text-gray-400">
-                <span>Subtotal ({cart.totalItems} barang)</span>
-                <span className="font-mono text-gray-200">{formatIDR(cart.totalAmount)}</span>
-              </div>
-              <div className="flex justify-between text-gray-400">
-                <span>Ongkos Kirim Standar Turnamen</span>
-                <span className="font-mono text-emerald-400 font-bold">GRATIS</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-[#20293A]">
-                <span>Total Tagihan</span>
-                <span className="text-[#FF1E27] font-mono font-black text-base">
-                  {formatIDR(cart.totalAmount)}
-                </span>
-              </div>
-            </div>
-
-            {/* Error Banner jika ada */}
-            {errorMsg && (
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {/* Tombol Checkout */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#FF1E27] text-white font-black uppercase tracking-wider text-xs hover:bg-[#FFD000] hover:text-black transition-all shadow-lg shadow-[#FF1E27]/25 hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {submitting ? 'Memproses Pesanan...' : 'Konfirmasi Checkout & Buat Pesanan'}
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 text-center font-mono">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Transaksi atomik PostgreSQL (Langsung tercatat di database).</span>
-            </div>
-          </form>
+            submitting={submitting}
+            errorMsg={errorMsg}
+            formatIDR={formatIDR}
+          />
         </div>
-
       </div>
-
     </div>
   );
 }

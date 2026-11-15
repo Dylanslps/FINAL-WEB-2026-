@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shield, ShoppingBag, Package, Store, LayoutDashboard, MapPin, Phone, Clock } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -7,19 +7,15 @@ export default function Footer() {
       <footer className="bg-[#070A0F] border-t border-[#20293A] text-gray-400 text-xs mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           
-          {/* Main Footer Row: Slogan & Socials (Left) + Real Functional Links (Right) */}
+          {/* Main Footer Layout Matching GoodGamingShop Reference */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-12 border-b border-[#20293A]">
             
-            {/* Left Column: Slogan & Social Media (5/12) */}
-            <div className="lg:col-span-5 space-y-6">
+            {/* Left Column: Slogan, Socials & Brand (6/12) */}
+            <div className="lg:col-span-6 space-y-6">
               
-              {/* Brand Slogan */}
+              {/* Punchline Header */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-white font-black tracking-wider text-sm font-mono mb-3">
-                  <Shield className="w-5 h-5 text-[#FF1E27] fill-current" />
-                  <span>VALIANT <strong className="text-[#FF1E27]">PRO</strong> ESPORTS</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tight text-white font-sans leading-tight">
+                <h2 className="text-2xl sm:text-4xl font-black italic uppercase tracking-tight text-white font-sans leading-tight">
                   LEVEL UP YOUR GEAR.{' '}
                   <span className="text-[#FF1E27]">GAME LIKE A PRO.</span>
                 </h2>
@@ -82,135 +78,98 @@ export default function Footer() {
                     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
                   </svg>
                 </a>
-
-                {/* YouTube */}
-                <a
-                  href="https://youtube.com/@bigetronesports"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[#121722] border border-[#20293A] text-gray-300 hover:text-white hover:border-[#FF1E27] hover:bg-[#FF1E27]/15 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm"
-                  title="YouTube Channel"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                </a>
-
               </div>
             </div>
 
-            {/* Right Column: Real Functional Pages (7/12) */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {/* Right Column: OUR SERVICE & OTHER (6/12) */}
+            <div className="lg:col-span-6 grid grid-cols-2 gap-8">
               
-              {/* Kolom 1: Kategori Produk Real */}
+              {/* Kolom 1: OUR SERVICE */}
               <div>
-                <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
-                  Kategori Gear
+                <h5 className="text-white font-extrabold mb-4 text-xs tracking-wider uppercase font-mono">
+                  OUR SERVICE
                 </h5>
-                <ul className="space-y-2 text-xs">
+                <ul className="space-y-2.5 text-xs text-gray-400">
                   <li>
-                    <Link href="/katalog" className="hover:text-[#FF1E27] transition-colors">
-                      Semua Produk
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      About Us
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog?kategori=gaming-gear" className="hover:text-[#FFD000] transition-colors">
-                      Gaming Gear & Mouse
+                    <a
+                      href="https://wa.me/6281234567890?text=Halo%20VALIANT%20PRO%20Support"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#FF1E27] transition-colors"
+                    >
+                      Contact Us
+                    </a>
+                  </li>
+                  <li>
+                    <Link href="/orders" className="hover:text-white transition-colors">
+                      FAQ
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog?kategori=esports-apparel" className="hover:text-[#FF1E27] transition-colors">
-                      Jersey & Pro Kit
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Return and Warranty
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog?kategori=gaming-hardware" className="hover:text-[#FFD000] transition-colors">
-                      Hardware & Rig
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Delivery Policy
                     </Link>
                   </li>
                   <li>
-                    <Link href="/katalog?kategori=accessories" className="hover:text-[#FF1E27] transition-colors">
-                      Accessories & Mat
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Refund & Return Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Terms & Conditions
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* Kolom 2: Area Akun & Portal Real */}
+              {/* Kolom 2: OTHER */}
               <div>
-                <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
-                  Area Akun
+                <h5 className="text-white font-extrabold mb-4 text-xs tracking-wider uppercase font-mono">
+                  OTHER
                 </h5>
-                <ul className="space-y-2 text-xs">
+                <ul className="space-y-2.5 text-xs text-gray-400">
                   <li>
-                    <Link href="/cart" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
-                      <ShoppingBag className="w-3.5 h-3.5 text-[#FF1E27]" />
-                      <span>Keranjang Belanja</span>
+                    <Link href="/orders" className="hover:text-white transition-colors">
+                      RMA Page
                     </Link>
                   </li>
                   <li>
-                    <Link href="/orders" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-[#FFD000]" />
-                      <span>Lacak Pesanan</span>
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Driver & Firmware
                     </Link>
                   </li>
                   <li>
-                    <Link href="/seller/dashboard" className="hover:text-[#FFD000] transition-colors flex items-center gap-1.5">
-                      <Store className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Portal Toko Seller</span>
+                    <Link href="/seller/dashboard" className="hover:text-[#FFD000] transition-colors">
+                      Merchant Portal
                     </Link>
                   </li>
                   <li>
-                    <Link href="/admin/dashboard" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1.5">
-                      <LayoutDashboard className="w-3.5 h-3.5 text-purple-400" />
-                      <span>Panel Admin</span>
+                    <Link href="/admin/dashboard" className="hover:text-[#FF1E27] transition-colors">
+                      Tournament Admin
                     </Link>
                   </li>
                   <li>
-                    <Link href="/login" className="hover:text-white transition-colors">
-                      Halaman Login / Demo
+                    <Link href="/katalog" className="hover:text-white transition-colors">
+                      Official Arena Locations
                     </Link>
                   </li>
                 </ul>
-              </div>
-
-              {/* Kolom 3: Layanan Pelanggan & Hub Resmi */}
-              <div>
-                <h5 className="text-white font-bold mb-4 text-xs tracking-wider uppercase font-mono">
-                  Customer Support
-                </h5>
-                <div className="space-y-2.5 text-xs text-gray-400">
-                  <div className="flex items-start gap-2">
-                    <Phone className="w-3.5 h-3.5 text-[#FF1E27] flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-gray-200 font-semibold">WhatsApp CS Resmi</p>
-                      <a
-                        href="https://wa.me/6281234567890"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-emerald-400 hover:underline font-mono"
-                      >
-                        +62 812-3456-7890
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2">
-                    <Clock className="w-3.5 h-3.5 text-[#FFD000] flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-gray-200 font-semibold">Jam Operasional</p>
-                      <p className="text-[11px] font-mono">Setiap Hari, 09:00 - 22:00 WIB</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-gray-200 font-semibold">Arena Warehouse</p>
-                      <p className="text-[11px]">Mangga Dua Mall Lt. 3, Jakarta</p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -220,14 +179,15 @@ export default function Footer() {
           {/* Bottom Row: Logo & Copyright */}
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
             <div className="flex items-center gap-3">
-              <span className="font-mono font-black text-white text-sm tracking-wider">
+              <span className="font-mono font-black text-white text-base tracking-wider flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-[#FF1E27] fill-current" />
                 VALIANT <span className="text-[#FF1E27]">PRO</span>
               </span>
-              <span className="text-gray-600">|</span>
-              <p>Copyright © 2026 VALIANT PRO Esports Gear. All rights reserved.</p>
+              <span className="text-gray-700">|</span>
+              <p>Copyright © 2026 GoodGamingShop / VALIANT PRO All rights reserved.</p>
             </div>
             <p className="flex items-center gap-1 font-mono text-[11px] text-gray-400">
-              <span>BTR x VITALITY RED THEME</span> • <span className="text-[#FFD000]">OFFICIAL GAMING SHOP</span>
+              <span className="text-[#FF1E27]">BTR x VITALITY RED THEME</span> • <span className="text-[#FFD000]">ESPORTS TOURNAMENT ARENA</span>
             </p>
           </div>
 
@@ -236,18 +196,18 @@ export default function Footer() {
 
       {/* Floating WhatsApp Quick Action Button */}
       <a
-        href="https://wa.me/6281234567890?text=Halo%20VALIANT%20PRO%20Esports%20Store%2C%20saya%20ingin%20tanya%20tentang%20gear%20gaming%20dan%20varian%20produk."
+        href="https://wa.me/6281234567890?text=Halo%20VALIANT%20PRO%20Support%2C%20saya%20ingin%20tanya%20tentang%20gear%20gaming%20dan%20stok%20toko."
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl shadow-[#25D366]/40 hover:scale-110 transition-all duration-300 hover:shadow-emerald-500/60 group"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-2xl shadow-[#25D366]/40 hover:scale-110 transition-all duration-300 hover:shadow-emerald-500/60 group"
         title="Chat WhatsApp Customer Support"
       >
-        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+        <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
           <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm0 18.06c-1.49 0-2.94-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.13 8.13 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.16-8.16 2.18 0 4.23.85 5.77 2.39a8.106 8.106 0 0 1 2.39 5.77c0 4.5-3.66 8.15-8.08 8.15zm4.47-6.11c-.24-.12-1.45-.71-1.67-.79-.23-.08-.39-.12-.56.12-.17.24-.65.79-.79.95-.15.17-.3.19-.54.07-.24-.12-1.03-.38-1.96-1.21-.72-.64-1.21-1.44-1.35-1.68-.15-.24-.02-.37.11-.49.11-.11.24-.29.37-.43.12-.15.17-.24.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.24-.88.86-.88 2.09 0 1.23.9 2.42 1.02 2.59.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.45-.59 1.66-1.16.2-.57.2-1.06.14-1.16-.05-.1-.22-.16-.46-.28z" />
         </svg>
 
         {/* Tooltip */}
-        <span className="absolute right-14 bg-[#121722] text-white text-[11px] font-mono font-bold px-3 py-1.5 rounded-xl border border-[#20293A] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-xl">
+        <span className="absolute right-16 bg-[#121722] text-white text-[11px] font-mono font-bold px-3 py-1.5 rounded-xl border border-[#20293A] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-xl">
           Tanya CS (WhatsApp Live)
         </span>
       </a>

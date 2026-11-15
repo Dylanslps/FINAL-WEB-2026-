@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getProductBySlug, getRelatedProducts } from '@/lib/products';
 import { getProductReviews, getProductRatingSummary } from '@/lib/reviews';
 import AddToCartSection from '@/components/AddToCartSection';
+import ProductSpecsTable from '@/components/product/ProductSpecsTable';
+import RecommendedProducts from '@/components/product/RecommendedProducts';
 import { Star, Store, ArrowLeft, Truck, Package, RotateCcw } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -92,17 +94,8 @@ export default async function ProductDetailPage({ params }) {
 
   const specs = getProductSpecifications(product);
 
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
-
   return (
     <div className="space-y-12 py-4">
-      
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-2 text-xs text-gray-400 font-mono">
         <Link href="/" className="hover:text-[#FF1E27] transition-colors flex items-center gap-1">
@@ -122,7 +115,6 @@ export default async function ProductDetailPage({ params }) {
 
       {/* Main Grid: Gambar Produk & Info Pembelian */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
         {/* Kolom Kiri: Gambar Produk (5/12) */}
         <div className="lg:col-span-5 space-y-4">
           <div className="relative aspect-square w-full rounded-2xl bg-[#0A0D14] border border-[#20293A] overflow-hidden">
@@ -142,7 +134,6 @@ export default async function ProductDetailPage({ params }) {
             </span>
           </div>
 
-          {/* Value Badges */}
           <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-400">
             <div className="p-3 rounded-xl bg-[#121722] border border-[#20293A]">
               <Truck className="w-4 h-4 mx-auto mb-1 text-[#FF1E27]" />
@@ -161,7 +152,6 @@ export default async function ProductDetailPage({ params }) {
 
         {/* Kolom Kanan: Rincian Produk & Add to Cart (7/12) */}
         <div className="lg:col-span-7 space-y-6">
-          
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full bg-[#FF1E27]/15 border border-[#FF1E27]/40 text-[#FF1E27] text-xs font-mono font-bold">
@@ -214,122 +204,74 @@ export default async function ProductDetailPage({ params }) {
             </span>
           </div>
 
-          {/* Komponen Add to Cart Interaktif (Harga, Varian, Warna, Stok & Action) */}
+          {/* Komponen Add to Cart Interaktif */}
           <AddToCartSection product={product} />
-
         </div>
       </div>
 
-      {/* Product Specification Section (Matching Good Gaming Shop Reference) */}
-      <section className="space-y-4 pt-8 border-t border-[#20293A]">
+      {/* Product Specification Section */}
+      <ProductSpecsTable specs={specs} />
+
+      {/* Review Section */}
+      <section className="space-y-6 pt-12 border-t border-[#20293A]">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">
-            Product Specification
+          <h2 className="text-xl font-bold text-white tracking-tight font-sans">
+            Ulasan & Testimoni Pro Player
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Rincian teknis dan spesifikasi perangkat keras standar kompetisi.
+            Penilaian autentik dari atlet esports dan pembeli terverifikasi turnamen.
           </p>
         </div>
 
-        <div className="rounded-2xl bg-[#121722] border border-[#20293A] overflow-hidden">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-[#20293A] bg-[#0A0D14]/70 text-gray-400 font-mono text-[11px] uppercase tracking-wider">
-                <th className="py-3 px-5 font-semibold w-1/3">Features</th>
-                <th className="py-3 px-5 font-semibold w-2/3">Detail</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#20293A]/60">
-              {specs.map((item, idx) => (
-                <tr
-                  key={item.feature}
-                  className={`hover:bg-[#182030]/60 transition-colors ${
-                    idx % 2 === 1 ? 'bg-[#0E131C]/40' : ''
-                  }`}
-                >
-                  <td className="py-3 px-5 font-semibold text-gray-300">
-                    {item.feature}
-                  </td>
-                  <td className="py-3 px-5 font-mono text-gray-200">
-                    {item.detail}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Bagian Ulasan Pembeli (Penerapan Riset UX Baymard & Smashing Magazine) */}
-      <section className="space-y-8 pt-8 border-t border-[#20293A]">
-        <div>
-          <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-            Ulasan & Penilaian Pembeli
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            Ulasan terverifikasi hanya dapat diberikan setelah pesanan berstatus Selesai.
-          </p>
-        </div>
-
-        {/* Ringkasan Skor & Grafik Distribusi Rating 1-5 Bintang */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#121722] border border-[#20293A] items-center">
-          
-          {/* Skor Rata-Rata */}
-          <div className="text-center md:border-r border-[#20293A] md:pr-6 space-y-2">
-            <p className="text-5xl font-black text-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#121722] border border-[#20293A]">
+          <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-[#20293A] pb-6 md:pb-0 md:pr-6 text-center">
+            <span className="text-5xl font-black text-white font-mono">
               {ratingSummary.averageRating.toFixed(1)}
-            </p>
-            <div className="flex justify-center text-amber-400">
+            </span>
+            <div className="flex text-amber-400 my-2">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-5 h-5 ${
+                  className={`w-4 h-4 ${
                     i < Math.round(ratingSummary.averageRating)
-                      ? 'fill-amber-400 text-amber-400'
+                      ? 'fill-amber-400'
                       : 'text-gray-600'
                   }`}
                 />
               ))}
             </div>
             <p className="text-xs text-gray-400 font-mono">
-              Berdasarkan {ratingSummary.totalReviews} ulasan
+              Berdasarkan {ratingSummary.totalReviews} ulasan verified
             </p>
           </div>
 
-          {/* Grafik Batang Distribusi Bintang */}
           <div className="md:col-span-2 space-y-2">
             {ratingSummary.distribution.map((item) => (
               <div key={item.star} className="flex items-center gap-3 text-xs">
                 <span className="w-12 text-gray-300 font-mono flex items-center gap-1 justify-end">
                   {item.star} <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                 </span>
-                
-                {/* Bar Progres */}
                 <div className="flex-1 h-2 rounded-full bg-[#0A0D14] overflow-hidden border border-[#20293A]">
                   <div
                     className="h-full bg-amber-400 transition-all duration-500 rounded-full"
                     style={{ width: `${item.percentage}%` }}
                   />
                 </div>
-
                 <span className="w-16 text-right font-mono text-gray-400 text-[11px]">
                   {item.count} ({item.percentage}%)
                 </span>
               </div>
             ))}
           </div>
-
         </div>
 
-        {/* Daftar Komentar Review Pembeli */}
         <div className="space-y-4">
           <h3 className="font-bold text-white text-sm">
             Daftar Ulasan ({reviews.length})
           </h3>
 
           {reviews.length === 0 ? (
-            <div className="p-8 rounded-xl bg-[#121722]/60 border border-[#20293A] text-center text-gray-400 text-sm">
+            <div className="p-8 rounded-xl bg-[#121722]/60 border border-[#20293A] text-center text-gray-400 text-xs">
               Belum ada ulasan untuk produk ini. Jadilah yang pertama memberikan ulasan setelah pesanan Anda selesai!
             </div>
           ) : (
@@ -369,81 +311,10 @@ export default async function ProductDetailPage({ params }) {
             </div>
           )}
         </div>
-
       </section>
 
-      {/* OTHER RECOMMENDED Section (Matching Good Gaming Shop Reference) */}
-      {relatedProducts && relatedProducts.length > 0 && (
-        <section className="space-y-6 pt-12 border-t border-[#20293A]">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-black italic uppercase tracking-wider text-white font-sans">
-              OTHER <span className="text-[#FF1E27]">RECOMMENDED</span>
-            </h2>
-            <Link
-              href="/katalog"
-              className="text-xs text-[#FFD000] hover:text-[#FF1E27] font-mono font-bold transition-colors"
-            >
-              Lihat Semua Gear →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {relatedProducts.map((rel) => {
-              const relOriginalPrice = Math.round(Number(rel.price) * 1.25);
-              return (
-                <Link
-                  key={rel.id}
-                  href={`/produk/${rel.slug}`}
-                  className="group flex flex-col bg-[#121722] border border-[#20293A] hover:border-[#FF1E27]/60 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FF1E27]/10"
-                >
-                  <div className="relative aspect-square w-full bg-[#0A0D14] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={rel.image_url}
-                      alt={rel.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {rel.is_featured && (
-                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-[#FF1E27] text-white text-[9px] font-black uppercase tracking-wider shadow">
-                        HOT
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-4 flex-1 flex flex-col justify-between space-y-2.5">
-                    {/* Color Dots Indicator Sesuai Good Gaming Shop */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-black border border-gray-600" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-white border border-gray-400" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#FF1E27] border border-[#FF1E27]" />
-                      <span className="text-[10px] text-gray-500 font-mono ml-1">+1</span>
-                    </div>
-
-                    <div>
-                      <h3 className="font-bold text-white text-xs line-clamp-1 group-hover:text-[#FF1E27] transition-colors">
-                        {rel.name}
-                      </h3>
-                      <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                        Brand: {rel.brand || 'VALIANT PRO'}
-                      </p>
-                    </div>
-
-                    <div className="flex items-baseline gap-2 pt-1 border-t border-[#20293A]/60">
-                      <span className="font-black text-[#FF1E27] font-mono text-sm">
-                        {formatIDR(rel.price)}
-                      </span>
-                      <span className="text-[11px] text-gray-500 font-mono line-through">
-                        {formatIDR(relOriginalPrice)}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
+      {/* OTHER RECOMMENDED Section */}
+      <RecommendedProducts products={relatedProducts} />
     </div>
   );
 }
