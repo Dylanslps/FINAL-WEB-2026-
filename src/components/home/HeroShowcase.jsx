@@ -1,19 +1,111 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpRight, Box } from 'lucide-react';
+
+const Sneaker3DCanvas = dynamic(() => import('./Sneaker3DCanvas'), {
+  ssr: false,
+});
 
 const formatIDR = (num) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
 
-// Hero showcase: sepatu 3D melayang, rail produk, wipe tema per slide.
-// Arah gerak: .agents/design/DESIGN.md bagian 0 dan 4.
+// Lapisan panggung (dipakai pada layer dasar dan layer tirai wipe agar teks terbelah dua warna saat wipe melintas)
+function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
+  const href = slide.product ? `/produk/${slide.product.slug}` : '/katalog';
+  const wmClass = phase === 'in' ? 'anim-wm-in' : phase === 'out' ? 'anim-wm-out' : '';
+  const shoeClass = phase === 'in' ? 'anim-shoe-in' : phase === 'out' ? 'anim-shoe-out' : '';
+
+  return (
+    <div
+      data-hero-theme={slide.theme}
+      style={{ background: 'var(--hero-bg)', color: 'var(--hero-ink)' }}
+      className="w-full h-full grid grid-cols-1 lg:grid-cols-12 items-center px-6 sm:px-10 lg:px-14 pt-10 pb-36 lg:pb-32 min-h-[560px] lg:min-h-[650px] relative overflow-hidden"
+    >
+      {/* Kiri: Headline Italic Condensed + Subjudul + Tombol CTA sesuai video */}
+      <div className="lg:col-span-4 z-10 space-y-4">
+        <div className="font-display italic uppercase leading-[0.9] tracking-tight text-[clamp(3.1rem,6.5vw,5.6rem)]">
+          <span className="block">{slide.headline[0]}</span>
+          <span className="block">{slide.headline[1]}</span>
+        </div>
+
+        <p style={{ color: 'var(--hero-ink-2)' }} className="text-sm sm:text-base leading-snug font-medium">
+          {slide.tagline[0]}
+          <br />
+          {slide.tagline[1]}
+        </p>
+
+        <div className="pt-2">
+          <Link
+            href={href}
+            style={{ backgroundColor: 'var(--hero-btn-bg)', color: 'var(--hero-btn-ink)' }}
+            className="inline-flex items-center gap-3 min-h-11 px-6 rounded-lg font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity shadow-lg"
+          >
+            <span>Shop Now</span>
+            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Tengah: Watermark AIR MAX + Model 3D Sepatu + Bayangan Lantai */}
+      <div className="lg:col-span-8 relative flex items-center justify-center min-h-[300px] sm:min-h-[390px]">
+        <span
+          aria-hidden="true"
+          style={{ color: 'var(--hero-wm)' }}
+          className={`pointer-events-none select-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-display italic uppercase leading-none tracking-tight whitespace-nowrap text-[clamp(5.5rem,17vw,14.5rem)] ${wmClass}`}
+        >
+          {slide.watermark}
+        </span>
+
+        {/* Bayangan elips di bawah sepatu */}
+        <div
+          aria-hidden="true"
+          style={{ backgroundColor: 'var(--hero-shadow)' }}
+          className="anim-floor-in absolute bottom-[4%] left-1/2 -translate-x-1/2 w-[56%] max-w-[420px] h-6 rounded-[50%] blur-xl"
+        />
+
+        {mode3D ? (
+          <div className="relative z-10 w-full max-w-[560px] h-[300px] sm:h-[380px]">
+            {phase !== 'out' && (
+              <Sneaker3DCanvas
+                theme={slide.theme}
+                slideIndex={slideIndex}
+                pointerOffset={tilt}
+              />
+            )}
+          </div>
+        ) : (
+          <div
+            style={{
+              transform: `perspective(1100px) rotateY(${tilt.x * 14}deg) rotateX(${-tilt.y * 10}deg) translate3d(${tilt.x * 20}px, ${tilt.y * 14}px, 0)`,
+            }}
+            className="relative z-10 w-full max-w-[540px] transition-transform duration-200 ease-out will-change-transform"
+          >
+            <div className={shoeClass}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={slide.image}
+                alt={slide.product?.name || slide.fallbackName}
+                width={900}
+                height={900}
+                fetchPriority="high"
+                className="w-full h-auto max-h-[390px] object-contain mx-auto drop-shadow-[0_28px_32px_rgba(0,0,0,0.45)] select-none"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function HeroShowcase({ slides }) {
   const [active, setActive] = useState(0);
-  const [wipe, setWipe] = useState(null); // { to, theme }
-  const tiltRef = useRef(null);
-  const frameRef = useRef(0);
+  const [transition, setTransition] = useState(null); // { from, to }
+  const [mode3D, setMode3D] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const reducedRef = useRef(false);
 
   useEffect(() => {
@@ -24,20 +116,20 @@ export default function HeroShowcase({ slides }) {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const go = useCallback((next) => {
-    const target = (next + slides.length) % slides.length;
-    if (target === active || wipe) return;
-    if (reducedRef.current || slides[target].theme === slides[active].theme) {
+  const go = useCallback((nextIdx) => {
+    const target = (nextIdx + slides.length) % slides.length;
+    if (target === active || transition) return;
+    if (reducedRef.current) {
       setActive(target);
       return;
     }
-    setWipe({ to: target, theme: slides[target].theme });
-  }, [active, wipe, slides]);
+    setTransition({ from: active, to: target });
+  }, [active, transition, slides.length]);
 
-  const finishWipe = () => {
-    if (!wipe) return;
-    setActive(wipe.to);
-    setWipe(null);
+  const finishTransition = () => {
+    if (!transition) return;
+    setActive(transition.to);
+    setTransition(null);
   };
 
   const handlePointerMove = (e) => {
@@ -45,141 +137,160 @@ export default function HeroShowcase({ slides }) {
     const rect = e.currentTarget.getBoundingClientRect();
     const dx = (e.clientX - rect.left) / rect.width - 0.5;
     const dy = (e.clientY - rect.top) / rect.height - 0.5;
-    cancelAnimationFrame(frameRef.current);
-    frameRef.current = requestAnimationFrame(() => {
-      if (tiltRef.current) {
-        tiltRef.current.style.transform =
-          `perspective(1000px) rotateY(${dx * 16}deg) rotateX(${-dy * 10}deg) translate3d(${dx * 24}px, ${dy * 16}px, 0)`;
-      }
-    });
+    setTilt({ x: dx, y: dy });
   };
 
-  const resetTilt = () => {
-    cancelAnimationFrame(frameRef.current);
-    if (tiltRef.current) tiltRef.current.style.transform = '';
-  };
+  const resetTilt = () => setTilt({ x: 0, y: 0 });
 
   const handleKeyDown = (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); go(active + 1); }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); go(active - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(active + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(active - 1); }
   };
 
-  const slide = slides[active];
-  const href = slide.product ? `/produk/${slide.product.slug}` : '/katalog';
+  const visualIndex = transition ? transition.to : active;
+  const baseSlide = slides[transition ? transition.from : active];
+  const incomingSlide = transition ? slides[transition.to] : null;
+  const activeTheme = slides[visualIndex].theme;
 
   return (
     <section
-      data-theme={slide.theme}
+      data-hero-theme={activeTheme}
       aria-roledescription="carousel"
-      aria-label="Sneaker pilihan"
+      aria-label="Showcase Sneaker 3D STRIDE"
       onPointerMove={handlePointerMove}
       onPointerLeave={resetTilt}
-      className="relative isolate overflow-hidden rounded-[28px] border border-line bg-canvas text-ink transition-colors duration-300"
+      onKeyDown={handleKeyDown}
+      className="relative isolate overflow-hidden rounded-[28px] border border-line shadow-2xl select-none"
     >
-      {wipe && (
-        <div
-          data-theme={wipe.theme}
-          aria-hidden="true"
-          onAnimationEnd={finishWipe}
-          className="anim-wipe-down absolute inset-0 z-30 bg-canvas"
+      {/* Tombol Mode 3D Interaktif (360° GLB vs Studio 3D Video) */}
+      <div className="absolute top-4 right-5 z-40 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setMode3D((v) => !v)}
+          aria-pressed={mode3D}
+          style={{
+            backgroundColor: 'var(--hero-card-active)',
+            borderColor: 'var(--hero-line-active)',
+            color: 'var(--hero-ink)',
+          }}
+          className="min-h-10 px-3.5 rounded-full border backdrop-blur-md text-xs font-semibold inline-flex items-center gap-2 transition-all hover:scale-105"
+        >
+          <Box className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>{mode3D ? 'Mode 3D 360° (Geser Sepatu)' : 'Aktifkan 3D Model 360°'}</span>
+        </button>
+      </div>
+
+      {/* Layer Dasar */}
+      <div className="relative z-10">
+        <StageLayer
+          slide={baseSlide}
+          phase={transition ? 'out' : 'idle'}
+          tilt={tilt}
+          mode3D={mode3D}
+          slideIndex={visualIndex}
         />
+      </div>
+
+      {/* Layer Tirai Wipe Kanan-ke-Kiri (membelah background, watermark, judul, dan sepatu seperti di video) */}
+      {incomingSlide && (
+        <div
+          aria-hidden="true"
+          onAnimationEnd={finishTransition}
+          className="anim-curtain-left absolute inset-0 z-20"
+        >
+          <StageLayer
+            slide={incomingSlide}
+            phase="in"
+            tilt={tilt}
+            mode3D={mode3D}
+            slideIndex={visualIndex}
+          />
+        </div>
       )}
 
-      <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-4 px-5 py-8 sm:px-8 lg:px-12 lg:py-12 lg:min-h-[620px]">
-        {/* Teks kiri */}
-        <div key={`text-${active}`} className="lg:col-span-4 flex flex-col justify-center gap-5 z-10">
-          <h1 className="anim-rise-in font-display uppercase leading-[0.9] text-[clamp(3rem,7vw,6.25rem)]">
-            {slide.headline[0]}
-            <br />
-            {slide.headline[1]}
-          </h1>
-          <p className="anim-rise-in text-ink-2 text-base max-w-xs [animation-delay:80ms]">
-            {slide.tagline}
-          </p>
-          <div className="anim-rise-in flex flex-wrap items-center gap-4 [animation-delay:160ms]">
-            <Link
-              href={href}
-              className="inline-flex items-center min-h-11 px-6 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85 active:opacity-70 transition-opacity"
-            >
-              {slide.product ? 'Lihat dan beli' : 'Buka katalog'}
-            </Link>
-            {slide.product && (
-              <span className="text-lg font-semibold tabular-nums">{formatIDR(slide.product.price)}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Panggung produk */}
-        <div className="lg:col-span-6 relative flex items-center justify-center min-h-[300px] sm:min-h-[420px]">
-          <span
-            key={`wm-${active}`}
-            aria-hidden="true"
-            className="anim-watermark-in pointer-events-none select-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-display uppercase leading-none text-[clamp(5rem,16vw,13rem)] text-[var(--watermark)]"
-          >
-            {slide.watermark}
-          </span>
-
-          <div
-            key={`floor-${active}`}
-            aria-hidden="true"
-            className="anim-floor-in absolute bottom-[12%] left-1/2 -ml-[32%] w-[64%] h-6 rounded-[50%] blur-xl bg-[var(--floor-shadow)]"
-          />
-
-          <div ref={tiltRef} className="relative w-full max-w-[560px] transition-transform duration-300 ease-out will-change-transform">
-            <div key={`shoe-${active}`} className="anim-shoe-in">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={slide.image}
-                alt={slide.product?.name || slide.fallbackName}
-                width={1000}
-                height={1000}
-                fetchPriority={active === 0 ? 'high' : 'auto'}
-                className={`w-full h-auto drop-shadow-2xl ${slide.flip ? '-scale-x-100' : ''}`}
+      {/* Navigasi Bawah: 3 Dots + Tombol < + 3 Kartu Horizontal + Tombol > (Sesuai Video) */}
+      <div className="absolute inset-x-0 bottom-0 z-30 px-4 sm:px-8 pb-5 pt-2 flex flex-col items-center gap-3">
+        {/* 3 Titik Indikator Slide */}
+        <div className="flex items-center gap-2" role="tablist" aria-label="Pilih slide sepatu">
+          {slides.map((s, i) => {
+            const isCurrent = i === visualIndex;
+            return (
+              <button
+                key={`dot-${s.slug}`}
+                type="button"
+                role="tab"
+                aria-selected={isCurrent}
+                aria-label={`Slide ${i + 1}: ${s.cardTitle}`}
+                onClick={() => go(i)}
+                style={{
+                  backgroundColor: 'var(--hero-ink)',
+                  opacity: isCurrent ? 1 : 0.3,
+                }}
+                className="w-2 h-2 rounded-full transition-opacity"
               />
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Rail produk */}
-        <div className="lg:col-span-2 flex lg:flex-col items-center justify-center gap-3 z-10" onKeyDown={handleKeyDown}>
+        {/* Bar Horizontal: < | 3 Kartu Sepatu | > */}
+        <div className="w-full max-w-5xl flex items-center justify-center gap-3 sm:gap-4">
           <button
             type="button"
-            onClick={() => go(active - 1)}
-            aria-label="Produk sebelumnya"
-            className="hidden lg:flex w-11 h-11 items-center justify-center rounded-full border border-line hover:bg-surface-2 transition-colors"
+            onClick={() => go(visualIndex - 1)}
+            aria-label="Sepatu sebelumnya"
+            style={{
+              backgroundColor: 'var(--hero-card)',
+              borderColor: 'var(--hero-line)',
+              color: 'var(--hero-ink)',
+            }}
+            className="w-11 h-11 rounded-full border flex items-center justify-center flex-shrink-0 hover:opacity-80 transition-opacity"
           >
-            <ChevronUp className="w-5 h-5" aria-hidden="true" />
+            <ChevronLeft className="w-5 h-5" aria-hidden="true" />
           </button>
 
-          <ul className="flex lg:flex-col gap-3 w-full">
+          <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
             {slides.map((s, i) => {
-              const isActive = i === active;
+              const isSelected = i === visualIndex;
+              const price = s.product?.price || s.fallbackPrice;
               return (
-                <li key={s.slug} className="flex-1">
+                <li key={s.slug}>
                   <button
                     type="button"
                     onClick={() => go(i)}
-                    aria-pressed={isActive}
-                    aria-label={`Tampilkan ${s.product?.name || s.fallbackName}`}
-                    className={`w-full rounded-xl border p-2 text-left transition-colors ${
-                      isActive ? 'border-ink bg-surface' : 'border-transparent hover:border-line hover:bg-surface/60'
-                    }`}
+                    aria-pressed={isSelected}
+                    aria-label={`Tampilkan ${s.cardTitle}`}
+                    style={{
+                      backgroundColor: isSelected ? 'var(--hero-card-active)' : 'var(--hero-card)',
+                      borderColor: isSelected ? 'var(--hero-line-active)' : 'var(--hero-line)',
+                      color: 'var(--hero-ink)',
+                    }}
+                    className="w-full h-24 px-3 sm:px-4 rounded-xl border backdrop-blur-md flex items-center gap-3 text-left transition-all duration-300"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={s.image}
-                      alt=""
-                      width={160}
-                      height={160}
-                      loading="lazy"
-                      className={`w-full max-w-[96px] mx-auto h-auto ${s.flip ? '-scale-x-100' : ''}`}
+                    <div className="relative w-20 h-16 flex-shrink-0 flex items-center justify-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={s.image}
+                        alt=""
+                        width={140}
+                        height={140}
+                        className="w-16 h-16 object-contain drop-shadow-md"
+                      />
+                    </div>
+
+                    <div
+                      aria-hidden="true"
+                      style={{ backgroundColor: 'var(--hero-line)' }}
+                      className="w-px h-11 flex-shrink-0"
                     />
-                    <span className="mt-1 block text-xs font-medium leading-tight line-clamp-2">
-                      {s.product?.name || s.fallbackName}
-                    </span>
-                    {s.product && (
-                      <span className="block text-xs text-ink-2 tabular-nums">{formatIDR(s.product.price)}</span>
-                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-xs sm:text-sm font-semibold truncate">
+                        {s.cardTitle}
+                      </span>
+                      <span className="block text-xs sm:text-sm font-bold tabular-nums mt-1">
+                        {formatIDR(price)}
+                      </span>
+                    </div>
                   </button>
                 </li>
               );
@@ -188,17 +299,22 @@ export default function HeroShowcase({ slides }) {
 
           <button
             type="button"
-            onClick={() => go(active + 1)}
-            aria-label="Produk berikutnya"
-            className="hidden lg:flex w-11 h-11 items-center justify-center rounded-full border border-line hover:bg-surface-2 transition-colors"
+            onClick={() => go(visualIndex + 1)}
+            aria-label="Sepatu berikutnya"
+            style={{
+              backgroundColor: 'var(--hero-card)',
+              borderColor: 'var(--hero-line)',
+              color: 'var(--hero-ink)',
+            }}
+            className="w-11 h-11 rounded-full border flex items-center justify-center flex-shrink-0 hover:opacity-80 transition-opacity"
           >
-            <ChevronDown className="w-5 h-5" aria-hidden="true" />
+            <ChevronRight className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
       </div>
 
       <p className="sr-only" aria-live="polite">
-        Slide {active + 1} dari {slides.length}: {slide.product?.name || slide.fallbackName}
+        Slide {visualIndex + 1} dari {slides.length}: {slides[visualIndex].cardTitle}
       </p>
     </section>
   );

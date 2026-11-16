@@ -16,13 +16,13 @@ Pola yang diambil dari video:
 
 | Pola di video | Penerapan di STRIDE |
 |---|---|
-| Headline raksasa condensed, rata kiri, 2 baris | `font-display` (Anton) uppercase, 2 baris, ukuran clamp besar |
-| Sepatu 3D melayang, dimiringkan sekitar -18 derajat, dengan bayangan lembut di bawah | Gambar PNG/WebP transparan, `rotate(-18deg)`, bayangan elips blur di lantai |
-| Watermark teks raksasa di belakang sepatu, warna sangat tipis | Nama model (misal `JORDAN`) di belakang produk, `opacity` rendah, tidak dibaca screen reader |
-| Rail produk vertikal di sisi kanan dengan tombol atas/bawah, kartu aktif disorot | Rail 3 produk unggulan, tombol naik/turun, kartu aktif ber-border |
-| Tema berganti terang/gelap mengikuti warna sepatu, dengan efek wipe | Tiap slide punya `theme: 'light' \| 'dark'`; ganti slide memicu wipe dari atas ke bawah |
-| Tombol CTA kotak hitam (terang) / putih (gelap) | Tombol `bg-ink text-canvas`, radius kecil |
-| Navigasi minimal: logo kiri, menu tengah, ikon kanan | Navbar: wordmark STRIDE, link kategori, ikon cari/akun/keranjang/tema |
+| Headline raksasa italic condensed, rata kiri, 2 baris (`STRIDE / AIR MAX`) | `font-display italic uppercase` (Anton), 2 baris, ukuran clamp besar |
+| Sepatu 3D profil samping melayang pada sudut `-25deg` dengan bayangan lantai elips | Potongan studio 3D Air Max (`public/hero/slide-1..3.webp`) + model 3D WebGL `.glb` (`public/models/shoe.glb`) |
+| Watermark teks `AIR MAX` raksasa di belakang sepatu | Watermark `AIR MAX` italic di tengah panggung dengan pergeseran paralaks horizontal |
+| Bar produk horizontal 3 kartu di bagian bawah dengan tombol `<` dan `>` serta 3 titik indikator | Bar 3 kartu kaca transparan (`[thumbnail sepatu | garis vertikal | Nama + Harga]`) dengan tombol kiri/kanan |
+| Tiga tema panggung mengikuti warna sepatu (Crimson Red, Stealth Black, Studio White) | Atribut `data-hero-theme="red \| dark \| light"` dengan gradien radial studio |
+| Transisi *split-curtain wipe* dari kanan ke kiri yang membelah judul menjadi dua warna saat melintas | Layer masuk memakai `clip-path: inset(0 0 0 100% -> 0)` (`820ms`) sementara sepatu lama bergeser ke kiri dan sepatu baru meluncur dari kanan |
+| Tombol CTA kotak `SHOP NOW ↗` kontras tinggi | Tombol `bg-[var(--hero-btn-bg)] text-[var(--hero-btn-ink)]` |
 
 Yang **tidak** diambil: logo dan nama Nike, ikon sosial media tanpa akun asli, harga dalam Rupee.
 
@@ -83,24 +83,25 @@ Aturan:
 - Radius: `rounded-md` (6px) untuk tombol dan input, `rounded-xl` untuk kartu, `rounded-[28px]` hanya untuk bingkai hero.
 - Bayangan: hanya bayangan lantai di bawah sepatu hero dan dropdown/modal (elevasi nyata). Kartu datar dengan border.
 - Glass/blur: tidak dipakai, kecuali navbar sticky (`bg-canvas/90 backdrop-blur`).
-- Gerak hero (lihat `src/components/home/HeroShowcase.jsx`):
-  - `shoe-in`: sepatu masuk dari kanan sambil berputar ke `-18deg` (700ms).
-  - Tilt: sepatu sedikit mengikuti posisi kursor (maks 8 derajat) agar terasa 3D.
-  - Wipe tema: lapisan warna tema baru menyapu dari atas ke bawah (450ms) saat ganti slide.
+- Gerak hero (lihat `src/components/home/HeroShowcase.jsx` dan `src/components/home/Sneaker3DCanvas.jsx`):
+  - `curtain-wipe-left`: lapisan tema baru menyapu dari kanan ke kiri (`820ms cubic-bezier(0.65, 0, 0.25, 1)`), membelah headline menjadi dua warna tepat pada garis potong tirai.
+  - `shoe-glide-in` & `shoe-glide-out`: sepatu lama bergeser ke kiri sambil sedikit meredup, sedangkan sepatu baru meluncur dari kanan ke tengah dengan rotasi pegas (`880ms`).
+  - Tilt & 3D 360°: sepatu mengikuti posisi kursor dalam perspektif 3D, dan tombol `Aktifkan 3D Model 360°` mengaktifkan renderer WebGL Three.js (`public/models/shoe.glb`) yang dapat diputar 360 derajat dengan mouse/sentuhan.
   - Tidak ada autoplay dan tidak ada loop tanpa henti.
   - Semua gerak dimatikan saat `prefers-reduced-motion: reduce`.
 
 ---
 
-## 5. Gambar 3D Produk (Dummy)
+## 5. Aset 3D Produk (Studio Render & GLB Model)
 
-Gambar hero sekarang **dummy** dari DummyJSON (render 3D sepatu dengan latar transparan), disalin ke `public/hero/`:
+Hero menyediakan dua mode visual 3D di `public/hero/` dan `public/models/`:
 
-| File | Produk | Tema slide |
+| File | Produk / Fungsi | Tema slide |
 |---|---|---|
-| `public/hero/slide-1.webp` | Sports Sneakers Off White & Red | light |
-| `public/hero/slide-2.webp` | Nike Air Jordan 1 Red And Black | dark |
-| `public/hero/slide-3.webp` | Puma Future Rider Trainers | light |
+| `public/hero/slide-1.webp` | Stride Air Max 270 Crimson (Studio 3D Cutout) | `red` |
+| `public/hero/slide-2.webp` | Stride Air Max Alpha Stealth (Studio 3D Cutout) | `dark` |
+| `public/hero/slide-3.webp` | Stride Air Max Excee White (Studio 3D Cutout) | `light` |
+| `public/models/shoe.glb` | Model 3D GLB interaktif 360° (3 varian tekstur PBR: Red, Dark, Light) | Semua |
 
 Cara mengganti: timpa file dengan nama yang sama (PNG/WebP latar transparan, rasio 1:1, minimal 1000x1000px, sepatu menghadap kiri), atau ubah path di `src/lib/hero-slides.js`.
 
