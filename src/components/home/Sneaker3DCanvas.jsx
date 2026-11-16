@@ -30,6 +30,8 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
     slideShiftX: 0,
     meshes: [],
     textures: {},
+    khronosGroup: null,
+    airforceGroup: null,
   });
   const [loaded, setLoaded] = useState(false);
 
@@ -41,6 +43,14 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
       st.slideIndex = slideIndex;
     }
     st.theme = theme;
+
+    // Toggle between AirForceWhite 3D GLB (for light/slide 3) and Khronos Shoe GLB (for red/dark)
+    if (st.airforceGroup && st.khronosGroup) {
+      const useAirForce = theme === 'light';
+      st.airforceGroup.visible = useAirForce;
+      st.khronosGroup.visible = !useAirForce;
+    }
+
     const tex = st.textures[theme];
     if (tex && st.meshes.length) {
       for (const m of st.meshes) {
@@ -64,42 +74,46 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(0, 0.1, 4.15);
+    camera.position.set(0, 0.08, 4.15);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    renderer.toneMappingExposure = 1.22;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333340, 1.8);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333340, 1.85);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
     keyLight.position.set(3.5, 5.0, 4.0);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.9);
     rimLight.position.set(-4.0, 2.5, -3.5);
     scene.add(rimLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 1.15);
     fillLight.position.set(0, -3.5, 2.5);
     scene.add(fillLight);
 
     const pivot = new THREE.Group();
     scene.add(pivot);
 
-    const baseRotX = 0.16;
-    const baseRotY = -Math.PI * 0.5;
-    const baseRotZ = -0.44; // -25deg matching video
+    const khronosGroup = new THREE.Group();
+    const airforceGroup = new THREE.Group();
+    pivot.add(khronosGroup);
+    pivot.add(airforceGroup);
+    stateRef.current.khronosGroup = khronosGroup;
+    stateRef.current.airforceGroup = airforceGroup;
 
     const loader = new GLTFLoader();
     let disposed = false;
 
+    // 1. Load Khronos 3D sneaker model (/models/shoe.glb)
     loader.load(
       '/models/shoe.glb',
       async (gltf) => {
@@ -114,10 +128,10 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
         model.position.sub(center);
         const wrapper = new THREE.Group();
         wrapper.scale.setScalar(scale);
+        wrapper.rotation.set(0.16, -Math.PI * 0.5, -0.44);
         wrapper.add(model);
-        pivot.add(wrapper);
+        khronosGroup.add(wrapper);
 
-        // Load all 3 baked variant textures (1 = Red, 3 = Dark, 4 = Light)
         const texMap = {};
         for (const [k, idx] of Object.entries(VARIant_TEX_INDEX)) {
           try {
@@ -135,9 +149,7 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
         model.traverse((child) => {
           if (child.isMesh && child.material) {
             child.material = child.material.clone();
-            if (activeTex) {
-              child.material.map = activeTex;
-            }
+            if (activeTex) child.material.map = activeTex;
             child.material.color.copy(TINTS[stateRef.current.theme] || TINTS.red);
             child.material.roughness = 0.42;
             child.material.metalness = 0.15;
@@ -146,6 +158,41 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
           }
         });
         stateRef.current.meshes = meshes;
+        khronosGroup.visible = stateRef.current.theme !== 'light';
+        setLoaded(true);
+      },
+      undefined,
+      () => {}
+    );
+
+    // 2. Load 3D Air Force White model generated from airforcewhite.png (/models/airforcewhite.glb)
+    loader.load(
+      '/models/airforcewhite.glb',
+      (gltf) => {
+        if (disposed) return;
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const scale = 2.35 / maxDim;
+
+        model.position.sub(center);
+        model.traverse((child) => {
+          if (child.isMesh && child.material) {
+            if (child.material.map) {
+              child.material.map.colorSpace = THREE.SRGBColorSpace;
+            }
+            child.material.roughness = 0.38;
+            child.material.metalness = 0.05;
+          }
+        });
+
+        const wrapper = new THREE.Group();
+        wrapper.scale.setScalar(scale);
+        wrapper.add(model);
+        airforceGroup.add(wrapper);
+        airforceGroup.visible = stateRef.current.theme === 'light';
         setLoaded(true);
       },
       undefined,
@@ -183,13 +230,13 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
 
       const px = reducedMotion ? 0 : st.pointer.x;
       const py = reducedMotion ? 0 : st.pointer.y;
-      const floatY = reducedMotion ? 0 : Math.sin(t * 2.1) * 0.04;
+      const floatY = reducedMotion ? 0 : Math.sin(t * 2.1) * 0.045;
 
       pivot.position.x = st.slideShiftX + px * 0.16;
       pivot.position.y = floatY - py * 0.12;
-      pivot.rotation.x = baseRotX - py * 0.24 + st.userRot.x;
-      pivot.rotation.y = baseRotY + st.currentSpinY + px * 0.38 + st.userRot.y;
-      pivot.rotation.z = baseRotZ - st.slideShiftX * 0.18;
+      pivot.rotation.x = -py * 0.28 + st.userRot.x;
+      pivot.rotation.y = st.currentSpinY + px * 0.42 + st.userRot.y;
+      pivot.rotation.z = -st.slideShiftX * 0.14;
 
       const targetTint = TINTS[st.theme] || TINTS.red;
       for (const m of st.meshes) {
