@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowUpRight, Box } from 'lucide-react';
+import TiltShoe from '@/components/TiltShoe';
 
 const Sneaker3DCanvas = dynamic(() => import('./Sneaker3DCanvas'), {
   ssr: false,
@@ -76,6 +77,12 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
               />
             )}
           </div>
+        ) : slide.image === '/hero/airforcewhite.png' ? (
+          <TiltShoe
+            src={slide.image}
+            alt={slide.product?.name || slide.fallbackName}
+            className={shoeClass}
+          />
         ) : (
           <div
             style={{
@@ -269,11 +276,13 @@ export default function HeroShowcase({ slides }) {
                     <div className="relative w-20 h-16 flex-shrink-0 flex items-center justify-center">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={s.image}
+                        src={s.thumbnail || s.image}
                         alt=""
                         width={140}
                         height={140}
-                        className="w-16 h-16 object-contain drop-shadow-md"
+                        className={`w-16 h-16 object-contain drop-shadow-md ${
+                          s.thumbnail ? 'scale-125' : ''
+                        }`}
                       />
                     </div>
 

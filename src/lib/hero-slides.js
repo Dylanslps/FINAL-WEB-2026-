@@ -25,7 +25,8 @@ export const HERO_SLIDES = [
   },
   {
     slug: 'sports-sneakers-off-white-red',
-    image: '/hero/slide-3.webp',
+    image: '/hero/airforcewhite.png',
+    thumbnail: '/hero/airforce.png',
     theme: 'light',
     headline: ['STRIDE', 'AIR MAX'],
     watermark: 'AIR MAX',
