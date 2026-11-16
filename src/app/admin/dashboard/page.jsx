@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { Shield, Clock, Users, FolderTree, Package, RefreshCw, ExternalLink } from 'lucide-react';
+import { Shield, Clock, Users, FolderTree, Package, RefreshCw, X } from 'lucide-react';
 import AdminStatsGrid from '@/components/admin/AdminStatsGrid';
 import AdminPendingSellers from '@/components/admin/AdminPendingSellers';
 import AdminUsersTable from '@/components/admin/AdminUsersTable';
@@ -12,8 +12,9 @@ import AdminProductsTable from '@/components/admin/AdminProductsTable';
 import { CategoryModal, DeleteConfirmModal } from '@/components/admin/AdminModals';
 
 export default function AdminDashboardPage() {
-  const { user, login } = useAuth();
+  const { user, switchAccount } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [data, setData] = useState({
     stats: {
       total_users: 0,
@@ -43,7 +44,6 @@ export default function AdminDashboardPage() {
     name: '',
     slug: '',
     description: '',
-    image_url: '',
   });
 
   const [deleteConfirm, setDeleteConfirm] = useState({
@@ -53,20 +53,26 @@ export default function AdminDashboardPage() {
     title: '',
   });
 
-  const fetchAdminData = async () => {
+  const showToast = (type, text) => {
+    setStatusMessage({ type, text });
+    setTimeout(() => setStatusMessage(null), 4000);
+  };
+
+  const fetchAdminData = useCallback(async () => {
     if (!user || user.role !== 'admin') return;
     try {
       setLoading(true);
+      setLoadError('');
       const res = await fetch(`/api/admin?adminId=${user.id}`);
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Gagal memuat data admin.');
       setData(json);
     } catch (err) {
-      showToast('error', err.message);
+      setLoadError(err.message || 'Gagal memuat data admin.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user?.role === 'admin') {
@@ -74,12 +80,7 @@ export default function AdminDashboardPage() {
     } else {
       setLoading(false);
     }
-  }, [user]);
-
-  const showToast = (type, text) => {
-    setStatusMessage({ type, text });
-    setTimeout(() => setStatusMessage(null), 4000);
-  };
+  }, [user, fetchAdminData]);
 
   const handleApproveSeller = async (sellerId, storeName) => {
     try {
@@ -92,7 +93,7 @@ export default function AdminDashboardPage() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.error || 'Gagal menyetujui seller.');
 
-      showToast('success', `Toko "${storeName}" berhasil diverifikasi dan disetujui.`);
+      showToast('success', `Toko "${storeName}" telah diverifikasi dan disetujui.`);
       fetchAdminData();
     } catch (err) {
       showToast('error', err.message);
@@ -130,9 +131,9 @@ export default function AdminDashboardPage() {
         body: JSON.stringify({ action: 'delete_user', adminId: user.id, userId }),
       });
       const resData = await res.json();
-      if (!res.ok) throw new Error(resData.error || 'Gagal menghapus user.');
+      if (!res.ok) throw new Error(resData.error || 'Gagal menghapus pengguna.');
 
-      showToast('success', 'User berhasil dihapus.');
+      showToast('success', 'Pengguna berhasil dihapus.');
       setDeleteConfirm({ isOpen: false, type: null, id: null, title: '' });
       fetchAdminData();
     } catch (err) {
@@ -174,7 +175,6 @@ export default function AdminDashboardPage() {
         name: categoryModal.name,
         slug: categoryModal.slug || categoryModal.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
         description: categoryModal.description,
-        image_url: categoryModal.image_url,
       };
       if (categoryModal.isEdit) payload.id = categoryModal.id;
 
@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
       if (!res.ok) throw new Error(resData.error || 'Gagal menyimpan kategori.');
 
       showToast('success', `Kategori "${payload.name}" berhasil disimpan.`);
-      setCategoryModal({ isOpen: false, isEdit: false, id: null, name: '', slug: '', description: '', image_url: '' });
+      setCategoryModal({ isOpen: false, isEdit: false, id: null, name: '', slug: '', description: '' });
       fetchAdminData();
     } catch (err) {
       showToast('error', err.message);
@@ -219,30 +219,30 @@ export default function AdminDashboardPage() {
 
   if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-[#0A0D14] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#10141D] border border-red-500/30 rounded-2xl p-8 text-center space-y-6 shadow-2xl">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500">
-            <Shield className="w-8 h-8" />
-          </div>
-          <div>
-            <h1 className="text-xl font-black text-white uppercase tracking-wider">Akses Terbatas: Super Admin</h1>
-            <p className="text-xs text-gray-400 mt-2">
-              Halaman ini hanya dapat diakses oleh akun terotorisasi dengan peran <span className="text-purple-400 font-bold">Admin</span>.
-            </p>
-          </div>
-          <div className="pt-2 border-t border-[#1C2331] space-y-3">
-            <button
-              onClick={() => {
-                login({ id: 1, name: 'Admin Apex', email: 'admin@esports.com', role: 'admin', status: 'approved' });
-              }}
-              className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-purple-600/30"
-            >
-              🛡️ Masuk Cepat sebagai Super Admin
-            </button>
-            <Link href="/login" className="block w-full py-2.5 bg-[#151A23] hover:bg-[#1E2638] text-gray-300 font-semibold rounded-xl text-xs transition-colors">
-              Kembali ke Login
-            </Link>
-          </div>
+      <div className="max-w-md mx-auto my-12 bg-surface border border-line rounded-xl p-8 text-center space-y-5">
+        <div className="w-12 h-12 mx-auto rounded-full bg-surface-2 flex items-center justify-center text-ink">
+          <Shield className="w-6 h-6" aria-hidden="true" />
+        </div>
+        <div className="space-y-1">
+          <h1 className="font-display uppercase text-2xl">Khusus Administrator</h1>
+          <p className="text-sm text-ink-2">
+            Halaman ini hanya dapat diakses oleh akun dengan peran Admin.
+          </p>
+        </div>
+        <div className="pt-2 space-y-2">
+          <button
+            type="button"
+            onClick={() => switchAccount('admin')}
+            className="w-full min-h-11 bg-ink text-canvas font-semibold rounded-md text-sm hover:opacity-85"
+          >
+            Masuk cepat sebagai Admin Stride
+          </button>
+          <Link
+            href="/login"
+            className="w-full min-h-11 inline-flex items-center justify-center bg-surface-2 text-ink border border-line font-semibold rounded-md text-sm hover:bg-line"
+          >
+            Kembali ke halaman login
+          </Link>
         </div>
       </div>
     );
@@ -263,151 +263,155 @@ export default function AdminDashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0A0D14] text-gray-200 pb-20">
-      <div className="border-b border-[#1C2331] bg-[#0E121A]/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black text-white tracking-wider uppercase font-mono">COMMAND CENTER // ADMIN</h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  ROOT
-                </span>
-              </div>
-              <p className="text-xs text-gray-400">
-                Pengelolaan toko, verifikasi seller, dan moderasi marketplace turnamen
-              </p>
-            </div>
-          </div>
+    <div className="space-y-8 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-line pb-4">
+        <div>
+          <h1 className="font-display uppercase text-3xl sm:text-4xl">Panel Admin</h1>
+          <p className="text-sm text-ink-2 mt-1">
+            Verifikasi pengajuan seller, kelola pengguna, kategori, dan moderasi produk.
+          </p>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={fetchAdminData}
-              disabled={loading}
-              className="px-3 py-2 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-gray-500 text-xs font-semibold text-gray-300 flex items-center gap-2 transition-colors"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
-            </button>
-            <Link
-              href="/katalog"
-              className="px-3 py-2 rounded-xl bg-[#151A23] border border-[#262E3D] hover:border-[#FF1E27] text-xs font-semibold text-gray-300 flex items-center gap-2 transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-[#FF1E27]" />
-              <span>Lihat Katalog</span>
-            </Link>
-          </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={fetchAdminData}
+            disabled={loading}
+            className="min-h-11 px-4 rounded-md bg-surface border border-line hover:bg-surface-2 text-xs font-semibold text-ink inline-flex items-center gap-2"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+            <span>Muat ulang</span>
+          </button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
-        {statusMessage && (
-          <div
-            className={`p-4 rounded-xl border flex items-center justify-between animate-fadeIn text-xs font-semibold ${
-              statusMessage.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-red-500/10 border-red-500/30 text-red-300'
-            }`}
-          >
-            <span>{statusMessage.text}</span>
-            <button onClick={() => setStatusMessage(null)} className="text-gray-400 hover:text-white">✕</button>
-          </div>
-        )}
-
-        <AdminStatsGrid stats={data.stats} />
-
-        <div className="flex border-b border-[#1C2331] space-x-2 overflow-x-auto">
+      {statusMessage && (
+        <div
+          role="status"
+          className={`p-4 rounded-md border flex items-center justify-between text-xs font-semibold ${
+            statusMessage.type === 'success'
+              ? 'bg-surface border-ok text-ok'
+              : 'bg-surface border-accent text-accent'
+          }`}
+        >
+          <span>{statusMessage.text}</span>
           <button
-            onClick={() => setActiveTab('pending')}
-            className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'pending' ? 'border-amber-400 text-amber-300' : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
+            type="button"
+            onClick={() => setStatusMessage(null)}
+            aria-label="Tutup pemberitahuan"
+            className="w-8 h-8 inline-flex items-center justify-center rounded hover:bg-surface-2 text-ink"
           >
-            <Clock className="w-4 h-4" />
-            <span>Verifikasi Seller</span>
-            {pendingSellersList.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                {pendingSellersList.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'users' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>Manajemen Pengguna</span>
-            <span className="text-[10px] text-gray-500">({usersList.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('categories')}
-            className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'categories' ? 'border-emerald-400 text-emerald-300' : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <FolderTree className="w-4 h-4" />
-            <span>Kategori Produk</span>
-            <span className="text-[10px] text-gray-500">({categoriesList.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`pb-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'products' ? 'border-[#FF1E27] text-[#FF1E27]' : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>Moderasi Katalog</span>
-            <span className="text-[10px] text-gray-500">({productsList.length})</span>
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
+      )}
 
-        {activeTab === 'pending' && (
-          <AdminPendingSellers
-            pendingSellers={pendingSellersList}
-            onApprove={handleApproveSeller}
-            onReject={handleRejectSeller}
-            isSubmitting={isSubmitting}
-          />
-        )}
+      {loadError && (
+        <div role="alert" className="p-4 rounded-xl bg-surface border border-accent text-xs flex items-center justify-between">
+          <span className="text-accent font-medium">{loadError}</span>
+          <button type="button" onClick={fetchAdminData} className="px-3 py-1.5 rounded bg-ink text-canvas font-semibold">
+            Coba lagi
+          </button>
+        </div>
+      )}
 
-        {activeTab === 'users' && (
-          <AdminUsersTable
-            users={filteredUsers}
-            currentUserId={user.id}
-            userRoleFilter={userRoleFilter}
-            setUserRoleFilter={setUserRoleFilter}
-            onDeleteUser={(u) =>
-              setDeleteConfirm({ isOpen: true, type: 'user', id: u.id, title: `Hapus Akun: ${u.name} (${u.email})` })
-            }
-          />
-        )}
+      {/* Navigasi tab utama */}
+      <div className="flex flex-wrap gap-2 border-b border-line pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab('pending')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold inline-flex items-center gap-2 border transition-colors ${
+            activeTab === 'pending'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
+          }`}
+        >
+          <Clock className="w-4 h-4" aria-hidden="true" />
+          <span>Verifikasi seller ({pendingSellersList.length})</span>
+        </button>
 
-        {activeTab === 'categories' && (
-          <AdminCategoriesTab
-            categories={categoriesList}
-            onAdd={() => setCategoryModal({ isOpen: true, isEdit: false, id: null, name: '', slug: '', description: '', image_url: '' })}
-            onEdit={(cat) => setCategoryModal({ isOpen: true, isEdit: true, id: cat.id, name: cat.name, slug: cat.slug, description: cat.description || '', image_url: cat.image_url || '' })}
-            onDelete={(cat) => setDeleteConfirm({ isOpen: true, type: 'category', id: cat.id, title: `Hapus Kategori: ${cat.name}` })}
-          />
-        )}
+        <button
+          type="button"
+          onClick={() => setActiveTab('users')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold inline-flex items-center gap-2 border transition-colors ${
+            activeTab === 'users'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
+          }`}
+        >
+          <Users className="w-4 h-4" aria-hidden="true" />
+          <span>Pengguna ({usersList.length})</span>
+        </button>
 
-        {activeTab === 'products' && (
-          <AdminProductsTable
-            products={filteredProducts}
-            productSearch={productSearch}
-            setProductSearch={setProductSearch}
-            onDeleteProduct={(p) =>
-              setDeleteConfirm({ isOpen: true, type: 'product', id: p.id, title: `Turunkan Produk: "${p.name}" dari ${p.store_name}` })
-            }
-          />
-        )}
+        <button
+          type="button"
+          onClick={() => setActiveTab('categories')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold inline-flex items-center gap-2 border transition-colors ${
+            activeTab === 'categories'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
+          }`}
+        >
+          <FolderTree className="w-4 h-4" aria-hidden="true" />
+          <span>Kategori ({categoriesList.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('products')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold inline-flex items-center gap-2 border transition-colors ${
+            activeTab === 'products'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
+          }`}
+        >
+          <Package className="w-4 h-4" aria-hidden="true" />
+          <span>Moderasi produk ({productsList.length})</span>
+        </button>
       </div>
+
+      {activeTab === 'pending' && (
+        <AdminPendingSellers
+          pendingSellers={pendingSellersList}
+          onApprove={handleApproveSeller}
+          onReject={handleRejectSeller}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
+      {activeTab === 'users' && (
+        <AdminUsersTable
+          users={filteredUsers}
+          currentUserId={user.id}
+          userRoleFilter={userRoleFilter}
+          setUserRoleFilter={setUserRoleFilter}
+          onDeleteUser={(u) =>
+            setDeleteConfirm({ isOpen: true, type: 'user', id: u.id, title: `Hapus akun: ${u.name} (${u.email})` })
+          }
+        />
+      )}
+
+      {activeTab === 'categories' && (
+        <AdminCategoriesTab
+          categories={categoriesList}
+          onAdd={() => setCategoryModal({ isOpen: true, isEdit: false, id: null, name: '', slug: '', description: '' })}
+          onEdit={(cat) => setCategoryModal({ isOpen: true, isEdit: true, id: cat.id, name: cat.name, slug: cat.slug, description: cat.description || '' })}
+          onDelete={(cat) => setDeleteConfirm({ isOpen: true, type: 'category', id: cat.id, title: `Hapus kategori: ${cat.name}` })}
+        />
+      )}
+
+      {activeTab === 'products' && (
+        <AdminProductsTable
+          products={filteredProducts}
+          productSearch={productSearch}
+          setProductSearch={setProductSearch}
+          onDeleteProduct={(p) =>
+            setDeleteConfirm({ isOpen: true, type: 'product', id: p.id, title: `Turunkan produk "${p.name}" dari ${p.store_name}` })
+          }
+        />
+      )}
+
+      <AdminStatsGrid stats={data.stats} />
 
       <CategoryModal
         modal={categoryModal}

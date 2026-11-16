@@ -7,29 +7,41 @@ const AuthContext = createContext(null);
 export const TEST_ACCOUNTS = {
   buyer: {
     id: 6,
-    name: 'Dylan Gamer',
+    name: 'Dylan Buyer',
     email: 'buyer@gmail.com',
     role: 'buyer',
     status: 'approved',
   },
   seller: {
     id: 2,
-    name: 'Alex "Apex" Pratama',
-    email: 'seller1@apexgear.com',
+    name: 'Raka Pratama',
+    email: 'seller1@stride.id',
     role: 'seller',
     status: 'approved',
     store_id: 1,
-    store_name: 'Apex Pro Gaming Gear',
-    store_slug: 'apex-pro-gaming-gear',
+    store_name: 'Sole Vault Jakarta',
+    store_slug: 'sole-vault-jakarta',
+  },
+  seller_pending: {
+    id: 4,
+    name: 'Budi Santoso',
+    email: 'seller3@pending.com',
+    role: 'seller',
+    status: 'pending',
+    store_id: 3,
+    store_name: 'Makassar Kicks',
+    store_slug: 'makassar-kicks',
   },
   admin: {
     id: 1,
-    name: 'Super Admin Esports',
-    email: 'admin@esports.com',
+    name: 'Admin Stride',
+    email: 'admin@stride.id',
     role: 'admin',
     status: 'approved',
   },
 };
+
+const STORAGE_KEY = 'stride_user';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -37,12 +49,13 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('esports_user');
+      localStorage.removeItem('esports_user');
+      const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         setUser(JSON.parse(saved));
       } else {
         setUser(TEST_ACCOUNTS.buyer);
-        localStorage.setItem('esports_user', JSON.stringify(TEST_ACCOUNTS.buyer));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(TEST_ACCOUNTS.buyer));
       }
     } catch {
       setUser(TEST_ACCOUNTS.buyer);
@@ -53,12 +66,16 @@ export function AuthProvider({ children }) {
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('esports_user', JSON.stringify(userData));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+    } catch {}
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('esports_user');
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
   };
 
   const switchAccount = (key) => {

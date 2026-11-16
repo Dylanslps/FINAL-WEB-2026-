@@ -11,50 +11,59 @@ export default function SellerStoreTab({
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-xl p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-4"
+      className="max-w-xl p-6 rounded-xl bg-surface border border-line space-y-4"
     >
-      <h2 className="text-base font-bold text-white border-b border-[#20293A] pb-3 font-sans">
-        Pengaturan Profil Toko Merchant
+      <h2 className="font-semibold text-base border-b border-line pb-3">
+        Pengaturan Profil Toko
       </h2>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-gray-300">Nama Toko *</label>
+        <label htmlFor="store-name" className="text-xs font-semibold text-ink block">
+          Nama toko *
+        </label>
         <input
+          id="store-name"
           type="text"
           required
           value={storeForm.name}
           onChange={(e) => setStoreForm({ ...storeForm, name: e.target.value })}
-          className="w-full p-2.5 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
+          className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink focus:outline-none focus:border-ink"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-gray-300">Deskripsi Toko</label>
+        <label htmlFor="store-desc" className="text-xs font-semibold text-ink block">
+          Deskripsi toko
+        </label>
         <textarea
+          id="store-desc"
           rows={3}
           value={storeForm.description}
           onChange={(e) => setStoreForm({ ...storeForm, description: e.target.value })}
-          className="w-full p-2.5 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
+          className="w-full p-3 rounded-md bg-canvas border border-line text-sm text-ink focus:outline-none focus:border-ink"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-gray-300">URL Logo Toko (Gambar Internet)</label>
+        <label htmlFor="store-logo" className="text-xs font-semibold text-ink block">
+          URL logo toko
+        </label>
         <input
+          id="store-logo"
           type="url"
           value={storeForm.logoUrl}
           onChange={(e) => setStoreForm({ ...storeForm, logoUrl: e.target.value })}
-          placeholder="https://images.unsplash.com/..."
-          className="w-full p-2.5 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF1E27]"
+          placeholder="https://cdn.dummyjson.com/..."
+          className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-colors flex items-center gap-1.5 disabled:opacity-50 uppercase tracking-wider shadow-md shadow-[#FF1E27]/20"
+        className="min-h-11 px-6 rounded-md bg-ink text-canvas font-semibold text-xs hover:opacity-85 inline-flex items-center gap-1.5 disabled:opacity-50"
       >
-        <Save className="w-4 h-4" /> Simpan Perubahan Profil
+        <Save className="w-4 h-4" aria-hidden="true" /> Simpan perubahan
       </button>
     </form>
   );

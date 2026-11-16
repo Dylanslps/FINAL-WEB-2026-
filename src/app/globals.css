@@ -1,47 +1,113 @@
 @import "tailwindcss";
 
-:root {
+/* Tema STRIDE. Sumber nilai: .agents/design/DESIGN.md bagian 2.
+   Komponen memakai utility (bg-canvas, text-ink, border-line, ...), bukan hex. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #ECECE9;
+  --surface: #F7F7F5;
+  --surface-2: #E2E2DE;
+  --ink: #111111;
+  --ink-2: #4F4F4F;
+  --line: #D2D2CD;
+  --accent: #C8102E;
+  --ok: #17693B;
+  --warn: #8A5600;
+  --watermark: rgba(17, 17, 17, 0.06);
+  --floor-shadow: rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="dark"] {
   color-scheme: dark;
-  --btr-red: #FF1E27;
-  --vitality-yellow: #FFD000;
-  --arena-bg: #0A0D14;
+  --canvas: #121212;
+  --surface: #1B1B1B;
+  --surface-2: #262626;
+  --ink: #F2F2F0;
+  --ink-2: #A9A9A9;
+  --line: #2F2F2F;
+  --accent: #FF5A4F;
+  --ok: #4CC38A;
+  --warn: #F2B84B;
+  --watermark: rgba(242, 242, 240, 0.06);
+  --floor-shadow: rgba(0, 0, 0, 0.7);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --font-sans: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Anton', 'Archivo', Impact, sans-serif;
 }
 
 body {
-  background-color: #0A0D14;
-  color: #F1F5F9;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 300ms ease, color 300ms ease;
 }
 
-h1, h2, h3, h4, .font-display {
-  font-family: 'Rajdhani', 'Plus Jakarta Sans', system-ui, sans-serif;
-  letter-spacing: 0.02em;
+a[href], button:not(:disabled), summary, select, label[for], [role="button"], [role="tab"] {
+  cursor: pointer;
+}
+button:disabled, [aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
-code, pre, .font-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* BTR x Vitality Tournament scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0A0D14;
-}
-::-webkit-scrollbar-thumb {
-  background: #20293A;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #FF1E27;
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 ::selection {
-  background-color: rgba(255, 30, 39, 0.35);
-  color: #FFFFFF;
+  background-color: var(--ink);
+  color: var(--canvas);
+}
+
+/* ---------- Hero showcase motion (DESIGN.md bagian 4) ---------- */
+@keyframes shoe-in {
+  from { opacity: 0; transform: translateX(28%) rotate(-38deg) scale(0.86); }
+  to   { opacity: 1; transform: translateX(0) rotate(-18deg) scale(1); }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes watermark-in {
+  from { opacity: 0; transform: translateX(-6%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes wipe-down {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes floor-in {
+  from { opacity: 0; transform: scaleX(0.4); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+.anim-shoe-in      { animation: shoe-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-rise-in      { animation: rise-in 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-watermark-in { animation: watermark-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-wipe-down    { animation: wipe-down 450ms cubic-bezier(0.7, 0, 0.3, 1) both; }
+.anim-floor-in     { animation: floor-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
 }

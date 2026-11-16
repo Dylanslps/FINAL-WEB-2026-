@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Star, X, Check, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Star, X, AlertCircle } from 'lucide-react';
 
 export default function ReviewModal({ isOpen, onClose, orderId, product, buyerId, onReviewSuccess }) {
   const [rating, setRating] = useState(5);
@@ -10,12 +10,21 @@ export default function ReviewModal({ isOpen, onClose, orderId, product, buyerId
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!comment.trim()) {
-      setErrorMsg('Tuliskan beberapa patah kata ulasan Anda mengenai produk ini.');
+      setErrorMsg('Tuliskan ulasan singkat mengenai produk yang Anda terima.');
       return;
     }
 
@@ -40,7 +49,7 @@ export default function ReviewModal({ isOpen, onClose, orderId, product, buyerId
         throw new Error(data.error || 'Gagal mengirim ulasan');
       }
 
-      onReviewSuccess();
+      if (onReviewSuccess) onReviewSuccess();
       onClose();
     } catch (err) {
       setErrorMsg(err.message);
@@ -50,83 +59,87 @@ export default function ReviewModal({ isOpen, onClose, orderId, product, buyerId
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] shadow-2xl space-y-5">
-        
-        <div className="flex items-center justify-between border-b border-[#262E3D] pb-3">
-          <h3 className="font-bold text-white text-base">Beri Ulasan Produk</h3>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="review-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60"
+    >
+      <div className="w-full max-w-md p-6 rounded-xl bg-surface border border-line shadow-2xl space-y-5">
+        <div className="flex items-center justify-between border-b border-line pb-3">
+          <h3 id="review-modal-title" className="font-semibold text-base">Beri Ulasan Produk</h3>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            aria-label="Tutup dialog ulasan"
+            className="w-9 h-9 rounded-md flex items-center justify-center text-ink-2 hover:text-ink hover:bg-surface-2"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Info Produk Singkat */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0B0E14] border border-[#262E3D]">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-2 border border-line">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={product.product_image}
             alt={product.product_name}
-            className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+            width={48}
+            height={48}
+            className="w-12 h-12 object-contain rounded-md bg-surface flex-shrink-0"
           />
           <div className="min-w-0">
-            <h4 className="font-bold text-xs text-white truncate">{product.product_name}</h4>
-            <p className="text-[10px] text-gray-400 font-mono">Toko: {product.store_name}</p>
+            <p className="font-semibold text-xs truncate">{product.product_name}</p>
+            <p className="text-xs text-ink-2">Toko: {product.store_name}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {/* Rating Bintang Selector */}
           <div className="space-y-2 text-center">
-            <label className="text-xs font-semibold text-gray-300">Pilih Jumlah Bintang:</label>
-            <div className="flex justify-center gap-2">
+            <span className="text-xs font-medium text-ink-2 block">Pilih jumlah bintang</span>
+            <div className="flex justify-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
+                  aria-label={`Beri ${star} bintang`}
+                  aria-pressed={rating === star}
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
                   onClick={() => setRating(star)}
-                  className="p-1 focus:outline-none transition-transform hover:scale-125"
+                  className="w-11 h-11 flex items-center justify-center rounded-md hover:bg-surface-2"
                 >
                   <Star
-                    className={`w-7 h-7 transition-colors ${
-                      star <= (hoverRating || rating)
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-gray-600'
+                    aria-hidden="true"
+                    className={`w-6 h-6 ${
+                      star <= (hoverRating || rating) ? 'fill-current text-ink' : 'text-line'
                     }`}
                   />
                 </button>
               ))}
             </div>
-            <p className="text-xs font-mono font-bold text-amber-400">
-              {rating === 5 && 'Luar Biasa (5/5)'}
-              {rating === 4 && 'Sangat Bagus (4/5)'}
-              {rating === 3 && 'Cukup Baik (3/5)'}
-              {rating === 2 && 'Kurang Memuaskan (2/5)'}
-              {rating === 1 && 'Mengecewakan (1/5)'}
+            <p className="text-xs font-semibold">
+              {rating} dari 5 bintang
             </p>
           </div>
 
-          {/* Input Komentar */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300">Komentar & Pengalaman Penggunaan:</label>
+            <label htmlFor="review-comment" className="text-xs font-medium text-ink block">
+              Komentar ulasan
+            </label>
             <textarea
+              id="review-comment"
               required
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Ceritakan performa gear ini saat turnamen atau bermain game..."
-              className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+              placeholder="Ceritakan kecocokan ukuran, kualitas bahan, dan pengemasan..."
+              className="w-full p-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
             />
           </div>
 
           {errorMsg && (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div role="alert" className="flex items-center gap-2 p-2.5 rounded-md bg-surface-2 border border-accent text-accent text-xs">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -135,21 +148,19 @@ export default function ReviewModal({ isOpen, onClose, orderId, product, buyerId
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl bg-[#0B0E14] text-gray-300 border border-[#262E3D] font-bold text-xs hover:text-white"
+              className="flex-1 min-h-11 rounded-md bg-surface-2 text-ink border border-line font-semibold text-xs hover:bg-line"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 py-2.5 rounded-xl bg-[#00F0FF] text-black font-extrabold text-xs hover:bg-[#00F0FF]/90 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 min-h-11 rounded-md bg-ink text-canvas font-semibold text-xs hover:opacity-85 disabled:opacity-50"
             >
-              {submitting ? 'Mengirim...' : 'Kirim Ulasan'}
+              {submitting ? 'Mengirim...' : 'Kirim ulasan'}
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

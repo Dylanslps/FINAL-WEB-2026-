@@ -156,6 +156,17 @@ export async function getFeaturedProducts(limit = 4) {
   return products;
 }
 
+export async function getProductsBySlugs(slugs) {
+  if (!slugs.length) return [];
+  const sql = `
+    SELECT p.id, p.name, p.slug, p.price, p.stock, p.image_url, p.brand
+    FROM products p
+    WHERE p.slug = ANY($1::text[]);
+  `;
+  const res = await query(sql, [slugs]);
+  return res.rows;
+}
+
 export async function getRelatedProducts(productId, categoryId, limit = 4) {
   const sql = `
     SELECT 

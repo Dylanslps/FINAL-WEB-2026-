@@ -44,7 +44,7 @@ export async function checkoutOrder({ buyerId, shippingAddress, notes = '' }) {
     }
 
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const orderNumber = `ORD-2026-ESP${Date.now().toString().slice(-5)}${randomSuffix}`;
+    const orderNumber = `ORD-2026-STR${Date.now().toString().slice(-5)}${randomSuffix}`;
 
     const insertOrderSql = `
       INSERT INTO orders (order_number, buyer_id, total_amount, shipping_address, notes, status)

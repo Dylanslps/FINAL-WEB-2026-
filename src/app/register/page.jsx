@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Shield, ShoppingBag, Store, User, Mail, Lock, Phone, MapPin, FileText, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, Store, AlertCircle } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -65,175 +65,171 @@ export default function RegisterPage() {
 
   return (
     <div className="max-w-lg mx-auto py-8 space-y-6">
-      
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="w-12 h-12 rounded-2xl bg-[#00F0FF]/10 border border-[#00F0FF]/30 text-[#00F0FF] flex items-center justify-center mx-auto shadow-lg shadow-[#00F0FF]/10">
-          <Shield className="w-6 h-6" />
-        </div>
-        <h1 className="text-2xl font-black text-white tracking-tight">
-          Pendaftaran Akun Baru
-        </h1>
-        <p className="text-xs text-gray-400">
-          Bergabung ke platform resmi turnamen esports VALIANT.
+      <div className="space-y-1">
+        <h1 className="font-display uppercase text-4xl">Daftar Akun Baru</h1>
+        <p className="text-sm text-ink-2">
+          Pilih peran sebagai pembeli atau penjual toko di STRIDE.
         </p>
       </div>
 
-      {/* Role Selector Tabs (Sesuai Spesifikasi: Buyer atau Seller) */}
-      <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-[#151A23] border border-[#262E3D] gap-1.5">
+      {/* Pilihan peran */}
+      <div className="grid grid-cols-2 p-1 rounded-xl bg-surface border border-line gap-1">
         <button
           type="button"
+          aria-pressed={role === 'buyer'}
           onClick={() => { setRole('buyer'); setErrorMsg(''); }}
-          className={`py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`min-h-11 px-4 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors ${
             role === 'buyer'
-              ? 'bg-[#00F0FF] text-black shadow-lg shadow-[#00F0FF]/20 font-extrabold'
-              : 'text-gray-400 hover:text-white hover:bg-[#262E3D]/50'
+              ? 'bg-ink text-canvas'
+              : 'text-ink-2 hover:text-ink hover:bg-surface-2'
           }`}
         >
-          <ShoppingBag className="w-4 h-4" />
-          Daftar sebagai Pembeli (Buyer)
+          <ShoppingBag className="w-4 h-4" aria-hidden="true" />
+          Pembeli (Buyer)
         </button>
 
         <button
           type="button"
+          aria-pressed={role === 'seller'}
           onClick={() => { setRole('seller'); setErrorMsg(''); }}
-          className={`py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+          className={`min-h-11 px-4 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors ${
             role === 'seller'
-              ? 'bg-[#FF5E00] text-white shadow-lg shadow-[#FF5E00]/20 font-extrabold'
-              : 'text-gray-400 hover:text-white hover:bg-[#262E3D]/50'
+              ? 'bg-ink text-canvas'
+              : 'text-ink-2 hover:text-ink hover:bg-surface-2'
           }`}
         >
-          <Store className="w-4 h-4" />
-          Daftar sebagai Penjual (Seller)
+          <Store className="w-4 h-4" aria-hidden="true" />
+          Penjual (Seller)
         </button>
       </div>
 
-      {/* Form Container */}
-      <div className="p-6 rounded-2xl bg-[#151A23] border border-[#262E3D] space-y-5">
-        
+      <div className="p-6 rounded-xl bg-surface border border-line space-y-5">
         {role === 'seller' && (
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span>
-              Catatan: Pendaftaran Seller akan berstatus <strong>Pending</strong> terlebih dahulu dan ditinjau oleh Admin sebelum toko aktif.
-            </span>
+          <div className="p-3 rounded-md bg-surface-2 border border-line text-ink-2 text-xs leading-relaxed">
+            Pendaftaran Seller akan berstatus <strong className="text-warn">Pending</strong> terlebih dahulu dan ditinjau oleh Admin sebelum toko dapat menjual produk.
           </div>
         )}
 
         {errorMsg && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div role="alert" className="flex items-center gap-2 p-3 rounded-md bg-surface-2 border border-accent text-accent text-xs">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleRegister} className="space-y-4">
-          
-          {/* Identitas Diri */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-[#00F0FF]" /> Nama Lengkap *
+            <label htmlFor="reg-name" className="text-xs font-semibold text-ink block">
+              Nama lengkap *
             </label>
             <input
+              id="reg-name"
               type="text"
               required
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Contoh: Dylan Dwiputra"
-              className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+              placeholder="Masukkan nama lengkap Anda"
+              className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#00F0FF]" /> Alamat Email *
+              <label htmlFor="reg-email" className="text-xs font-semibold text-ink block">
+                Alamat email *
               </label>
               <input
+                id="reg-email"
                 type="email"
                 required
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="nama@email.com"
-                className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+                placeholder="email@contoh.com"
+                className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-[#00F0FF]" /> Kata Sandi *
+              <label htmlFor="reg-password" className="text-xs font-semibold text-ink block">
+                Kata sandi *
               </label>
               <input
+                id="reg-password"
                 type="password"
                 required
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Minimal 6 karakter"
-                className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+                className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-[#00F0FF]" /> Nomor WhatsApp / Telepon
+            <label htmlFor="reg-phone" className="text-xs font-semibold text-ink block">
+              Nomor telepon
             </label>
             <input
+              id="reg-phone"
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
               placeholder="081234567890"
-              className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+              className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#00F0FF]" /> Alamat Pengiriman
+            <label htmlFor="reg-address" className="text-xs font-semibold text-ink block">
+              Alamat domisili / pengiriman
             </label>
             <textarea
+              id="reg-address"
               rows={2}
               name="address"
               value={formData.address}
               onChange={handleChange}
-              placeholder="Alamat domisili lengkap..."
-              className="w-full p-2 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#00F0FF]"
+              placeholder="Tulis alamat lengkap Anda..."
+              className="w-full p-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
             />
           </div>
 
-          {/* Kolom Khusus Seller */}
           {role === 'seller' && (
-            <div className="pt-4 border-t border-[#262E3D] space-y-4">
-              <h3 className="text-xs font-bold text-[#FF5E00] uppercase font-mono tracking-wider flex items-center gap-1.5">
-                <Store className="w-4 h-4" /> Informasi Toko Esports:
-              </h3>
+            <div className="pt-4 border-t border-line space-y-4">
+              <h2 className="text-sm font-semibold">Informasi Toko</h2>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Nama Toko *</label>
+                <label htmlFor="reg-store-name" className="text-xs font-semibold text-ink block">
+                  Nama toko *
+                </label>
                 <input
+                  id="reg-store-name"
                   type="text"
                   required={role === 'seller'}
                   name="storeName"
                   value={formData.storeName}
                   onChange={handleChange}
-                  placeholder="Contoh: CyberTech Pro Gaming Gear"
-                  className="w-full p-2.5 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF5E00]"
+                  placeholder="Masukkan nama toko"
+                  className="w-full h-11 px-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-300">Deskripsi Singkat Toko</label>
+                <label htmlFor="reg-store-desc" className="text-xs font-semibold text-ink block">
+                  Deskripsi singkat toko
+                </label>
                 <textarea
+                  id="reg-store-desc"
                   rows={2}
                   name="storeDescription"
                   value={formData.storeDescription}
                   onChange={handleChange}
-                  placeholder="Ceritakan jenis produk gear turnamen yang ingin Anda jual..."
-                  className="w-full p-2 rounded-lg bg-[#0B0E14] border border-[#262E3D] text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF5E00]"
+                  placeholder="Jelaskan jenis sepatu atau pakaian yang dijual toko Anda..."
+                  className="w-full p-3 rounded-md bg-canvas border border-line text-sm text-ink placeholder:text-ink-2 focus:outline-none focus:border-ink"
                 />
               </div>
             </div>
@@ -242,30 +238,23 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3.5 rounded-xl font-extrabold text-xs transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 ${
-              role === 'buyer'
-                ? 'bg-[#00F0FF] text-black hover:bg-[#00F0FF]/90 shadow-[#00F0FF]/25'
-                : 'bg-[#FF5E00] text-white hover:bg-[#FF5E00]/90 shadow-[#FF5E00]/25'
-            }`}
+            className="w-full min-h-12 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85 transition-opacity disabled:opacity-50"
           >
             {loading
-              ? 'Mendaftarkan Akun...'
+              ? 'Mendaftarkan akun...'
               : role === 'buyer'
-              ? 'Selesaikan Pendaftaran Pembeli'
-              : 'Kirim Pengajuan Toko Seller'}
-            <ArrowRight className="w-4 h-4" />
+              ? 'Selesaikan pendaftaran pembeli'
+              : 'Kirim pengajuan toko'}
           </button>
         </form>
 
-        <div className="pt-3 border-t border-[#262E3D] text-center text-xs text-gray-400">
-          Sudah memiliki akun?{' '}
-          <Link href="/login" className="text-[#00F0FF] hover:underline font-bold">
-            Masuk di Sini
+        <div className="pt-3 border-t border-line text-center text-xs text-ink-2">
+          Sudah punya akun?{' '}
+          <Link href="/login" className="text-ink underline underline-offset-4 font-semibold">
+            Masuk di sini
           </Link>
         </div>
-
       </div>
-
     </div>
   );
 }

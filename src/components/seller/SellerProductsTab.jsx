@@ -12,30 +12,34 @@ export default function SellerProductsTab({
 }) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-bold text-white font-sans">Katalog Produk Toko</h2>
-          <p className="text-xs text-gray-400 font-mono">Total {products.length} item aktif</p>
+          <h2 className="font-semibold text-base">Katalog Produk Toko</h2>
+          <p className="text-xs text-ink-2">Total {products.length} produk aktif</p>
         </div>
         <button
+          type="button"
           onClick={onAddProduct}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all shadow-md shadow-[#FF1E27]/20 uppercase tracking-wider"
+          className="min-h-11 px-4 inline-flex items-center gap-1.5 rounded-md bg-ink text-canvas font-semibold text-xs hover:opacity-85"
         >
-          <Plus className="w-4 h-4" /> Tambah Produk Baru
+          <Plus className="w-4 h-4" aria-hidden="true" /> Tambah produk baru
         </button>
       </div>
 
       {loading ? (
-        <div className="py-12 text-center text-xs text-gray-400 font-mono">Memuat produk...</div>
+        <div className="py-12 text-center text-sm text-ink-2">Memuat daftar produk...</div>
       ) : products.length === 0 ? (
-        <div className="p-8 text-center rounded-xl bg-[#121722] border border-[#20293A] text-gray-400 text-xs">
-          Belum ada produk di toko Anda. Klik &quot;Tambah Produk Baru&quot; untuk mulai menjual perlengkapan esports.
+        <div className="p-8 text-center rounded-xl bg-surface border border-line space-y-2">
+          <p className="text-sm font-medium">Belum ada produk di toko ini</p>
+          <p className="text-xs text-ink-2">
+            Klik tombol Tambah produk baru di kanan atas untuk mulai menambahkan sepatu atau pakaian.
+          </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-[#121722] border border-[#20293A] overflow-hidden">
+        <div className="rounded-xl bg-surface border border-line overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#0A0D14] text-gray-400 uppercase font-mono border-b border-[#20293A] text-[11px]">
+              <thead className="bg-surface-2 text-ink-2 uppercase border-b border-line">
                 <tr>
                   <th className="p-3.5">Produk</th>
                   <th className="p-3.5">Kategori</th>
@@ -45,40 +49,46 @@ export default function SellerProductsTab({
                   <th className="p-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#20293A]">
+              <tbody className="divide-y divide-line">
                 {products.map((p) => (
-                  <tr key={p.id} className="hover:bg-[#1A2232] transition-colors">
+                  <tr key={p.id} className="hover:bg-surface-2/60 transition-colors">
                     <td className="p-3.5 flex items-center gap-3">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={p.image_url}
                         alt={p.name}
-                        className="w-10 h-10 rounded-lg object-cover bg-[#0A0D14] border border-[#20293A]"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded object-contain bg-surface-2 border border-line p-0.5"
                       />
                       <div className="max-w-xs truncate">
-                        <p className="font-bold text-white truncate">{p.name}</p>
-                        <p className="text-[10px] text-gray-400 font-mono truncate">{p.brand || 'VALIANT PRO'}</p>
+                        <p className="font-semibold text-ink truncate">{p.name}</p>
+                        <p className="text-xs text-ink-2 truncate">{p.brand || 'Stride Studio'}</p>
                       </div>
                     </td>
-                    <td className="p-3.5 text-gray-300 font-mono">{p.category_name}</td>
-                    <td className="p-3.5 font-bold font-mono text-[#FF1E27]">{formatIDR(p.price)}</td>
-                    <td className="p-3.5 font-mono text-gray-300">{p.stock} Unit</td>
-                    <td className="p-3.5 font-mono text-amber-400">★ {Number(p.rating_avg || 5.0).toFixed(1)}</td>
-                    <td className="p-3.5 text-right space-x-2">
-                      <button
-                        onClick={() => onEditProduct(p)}
-                        className="p-1.5 rounded-lg bg-[#0A0D14] border border-[#20293A] text-gray-300 hover:text-white hover:border-[#FFD000] transition-colors"
-                        title="Edit Produk"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => onDeleteProduct(p.id)}
-                        className="p-1.5 rounded-lg bg-[#0A0D14] border border-[#20293A] text-gray-300 hover:text-rose-400 hover:border-rose-500 transition-colors"
-                        title="Hapus Produk"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                    <td className="p-3.5 text-ink-2">{p.category_name}</td>
+                    <td className="p-3.5 font-semibold tabular-nums">{formatIDR(p.price)}</td>
+                    <td className="p-3.5 tabular-nums">{p.stock} unit</td>
+                    <td className="p-3.5 tabular-nums">{Number(p.rating_avg || 0).toFixed(1)} / 5</td>
+                    <td className="p-3.5 text-right">
+                      <div className="inline-flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditProduct(p)}
+                          aria-label={`Edit ${p.name}`}
+                          className="w-9 h-9 rounded-md bg-canvas border border-line text-ink hover:bg-surface-2 inline-flex items-center justify-center"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteProduct(p.id)}
+                          aria-label={`Hapus ${p.name}`}
+                          className="w-9 h-9 rounded-md bg-canvas border border-line text-ink-2 hover:text-accent hover:border-accent inline-flex items-center justify-center"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

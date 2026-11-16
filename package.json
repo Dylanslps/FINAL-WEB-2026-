@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "node --env-file=.env.local scripts/seed-esports.mjs"
+    "db:seed": "node --env-file=.env.local scripts/seed-fashion.mjs"
   },
   "dependencies": {
     "next": "^15.2.0",

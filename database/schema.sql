@@ -1,6 +1,6 @@
 -- =============================================================================
 -- PROYEK FINAL PRAKTIKUM PEMROGRAMAN WEB 2026
--- TEMA 1: E-COMMERCE (ESPORTS GEAR & MERCHANDISE)
+-- TEMA 1: E-COMMERCE (STRIDE - SNEAKER & FASHION MARKETPLACE)
 -- DATABASE SCHEMA (POSTGRESQL / PGADMIN 4)
 -- =============================================================================
 
@@ -36,7 +36,7 @@ CREATE TABLE users (
 
 -- =============================================================================
 -- TABEL: stores
--- Toko resmi milik seller untuk menjual gear atau merchandise esports.
+-- Toko resmi milik seller untuk menjual sneaker, pakaian, dan aksesori fashion.
 -- 1 seller memiliki 1 store (1-to-1 relationship).
 -- =============================================================================
 CREATE TABLE stores (
@@ -53,7 +53,7 @@ CREATE TABLE stores (
 
 -- =============================================================================
 -- TABEL: categories
--- Kategori produk (Gaming Gear, Apparel & Jersey, Hardware, Accessories).
+-- Kategori produk (Sepatu Pria, Sepatu Wanita, Pakaian Pria, Pakaian Wanita, Tas, Jam Tangan, Kacamata, Perhiasan).
 -- =============================================================================
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
@@ -65,7 +65,7 @@ CREATE TABLE categories (
 
 -- =============================================================================
 -- TABEL: products
--- Menyimpan katalog barang dengan dukungan gambar internet/API e-commerce.
+-- Menyimpan katalog barang dari DummyJSON & Fake Store API serta produk unggahan seller.
 -- =============================================================================
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
@@ -164,13 +164,20 @@ CREATE TABLE wishlists (
 );
 
 -- =============================================================================
--- INDEXING UNTUK OPTIMASI PERFORMA QUERY
+-- INDEXING UNTUK OPTIMASI PERFORMA QUERY & FOREIGN KEYS
 -- =============================================================================
+CREATE INDEX idx_users_role_status ON users(role, status);
 CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_products_store ON products(store_id);
 CREATE INDEX idx_products_is_featured ON products(is_featured);
 CREATE INDEX idx_cart_buyer ON cart_items(buyer_id);
+CREATE INDEX idx_cart_product ON cart_items(product_id);
 CREATE INDEX idx_orders_buyer ON orders(buyer_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_order_items_order ON order_items(order_id);
+CREATE INDEX idx_order_items_product ON order_items(product_id);
+CREATE INDEX idx_order_items_store ON order_items(store_id);
 CREATE INDEX idx_reviews_product ON reviews(product_id);
+CREATE INDEX idx_reviews_buyer ON reviews(buyer_id);
+CREATE INDEX idx_wishlists_buyer ON wishlists(buyer_id);
+CREATE INDEX idx_wishlists_product ON wishlists(product_id);

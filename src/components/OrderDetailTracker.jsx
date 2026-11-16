@@ -7,19 +7,14 @@ import { useAuth } from '@/context/AuthContext';
 import ReviewModal from '@/components/ReviewModal';
 import { Clock, Truck, CheckCircle2, AlertCircle, MapPin, Store, Star, ArrowLeft } from 'lucide-react';
 
+const formatIDR = (num) =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+
 export default function OrderDetailTracker({ order }) {
   const router = useRouter();
   const { user } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
-
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
 
   const openReview = (item) => {
     setSelectedProduct(item);
@@ -27,9 +22,9 @@ export default function OrderDetailTracker({ order }) {
   };
 
   const steps = [
-    { title: 'Menunggu Pembayaran', icon: Clock, desc: 'Pesanan dibuat, menunggu konfirmasi seller' },
-    { title: 'Diproses', icon: Truck, desc: 'Seller sedang mempacking gear & kirim paket' },
-    { title: 'Selesai', icon: CheckCircle2, desc: 'Pesanan diterima dengan baik oleh pembeli' },
+    { title: 'Menunggu Pembayaran', icon: Clock, desc: 'Pesanan diterima dan menunggu diproses oleh penjual.' },
+    { title: 'Diproses', icon: Truck, desc: 'Penjual sedang mengemas dan mengirimkan barang.' },
+    { title: 'Selesai', icon: CheckCircle2, desc: 'Pesanan telah selesai dan diterima pembeli.' },
   ];
 
   const currentStepIndex = steps.findIndex((s) => s.title === order.status);
@@ -37,24 +32,22 @@ export default function OrderDetailTracker({ order }) {
 
   return (
     <div className="space-y-8 py-4">
-      
-      {/* Back button */}
       <Link
         href="/orders"
-        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#FF1E27] transition-colors font-mono"
+        className="inline-flex items-center gap-1.5 text-xs text-ink-2 hover:text-ink py-1"
       >
-        <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Riwayat Pesanan
+        <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> Kembali ke riwayat pesanan
       </Link>
 
-      {/* Header Detail */}
-      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-surface border border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono text-[#FFD000]">RINCIAN & PELACAKAN PESANAN</span>
-          <h1 className="text-2xl font-black text-white tracking-tight mt-1 font-mono">
+          <p className="text-xs font-medium uppercase tracking-wider text-ink-2">Rincian pesanan</p>
+          <h1 className="font-display uppercase text-2xl sm:text-3xl mt-1">
             {order.order_number}
           </h1>
-          <p className="text-xs text-gray-400 mt-1">
-            Dibuat pada {new Date(order.created_at).toLocaleDateString('id-ID', {
+          <p className="text-xs text-ink-2 mt-1">
+            Dibuat pada{' '}
+            {new Date(order.created_at).toLocaleDateString('id-ID', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
@@ -63,27 +56,25 @@ export default function OrderDetailTracker({ order }) {
             })}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-400 font-mono">Total Tagihan:</p>
-          <p className="text-2xl font-black text-[#FF1E27] font-mono">
+        <div className="md:text-right">
+          <p className="text-xs text-ink-2">Total pembayaran</p>
+          <p className="text-2xl font-bold tabular-nums">
             {formatIDR(order.total_amount)}
           </p>
         </div>
       </div>
 
-      {/* Stepper Timeline Pelacakan (Baymard UX Order Tracking) */}
-      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6">
-        <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
-          Timeline Pelacakan Status:
-        </h2>
+      {/* Status pelacakan */}
+      <div className="p-6 rounded-xl bg-surface border border-line space-y-4">
+        <h2 className="font-semibold text-sm">Status Pengiriman</h2>
 
         {isCanceled ? (
-          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <div className="p-4 rounded-lg bg-surface-2 border border-accent text-accent text-xs flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
             <span>Pesanan ini telah dibatalkan.</span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {steps.map((step, idx) => {
               const Icon = step.icon;
               const isPastOrCurrent = currentStepIndex >= idx;
@@ -92,33 +83,29 @@ export default function OrderDetailTracker({ order }) {
               return (
                 <div
                   key={step.title}
-                  className={`p-4 rounded-xl border transition-all ${
+                  className={`p-4 rounded-lg border ${
                     isCurrent
-                      ? 'bg-[#FF1E27]/10 border-[#FF1E27] shadow-lg shadow-[#FF1E27]/10'
+                      ? 'bg-canvas border-ink'
                       : isPastOrCurrent
-                      ? 'bg-[#121722] border-emerald-500/40 text-emerald-400'
-                      : 'bg-[#0A0D14] border-[#20293A] opacity-40'
+                      ? 'bg-canvas border-ok'
+                      : 'bg-surface-2 border-line opacity-60'
                   }`}
                 >
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-2.5 mb-2">
                     <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      className={`w-8 h-8 rounded-md flex items-center justify-center ${
                         isCurrent
-                          ? 'bg-[#FF1E27] text-white font-bold'
+                          ? 'bg-ink text-canvas'
                           : isPastOrCurrent
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-[#20293A] text-gray-500'
+                          ? 'bg-ok text-canvas'
+                          : 'bg-surface text-ink-2 border border-line'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-4 h-4" aria-hidden="true" />
                     </div>
-                    <span className="text-xs font-bold font-mono text-white">
-                      {step.title}
-                    </span>
+                    <span className="text-xs font-semibold">{step.title}</span>
                   </div>
-                  <p className="text-[11px] text-gray-400 leading-relaxed">
-                    {step.desc}
-                  </p>
+                  <p className="text-xs text-ink-2 leading-relaxed">{step.desc}</p>
                 </div>
               );
             })}
@@ -126,85 +113,85 @@ export default function OrderDetailTracker({ order }) {
         )}
       </div>
 
-      {/* Rincian Produk & Tombol Ulasan */}
-      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-6">
-        <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
-          Barang yang Dipesan ({order.items.length}):
+      {/* Daftar barang & tombol ulasan */}
+      <div className="p-6 rounded-xl bg-surface border border-line space-y-4">
+        <h2 className="font-semibold text-sm">
+          Barang yang dipesan ({order.items.length})
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {order.items.map((item) => (
             <div
               key={item.order_item_id}
-              className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="p-4 rounded-lg bg-canvas border border-line flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="flex items-center gap-3.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.product_image}
                   alt={item.product_name}
-                  className="w-16 h-16 rounded-lg object-cover border border-[#20293A] flex-shrink-0"
+                  width={64}
+                  height={64}
+                  className="w-16 h-16 rounded-md object-contain bg-surface-2 border border-line p-1 flex-shrink-0"
                 />
                 <div className="space-y-1">
-                  <p className="text-[11px] text-gray-400 font-mono flex items-center gap-1">
-                    <Store className="w-3 h-3 text-[#FFD000]" /> {item.store_name}
+                  <p className="text-xs text-ink-2 flex items-center gap-1">
+                    <Store className="w-3.5 h-3.5" aria-hidden="true" /> {item.store_name}
                   </p>
                   <Link
                     href={`/produk/${item.product_slug}`}
-                    className="font-bold text-sm text-white hover:text-[#FF1E27] transition-colors block"
+                    className="font-semibold text-sm hover:underline block"
                   >
                     {item.product_name}
                   </Link>
 
-                  {/* Varian & Warna */}
                   {(item.selected_variant || item.selected_color) && (
-                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-xs text-ink-2">
                       {item.selected_variant && (
-                        <span className="px-2 py-0.5 rounded-md bg-[#121722] border border-[#20293A] text-[10px] font-mono text-gray-300">
-                          Varian: <strong className="text-white">{item.selected_variant}</strong>
+                        <span className="px-2 py-0.5 rounded bg-surface border border-line text-ink">
+                          Ukuran: {item.selected_variant}
                         </span>
                       )}
                       {item.selected_color && (
-                        <span className="px-2 py-0.5 rounded-md bg-[#121722] border border-[#20293A] text-[10px] font-mono text-gray-300">
-                          Warna: <strong className="text-[#FFD000]">{item.selected_color}</strong>
+                        <span className="px-2 py-0.5 rounded bg-surface border border-line text-ink">
+                          Warna: {item.selected_color}
                         </span>
                       )}
                     </div>
                   )}
 
-                  <p className="text-xs text-gray-400 font-mono">
+                  <p className="text-xs text-ink-2 tabular-nums">
                     {item.quantity} x {formatIDR(item.price)}
                   </p>
                 </div>
               </div>
 
-              {/* Subtotal & Status Ulasan */}
-              <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
-                <div className="text-right">
-                  <p className="text-[10px] text-gray-400 uppercase font-mono">Subtotal</p>
-                  <p className="text-sm font-extrabold text-[#FF1E27] font-mono">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="sm:text-right">
+                  <p className="text-xs text-ink-2">Subtotal</p>
+                  <p className="text-sm font-bold tabular-nums">
                     {formatIDR(item.subtotal)}
                   </p>
                 </div>
 
-                {/* Tombol Ulasan Sesuai Spesifikasi: HANYA jika status = 'Selesai' */}
                 {order.status === 'Selesai' ? (
                   item.review_id ? (
-                    <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      <span>Rating: {item.review_rating}/5 (Sudah Diulas)</span>
+                    <div className="px-3 py-2 rounded-md bg-surface-2 border border-line text-ok text-xs font-medium flex items-center gap-1.5">
+                      <Star className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
+                      <span>Dinilai {item.review_rating}/5</span>
                     </div>
                   ) : (
                     <button
+                      type="button"
                       onClick={() => openReview(item)}
-                      className="px-3 py-1.5 rounded-lg bg-[#FF1E27] hover:bg-[#FFD000] hover:text-black text-white font-bold text-xs flex items-center gap-1.5 shadow transition-all hover:scale-105"
+                      className="min-h-11 px-4 rounded-md bg-ink text-canvas font-semibold text-xs flex items-center gap-1.5 hover:opacity-85"
                     >
-                      <Star className="w-3.5 h-3.5 fill-white" /> Beri Ulasan Bintang
+                      <Star className="w-3.5 h-3.5 fill-current" aria-hidden="true" /> Beri ulasan
                     </button>
                   )
                 ) : (
-                  <span className="text-[11px] text-gray-500 font-mono italic">
-                    Ulasan aktif saat pesanan Selesai
+                  <span className="text-xs text-ink-2">
+                    Ulasan dibuka saat status Selesai
                   </span>
                 )}
               </div>
@@ -213,21 +200,20 @@ export default function OrderDetailTracker({ order }) {
         </div>
       </div>
 
-      {/* Info Pengiriman */}
-      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] space-y-3">
-        <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider flex items-center gap-1.5">
-          <MapPin className="w-4 h-4 text-[#FF1E27]" /> Alamat Tujuan Pengiriman:
+      {/* Info pengiriman */}
+      <div className="p-6 rounded-xl bg-surface border border-line space-y-3">
+        <h2 className="font-semibold text-sm flex items-center gap-1.5">
+          <MapPin className="w-4 h-4" aria-hidden="true" /> Alamat Pengiriman
         </h2>
-        <div className="p-4 rounded-xl bg-[#0A0D14] border border-[#20293A] text-xs text-gray-300 leading-relaxed">
-          <p className="font-bold text-white mb-1">{order.buyer_name} ({order.buyer_email})</p>
-          <p>{order.shipping_address}</p>
+        <div className="p-4 rounded-lg bg-canvas border border-line text-xs text-ink space-y-1">
+          <p className="font-semibold">{order.buyer_name} ({order.buyer_email})</p>
+          <p className="text-ink-2">{order.shipping_address}</p>
           {order.notes && (
-            <p className="mt-2 text-gray-400 italic">Catatan Pembeli: &quot;{order.notes}&quot;</p>
+            <p className="pt-1 text-ink-2">Catatan pembeli: &quot;{order.notes}&quot;</p>
           )}
         </div>
       </div>
 
-      {/* Modal Review */}
       {selectedProduct && (
         <ReviewModal
           isOpen={isReviewOpen}
@@ -235,12 +221,11 @@ export default function OrderDetailTracker({ order }) {
           orderId={order.id}
           product={selectedProduct}
           buyerId={user?.id || order.buyer_id}
-          onSuccess={() => {
+          onReviewSuccess={() => {
             router.refresh();
           }}
         />
       )}
-
     </div>
   );
 }

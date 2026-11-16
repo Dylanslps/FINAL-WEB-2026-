@@ -1,80 +1,51 @@
-import { Users, Store, Clock, Package, ShoppingBag, DollarSign } from 'lucide-react';
-
 export default function AdminStatsGrid({ stats }) {
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
+  const formatIDR = (num) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <div className="bg-[#10141D] border border-[#1C2331] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Total Pengguna</span>
-          <Users className="w-4 h-4 text-cyan-400" />
+    <section aria-label="Ringkasan data database" className="pt-6 border-t border-line">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-2 mb-3">
+        Ringkasan Data Platform (PostgreSQL)
+      </h2>
+      <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Total pengguna</dt>
+          <dd className="text-2xl font-bold tabular-nums">{stats.total_users}</dd>
+          <dd className="text-xs text-ink-2">{stats.total_buyers} buyer</dd>
         </div>
-        <p className="text-2xl font-black text-white font-mono">{stats.total_users}</p>
-        <p className="text-[10px] text-gray-500">{stats.total_buyers} Buyer terdaftar</p>
-      </div>
 
-      <div className="bg-[#10141D] border border-[#1C2331] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Seller Aktif</span>
-          <Store className="w-4 h-4 text-emerald-400" />
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Seller aktif</dt>
+          <dd className="text-2xl font-bold text-ok tabular-nums">{stats.total_active_sellers}</dd>
+          <dd className="text-xs text-ink-2">Toko disetujui</dd>
         </div>
-        <p className="text-2xl font-black text-emerald-400 font-mono">{stats.total_active_sellers}</p>
-        <p className="text-[10px] text-gray-500">Toko terverifikasi</p>
-      </div>
 
-      <div
-        className={`bg-[#10141D] border rounded-2xl p-4 space-y-2 ${
-          stats.total_pending_sellers > 0 ? 'border-amber-500/40 bg-amber-500/5' : 'border-[#1C2331]'
-        }`}
-      >
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Menunggu Review</span>
-          <Clock className="w-4 h-4 text-amber-400" />
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Menunggu tinjauan</dt>
+          <dd className="text-2xl font-bold text-warn tabular-nums">{stats.total_pending_sellers}</dd>
+          <dd className="text-xs text-ink-2">Seller pending</dd>
         </div>
-        <div className="flex items-center gap-2">
-          <p className="text-2xl font-black text-amber-400 font-mono">{stats.total_pending_sellers}</p>
-          {stats.total_pending_sellers > 0 && (
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          )}
-        </div>
-        <p className="text-[10px] text-amber-300/80 font-medium">Perlu tindakan</p>
-      </div>
 
-      <div className="bg-[#10141D] border border-[#1C2331] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Total Produk</span>
-          <Package className="w-4 h-4 text-[#FF1E27]" />
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Total produk</dt>
+          <dd className="text-2xl font-bold tabular-nums">{stats.total_products}</dd>
+          <dd className="text-xs text-ink-2">Seluruh toko</dd>
         </div>
-        <p className="text-2xl font-black text-white font-mono">{stats.total_products}</p>
-        <p className="text-[10px] text-gray-500">Semua katalog toko</p>
-      </div>
 
-      <div className="bg-[#10141D] border border-[#1C2331] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Total Pesanan</span>
-          <ShoppingBag className="w-4 h-4 text-purple-400" />
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Total pesanan</dt>
+          <dd className="text-2xl font-bold tabular-nums">{stats.total_orders}</dd>
+          <dd className="text-xs text-ink-2">Transaksi dibuat</dd>
         </div>
-        <p className="text-2xl font-black text-white font-mono">{stats.total_orders}</p>
-        <p className="text-[10px] text-gray-500">Transaksi dibuat</p>
-      </div>
 
-      <div className="bg-[#10141D] border border-[#1C2331] rounded-2xl p-4 space-y-2">
-        <div className="flex items-center justify-between text-gray-400 text-xs">
-          <span>Revenue Selesai</span>
-          <DollarSign className="w-4 h-4 text-[#FFD000]" />
+        <div className="bg-surface border border-line rounded-xl p-4 space-y-1">
+          <dt className="text-xs text-ink-2">Transaksi selesai</dt>
+          <dd className="text-base font-bold tabular-nums truncate">
+            {formatIDR(Number(stats.total_completed_revenue))}
+          </dd>
+          <dd className="text-xs text-ink-2">Status Selesai</dd>
         </div>
-        <p className="text-lg font-black text-[#FFD000] font-mono truncate">
-          {formatIDR(Number(stats.total_completed_revenue))}
-        </p>
-        <p className="text-[10px] text-gray-500">Order sukses</p>
-      </div>
-    </div>
+      </dl>
+    </section>
   );
 }

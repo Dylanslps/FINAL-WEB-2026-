@@ -3,27 +3,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import {
-  Store,
-  Package,
-  ShoppingBag,
-  Check,
-  AlertCircle,
-} from 'lucide-react';
+import { Store, Package, ShoppingBag, Check, AlertCircle } from 'lucide-react';
 import SellerProductsTab from '@/components/seller/SellerProductsTab';
 import SellerOrdersTab from '@/components/seller/SellerOrdersTab';
 import SellerStoreTab from '@/components/seller/SellerStoreTab';
 import SellerProductModal from '@/components/seller/SellerProductModal';
 
+const formatIDR = (num) =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+
 export default function SellerDashboardPage() {
   const router = useRouter();
   const { user, switchAccount } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState('orders');
   const [data, setData] = useState({ store: null, products: [], incomingOrders: [], categories: [] });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
-  // Modal Tambah/Edit Produk State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [productForm, setProductForm] = useState({
@@ -37,18 +34,9 @@ export default function SellerDashboardPage() {
     isFeatured: false,
   });
 
-  // Profil Toko State
   const [storeForm, setStoreForm] = useState({ name: '', description: '', logoUrl: '' });
   const [submitting, setSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState({ type: '', text: '' });
-
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
 
   const loadData = useCallback(async () => {
     if (!user || user.role !== 'seller') {
@@ -62,25 +50,25 @@ export default function SellerDashboardPage() {
     }
 
     try {
+      setLoadError('');
       const res = await fetch(`/api/seller?sellerId=${user.id}`);
-      if (res.ok) {
-        const json = await res.json();
-        setData({
-          store: json.store || null,
-          products: Array.isArray(json.products) ? json.products : [],
-          incomingOrders: Array.isArray(json.incomingOrders) ? json.incomingOrders : [],
-          categories: Array.isArray(json.categories) ? json.categories : [],
+      if (!res.ok) throw new Error('Gagal memuat data toko dari server.');
+      const json = await res.json();
+      setData({
+        store: json.store || null,
+        products: Array.isArray(json.products) ? json.products : [],
+        incomingOrders: Array.isArray(json.incomingOrders) ? json.incomingOrders : [],
+        categories: Array.isArray(json.categories) ? json.categories : [],
+      });
+      if (json.store) {
+        setStoreForm({
+          name: json.store.name || '',
+          description: json.store.description || '',
+          logoUrl: json.store.logo_url || '',
         });
-        if (json.store) {
-          setStoreForm({
-            name: json.store.name || '',
-            description: json.store.description || '',
-            logoUrl: json.store.logo_url || '',
-          });
-        }
       }
     } catch (err) {
-      console.error(err);
+      setLoadError(err.message || 'Gagal memuat data toko.');
     } finally {
       setLoading(false);
     }
@@ -97,8 +85,8 @@ export default function SellerDashboardPage() {
       categoryId: data.categories[0]?.id || '',
       price: '',
       stock: '',
-      imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800',
-      brand: 'VALIANT PRO',
+      imageUrl: 'https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/1.webp',
+      brand: 'Stride Studio',
       description: '',
       isFeatured: false,
     });
@@ -164,7 +152,7 @@ export default function SellerDashboardPage() {
       }
       await loadData();
     } catch (err) {
-      alert(err.message);
+      setFeedbackMsg({ type: 'error', text: err.message });
     }
   };
 
@@ -186,7 +174,7 @@ export default function SellerDashboardPage() {
       }
       await loadData();
     } catch (err) {
-      alert(err.message);
+      setFeedbackMsg({ type: 'error', text: err.message });
     }
   };
 
@@ -220,19 +208,20 @@ export default function SellerDashboardPage() {
 
   if (!user || user.role !== 'seller') {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
-        <div className="w-12 h-12 rounded-full bg-[#20293A] flex items-center justify-center mx-auto text-[#FF1E27]">
-          <Store className="w-6 h-6" />
+      <div className="max-w-md mx-auto my-12 text-center space-y-4 p-8 rounded-xl bg-surface border border-line">
+        <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mx-auto text-ink">
+          <Store className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-white font-sans">Akses Khusus Seller</h2>
-        <p className="text-xs text-gray-400">
-          Anda belum masuk sebagai Seller yang terverifikasi.
+        <h1 className="font-display uppercase text-2xl">Khusus akun Seller</h1>
+        <p className="text-sm text-ink-2">
+          Masuk dengan akun Seller yang telah disetujui untuk mengelola produk dan memproses pesanan masuk.
         </p>
         <button
+          type="button"
           onClick={() => switchAccount('seller')}
-          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider"
+          className="w-full min-h-11 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
         >
-          Masuk sebagai Seller Approved (Apex Gear)
+          Masuk sebagai Seller (Sole Vault Jakarta)
         </button>
       </div>
     );
@@ -240,83 +229,105 @@ export default function SellerDashboardPage() {
 
   return (
     <div className="space-y-8 py-4">
-      {/* Header Dashboard Toko */}
-      <div className="p-6 rounded-2xl bg-[#121722] border border-[#20293A] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-xl bg-surface border border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#0A0D14] border border-[#20293A] text-[#FF1E27] flex items-center justify-center flex-shrink-0">
-            <Store className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-lg bg-surface-2 border border-line text-ink flex items-center justify-center flex-shrink-0">
+            <Store className="w-6 h-6" aria-hidden="true" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight font-sans">
-                {data.store?.name || 'Toko Esports'}
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="font-display uppercase text-2xl sm:text-3xl">
+                {data.store?.name || 'Toko Seller'}
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-bold">
-                Approved Merchant
+              <span className="px-2.5 py-0.5 rounded bg-surface-2 text-ok border border-line text-xs font-semibold">
+                Disetujui
               </span>
             </div>
-            <p className="text-xs text-gray-400 mt-1 max-w-xl truncate">
-              {data.store?.description || 'Pusat gear turnamen resmi di Indonesia.'}
+            <p className="text-xs text-ink-2 mt-1 max-w-xl">
+              {data.store?.description || 'Kelola katalog produk dan proses pesanan masuk dari pembeli.'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-[10px] text-gray-400 font-mono">Owner / Merchant:</p>
-            <p className="text-xs font-bold text-white font-mono">{user.name}</p>
-          </div>
+        <div className="md:text-right">
+          <p className="text-xs text-ink-2">Pemilik toko</p>
+          <p className="text-sm font-semibold">{user.name}</p>
         </div>
       </div>
 
       {feedbackMsg.text && (
         <div
-          className={`p-3.5 rounded-xl border text-xs flex items-center gap-2 font-medium ${
+          role="status"
+          className={`p-3.5 rounded-md border text-xs flex items-center gap-2 font-medium ${
             feedbackMsg.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+              ? 'bg-surface border-ok text-ok'
+              : 'bg-surface border-accent text-accent'
           }`}
         >
-          {feedbackMsg.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          {feedbackMsg.type === 'success' ? (
+            <Check className="w-4 h-4" aria-hidden="true" />
+          ) : (
+            <AlertCircle className="w-4 h-4" aria-hidden="true" />
+          )}
           <span>{feedbackMsg.text}</span>
         </div>
       )}
 
-      {/* Tabs Menu */}
-      <div className="flex items-center gap-2 border-b border-[#20293A] pb-1">
-        <button
-          onClick={() => setActiveTab('products')}
-          className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition-all uppercase tracking-wider font-mono ${
-            activeTab === 'products'
-              ? 'bg-[#FF1E27] text-white shadow-lg shadow-[#FF1E27]/20'
-              : 'text-gray-400 hover:text-white hover:bg-[#121722]'
-          }`}
-        >
-          <Package className="w-4 h-4" /> Kelola Produk ({data.products.length})
-        </button>
+      {loadError && (
+        <div role="alert" className="p-4 rounded-xl bg-surface border border-accent text-xs flex items-center justify-between">
+          <span className="text-accent font-medium">{loadError}</span>
+          <button type="button" onClick={loadData} className="px-3 py-1.5 rounded bg-ink text-canvas font-semibold">
+            Muat ulang
+          </button>
+        </div>
+      )}
 
+      {/* Navigasi tab: Pesanan masuk diutamakan sebagai keputusan utama seller */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-line pb-3">
         <button
+          type="button"
           onClick={() => setActiveTab('orders')}
-          className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition-all uppercase tracking-wider font-mono ${
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold flex items-center gap-2 border transition-colors ${
             activeTab === 'orders'
-              ? 'bg-[#FFD000] text-black shadow-lg shadow-[#FFD000]/20'
-              : 'text-gray-400 hover:text-white hover:bg-[#121722]'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
           }`}
         >
-          <ShoppingBag className="w-4 h-4" /> Pesanan Masuk ({data.incomingOrders.length})
+          <ShoppingBag className="w-4 h-4" aria-hidden="true" /> Pesanan masuk ({data.incomingOrders.length})
         </button>
 
         <button
-          onClick={() => setActiveTab('store')}
-          className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center gap-2 transition-all uppercase tracking-wider font-mono ${
-            activeTab === 'store'
-              ? 'bg-[#20293A] text-white border border-gray-500'
-              : 'text-gray-400 hover:text-white hover:bg-[#121722]'
+          type="button"
+          onClick={() => setActiveTab('products')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold flex items-center gap-2 border transition-colors ${
+            activeTab === 'products'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
           }`}
         >
-          <Store className="w-4 h-4" /> Profil Toko
+          <Package className="w-4 h-4" aria-hidden="true" /> Katalog produk ({data.products.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('store')}
+          className={`min-h-11 px-4 rounded-md text-xs font-semibold flex items-center gap-2 border transition-colors ${
+            activeTab === 'store'
+              ? 'bg-ink text-canvas border-ink'
+              : 'bg-surface text-ink border-line hover:bg-surface-2'
+          }`}
+        >
+          <Store className="w-4 h-4" aria-hidden="true" /> Profil toko
         </button>
       </div>
+
+      {activeTab === 'orders' && (
+        <SellerOrdersTab
+          orders={data.incomingOrders}
+          formatIDR={formatIDR}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
+        />
+      )}
 
       {activeTab === 'products' && (
         <SellerProductsTab
@@ -326,14 +337,6 @@ export default function SellerDashboardPage() {
           onAddProduct={openAddModal}
           onEditProduct={openEditModal}
           onDeleteProduct={handleDeleteProduct}
-        />
-      )}
-
-      {activeTab === 'orders' && (
-        <SellerOrdersTab
-          orders={data.incomingOrders}
-          formatIDR={formatIDR}
-          onUpdateOrderStatus={handleUpdateOrderStatus}
         />
       )}
 

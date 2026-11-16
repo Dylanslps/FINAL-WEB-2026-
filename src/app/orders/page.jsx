@@ -3,20 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { Package, Clock, CheckCircle2, AlertCircle, ArrowRight, Truck } from 'lucide-react';
+import { Package, Clock, CheckCircle2, AlertCircle, Truck } from 'lucide-react';
+
+const formatIDR = (num) =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
 
 export default function OrdersPage() {
   const { user, switchAccount } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
+  const [loadError, setLoadError] = useState('');
 
   const loadOrders = useCallback(async () => {
     if (!user || user.role !== 'buyer') {
@@ -25,13 +21,13 @@ export default function OrdersPage() {
     }
 
     try {
+      setLoadError('');
       const res = await fetch(`/api/orders?buyerId=${user.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data.orders || []);
-      }
-    } catch {
-      // silent fallback
+      if (!res.ok) throw new Error('Gagal memuat riwayat pesanan dari server.');
+      const data = await res.json();
+      setOrders(data.orders || []);
+    } catch (err) {
+      setLoadError(err.message || 'Gagal memuat riwayat pesanan.');
     } finally {
       setLoading(false);
     }
@@ -45,48 +41,49 @@ export default function OrdersPage() {
     switch (status) {
       case 'Menunggu Pembayaran':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold">
-            <Clock className="w-3 h-3" /> Menunggu Pembayaran
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-2 border border-line text-warn text-xs font-semibold">
+            <Clock className="w-3.5 h-3.5" aria-hidden="true" /> Menunggu Pembayaran
           </span>
         );
       case 'Diproses':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFD000]/10 border border-[#FFD000]/30 text-[#FFD000] text-xs font-mono font-bold">
-            <Truck className="w-3 h-3" /> Sedang Diproses
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-2 border border-line text-ink text-xs font-semibold">
+            <Truck className="w-3.5 h-3.5" aria-hidden="true" /> Diproses
           </span>
         );
       case 'Selesai':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
-            <CheckCircle2 className="w-3 h-3" /> Pesanan Selesai
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-2 border border-line text-ok text-xs font-semibold">
+            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" /> Selesai
           </span>
         );
       case 'Dibatalkan':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono font-bold">
-            <AlertCircle className="w-3 h-3" /> Dibatalkan
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-2 border border-line text-accent text-xs font-semibold">
+            <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" /> Dibatalkan
           </span>
         );
       default:
-        return <span className="text-xs text-gray-400">{status}</span>;
+        return <span className="text-xs text-ink-2">{status}</span>;
     }
   };
 
   if (!user || user.role !== 'buyer') {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
-        <div className="w-12 h-12 rounded-full bg-[#1A2232] flex items-center justify-center mx-auto text-[#FF1E27]">
-          <Package className="w-6 h-6" />
+      <div className="max-w-md mx-auto my-12 text-center space-y-4 p-8 rounded-xl bg-surface border border-line">
+        <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mx-auto text-ink">
+          <Package className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-white">Riwayat Pesanan Khusus Buyer</h2>
-        <p className="text-xs text-gray-400">
-          Silakan masuk sebagai Buyer untuk melihat seluruh riwayat dan melacak pesanan Anda.
+        <h1 className="font-display uppercase text-2xl">Khusus akun Buyer</h1>
+        <p className="text-sm text-ink-2">
+          Masuk sebagai Buyer untuk melihat riwayat transaksi dan melacak status pengiriman.
         </p>
         <button
+          type="button"
           onClick={() => switchAccount('buyer')}
-          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
+          className="w-full min-h-11 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
         >
-          Masuk Cepat sebagai Buyer (Dylan)
+          Masuk cepat sebagai Buyer (Dylan)
         </button>
       </div>
     );
@@ -94,51 +91,58 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-8 py-4">
-      
-      {/* Header */}
-      <div className="border-b border-[#20293A] pb-4">
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-          <Package className="w-6 h-6 text-[#FF1E27]" />
+      <div className="border-b border-line pb-4">
+        <h1 className="font-display uppercase text-3xl sm:text-4xl">
           Riwayat & Pelacakan Pesanan
         </h1>
-        <p className="text-xs text-gray-400 mt-1">
-          Pantau status pesanan, alamat pengiriman, dan berikan ulasan bintang setelah pesanan selesai.
+        <p className="text-sm text-ink-2 mt-1">
+          Pantau status pesanan Anda dan berikan ulasan produk setelah pesanan berstatus Selesai.
         </p>
       </div>
 
       {loading ? (
-        <div className="py-20 text-center text-xs text-gray-400 font-mono animate-pulse">
-          Memuat riwayat transaksi...
+        <div className="py-20 text-center text-sm text-ink-2">
+          Memuat riwayat pesanan Anda...
+        </div>
+      ) : loadError ? (
+        <div className="max-w-md mx-auto p-6 rounded-xl bg-surface border border-accent text-center space-y-3">
+          <p className="font-semibold text-sm text-accent">{loadError}</p>
+          <p className="text-xs text-ink-2">Periksa koneksi server lalu coba muat ulang.</p>
+          <button
+            type="button"
+            onClick={loadOrders}
+            className="min-h-11 px-5 rounded-md bg-ink text-canvas text-xs font-semibold"
+          >
+            Muat ulang
+          </button>
         </div>
       ) : orders.length === 0 ? (
-        <div className="py-16 text-center space-y-4 rounded-2xl bg-[#121722] border border-[#20293A] p-8 max-w-md mx-auto">
-          <div className="w-12 h-12 rounded-full bg-[#0A0D14] border border-[#20293A] flex items-center justify-center mx-auto text-gray-500">
-            <Package className="w-6 h-6" />
+        <div className="py-16 text-center space-y-4 rounded-xl bg-surface border border-line p-8 max-w-md mx-auto">
+          <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mx-auto text-ink-2">
+            <Package className="w-6 h-6" aria-hidden="true" />
           </div>
-          <h3 className="font-bold text-white text-base">Belum Ada Riwayat Pesanan</h3>
-          <p className="text-xs text-gray-400">
-            Anda belum pernah melakukan pemesanan gear esports di toko ini.
+          <h2 className="font-semibold text-base">Belum ada pesanan</h2>
+          <p className="text-sm text-ink-2">
+            Anda belum pernah melakukan checkout. Pilih produk di katalog untuk membuat pesanan pertama.
           </p>
           <Link
             href="/katalog"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-bold text-xs hover:bg-[#FFD000] hover:text-black transition-all"
+            className="inline-flex items-center justify-center min-h-11 px-6 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
           >
-            Mulai Belanja <ArrowRight className="w-3.5 h-3.5" />
+            Mulai belanja
           </Link>
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div
+            <article
               key={order.id}
-              className="p-5 rounded-2xl bg-[#121722] border border-[#20293A] hover:border-[#FF1E27]/40 transition-all space-y-4"
+              className="p-5 rounded-xl bg-surface border border-line space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#20293A] pb-3">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-sm text-[#FF1E27]">
-                    {order.order_number}
-                  </span>
-                  <span className="text-xs text-gray-400 font-mono">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-semibold text-sm">{order.order_number}</span>
+                  <time className="text-xs text-ink-2">
                     {new Date(order.created_at).toLocaleDateString('id-ID', {
                       day: 'numeric',
                       month: 'short',
@@ -146,53 +150,52 @@ export default function OrdersPage() {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </span>
+                  </time>
                 </div>
                 <div>{getStatusBadge(order.status)}</div>
               </div>
 
-              {/* Rincian Produk Singkat */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   {order.thumbnail_image && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={order.thumbnail_image}
-                      alt="Thumbnail Pesanan"
-                      className="w-14 h-14 rounded-lg object-cover bg-[#0A0D14] border border-[#20293A] flex-shrink-0"
+                      alt={order.product_names?.[0] || 'Produk pesanan'}
+                      width={56}
+                      height={56}
+                      className="w-14 h-14 rounded-lg object-contain bg-surface-2 border border-line p-1 flex-shrink-0"
                     />
                   )}
                   <div>
-                    <p className="text-xs font-semibold text-white truncate max-w-md">
+                    <p className="text-sm font-semibold line-clamp-1 max-w-md">
                       {order.product_names ? order.product_names.join(', ') : 'Rincian Barang'}
                     </p>
-                    <p className="text-[11px] text-gray-400 font-mono mt-0.5">
-                      Total: {order.total_items} Barang
+                    <p className="text-xs text-ink-2 mt-0.5">
+                      Total {order.total_items} unit
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-0 border-[#20293A] pt-3 sm:pt-0">
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-0 border-line pt-3 sm:pt-0">
                   <div className="text-right">
-                    <p className="text-[10px] text-gray-400 uppercase font-mono">Total Belanja</p>
-                    <p className="text-sm font-extrabold text-[#FF1E27] font-mono">
+                    <p className="text-xs text-ink-2">Total belanja</p>
+                    <p className="text-sm font-bold tabular-nums">
                       {formatIDR(order.total_amount)}
                     </p>
                   </div>
                   <Link
                     href={`/orders/${order.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#182030] hover:bg-[#FF1E27] text-white font-bold text-xs transition-colors border border-[#20293A]"
+                    className="min-h-11 px-4 inline-flex items-center rounded-md bg-ink text-canvas font-semibold text-xs hover:opacity-85"
                   >
-                    Lacak & Rincian <ArrowRight className="w-3.5 h-3.5" />
+                    Rincian & lacak
                   </Link>
                 </div>
               </div>
-
-            </div>
+            </article>
           ))}
         </div>
       )}
-
     </div>
   );
 }

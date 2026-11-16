@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ExternalLink, Trash2 } from 'lucide-react';
 
@@ -12,30 +11,30 @@ export default function AdminProductsTable({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-white uppercase tracking-wider">
-            Moderasi Seluruh Katalog
-          </h2>
-          <p className="text-xs text-gray-400">
-            Pantau gear turnamen dan turunkan produk yang melanggar aturan platform
+          <h2 className="font-semibold text-base">Moderasi Katalog Produk</h2>
+          <p className="text-xs text-ink-2">
+            Tinjau seluruh produk lintas toko dan hapus produk yang melanggar ketentuan.
           </p>
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <label htmlFor="admin-product-search" className="sr-only">Cari produk atau toko</label>
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-2" aria-hidden="true" />
           <input
-            type="text"
+            id="admin-product-search"
+            type="search"
             placeholder="Cari produk atau toko..."
             value={productSearch}
             onChange={(e) => setProductSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#10141D] border border-[#1C2331] focus:border-purple-500 text-xs text-white placeholder-gray-500 outline-none"
+            className="w-full h-11 pl-9 pr-3 rounded-md bg-surface border border-line focus:border-ink text-xs text-ink placeholder:text-ink-2 outline-none"
           />
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#1C2331] bg-[#10141D] overflow-hidden">
+      <div className="rounded-xl border border-line bg-surface overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#151A23] border-b border-[#1C2331] text-gray-400 uppercase tracking-wider text-[10px]">
+            <thead className="bg-surface-2 border-b border-line text-ink-2 uppercase">
               <tr>
                 <th className="p-4">Produk</th>
                 <th className="p-4">Toko Penjual</th>
@@ -46,76 +45,72 @@ export default function AdminProductsTable({
                 <th className="p-4 text-right">Moderasi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1C2331]">
+            <tbody className="divide-y divide-line">
               {(products || []).length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="p-8 text-center text-gray-500 font-mono text-xs">
-                    Tidak ada produk yang cocok dengan pencarian &quot;{productSearch}&quot;.
+                  <td colSpan="7" className="p-8 text-center text-ink-2 text-xs">
+                    {productSearch
+                      ? `Tidak ada produk yang cocok dengan pencarian "${productSearch}". Kosongkan kotak pencarian untuk melihat semua produk.`
+                      : 'Belum ada produk di katalog.'}
                   </td>
                 </tr>
               ) : (
                 (products || []).map((p) => (
-                <tr key={p.id} className="hover:bg-[#151A23]/50 transition-colors">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg overflow-hidden relative bg-[#151A23] flex-shrink-0 border border-[#262E3D]">
-                        {p.image_url ? (
-                          <Image
-                            src={p.image_url}
-                            alt={p.name}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        ) : null}
+                  <tr key={p.id} className="hover:bg-surface-2/60 transition-colors">
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.image_url}
+                          alt={p.name}
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded object-contain bg-surface-2 border border-line p-0.5 flex-shrink-0"
+                        />
+                        <div>
+                          <Link
+                            href={`/produk/${p.slug}`}
+                            className="font-semibold text-ink hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>{p.name}</span>
+                            <ExternalLink className="w-3 h-3 text-ink-2" aria-hidden="true" />
+                          </Link>
+                          <div className="text-xs text-ink-2">ID #{p.id}</div>
+                        </div>
                       </div>
-                      <div>
-                        <Link
-                          href={`/produk/${p.slug}`}
-                          target="_blank"
-                          className="font-bold text-white hover:text-[#FF1E27] transition-colors flex items-center gap-1"
-                        >
-                          <span>{p.name}</span>
-                          <ExternalLink className="w-3 h-3 opacity-60" />
-                        </Link>
-                        <span className="text-[10px] text-gray-500 font-mono">ID: #{p.id}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-gray-200 font-medium">{p.store_name}</div>
-                    <div className="text-[10px] text-gray-500">Seller ID #{p.seller_id}</div>
-                  </td>
-                  <td className="p-4">
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#151A23] border border-[#262E3D] text-gray-300">
-                      {p.category_name}
-                    </span>
-                  </td>
-                  <td className="p-4 font-mono font-bold text-white">
-                    Rp {Number(p.price).toLocaleString('id-ID')}
-                  </td>
-                  <td className="p-4 font-mono">
-                    <span className={p.stock < 5 ? 'text-red-400 font-bold' : 'text-gray-300'}>
-                      {p.stock} unit
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-1 text-amber-400 font-bold">
-                      <span>★</span>
-                      <span>{Number(p.rating || 0).toFixed(1)}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-right">
-                    <button
-                      onClick={() => onDeleteProduct(p)}
-                      className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-1.5 ml-auto transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Hapus</span>
-                    </button>
-                  </td>
-                </tr>
-              )))}
+                    </td>
+                    <td className="p-4">
+                      <div className="font-medium text-ink">{p.store_name}</div>
+                    </td>
+                    <td className="p-4">
+                      <span className="px-2 py-0.5 rounded bg-surface-2 border border-line text-ink">
+                        {p.category_name}
+                      </span>
+                    </td>
+                    <td className="p-4 font-semibold tabular-nums">
+                      Rp {Number(p.price).toLocaleString('id-ID')}
+                    </td>
+                    <td className="p-4 tabular-nums">
+                      <span className={p.stock < 5 ? 'text-accent font-semibold' : 'text-ink'}>
+                        {p.stock} unit
+                      </span>
+                    </td>
+                    <td className="p-4 tabular-nums">
+                      {Number(p.rating_avg || 0).toFixed(1)} / 5
+                    </td>
+                    <td className="p-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => onDeleteProduct(p)}
+                        className="min-h-9 px-3 rounded-md bg-canvas border border-line hover:border-accent text-ink-2 hover:text-accent text-xs font-semibold inline-flex items-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Hapus</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

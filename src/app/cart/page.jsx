@@ -4,10 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, ArrowRight, AlertCircle } from 'lucide-react';
+import { ShoppingBag, AlertCircle } from 'lucide-react';
 import CartItemList from '@/components/cart/CartItemList';
 import CartSummary from '@/components/cart/CartSummary';
 import CartOrderSuccess from '@/components/cart/CartOrderSuccess';
+
+const formatIDR = (num) =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
 
 export default function CartPage() {
   const { user, switchAccount } = useAuth();
@@ -15,19 +18,12 @@ export default function CartPage() {
 
   const [cart, setCart] = useState({ items: [], totalAmount: 0, totalItems: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successOrder, setSuccessOrder] = useState(null);
-
-  const formatIDR = (num) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
 
   const loadCart = useCallback(async () => {
     if (!user || user.role !== 'buyer') {
@@ -36,13 +32,13 @@ export default function CartPage() {
     }
 
     try {
+      setLoadError('');
       const res = await fetch(`/api/cart?buyerId=${user.id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setCart(data);
-      }
-    } catch {
-      // silent fallback
+      if (!res.ok) throw new Error('Gagal memuat keranjang dari server.');
+      const data = await res.json();
+      setCart(data);
+    } catch (err) {
+      setLoadError(err.message || 'Gagal memuat keranjang.');
     } finally {
       setLoading(false);
     }
@@ -138,26 +134,27 @@ export default function CartPage() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
-        <div className="w-12 h-12 rounded-full bg-[#1A2232] flex items-center justify-center mx-auto text-[#FF1E27]">
-          <ShoppingBag className="w-6 h-6" />
+      <div className="max-w-md mx-auto my-12 text-center space-y-4 p-8 rounded-xl bg-surface border border-line">
+        <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mx-auto text-ink">
+          <ShoppingBag className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-white font-sans">Anda Belum Masuk Akun</h2>
-        <p className="text-xs text-gray-400">
-          Silakan masuk atau gunakan akun pengujian Buyer untuk melihat dan memproses keranjang belanja.
+        <h1 className="font-display uppercase text-2xl">Anda belum masuk</h1>
+        <p className="text-sm text-ink-2">
+          Masuk ke akun Buyer untuk melihat keranjang dan melanjutkan ke checkout.
         </p>
         <div className="flex flex-col gap-2 pt-2">
           <button
+            type="button"
             onClick={() => switchAccount('buyer')}
-            className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider"
+            className="w-full min-h-11 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
           >
-            Masuk Cepat sebagai Buyer (Dylan)
+            Masuk cepat sebagai Buyer (Dylan)
           </button>
           <Link
             href="/login"
-            className="w-full py-2.5 rounded-xl bg-[#0A0D14] text-gray-300 border border-[#20293A] font-bold text-xs hover:text-white transition-all uppercase tracking-wider"
+            className="w-full min-h-11 inline-flex items-center justify-center rounded-md bg-surface-2 text-ink border border-line font-semibold text-sm hover:bg-line"
           >
-            Halaman Login / Register
+            Buka halaman login
           </Link>
         </div>
       </div>
@@ -166,19 +163,20 @@ export default function CartPage() {
 
   if (user.role !== 'buyer') {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
-        <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
-          <AlertCircle className="w-6 h-6" />
+      <div className="max-w-md mx-auto my-12 text-center space-y-4 p-8 rounded-xl bg-surface border border-line">
+        <div className="w-12 h-12 rounded-full bg-surface-2 text-warn flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-white font-sans">Akses Keranjang Khusus Buyer</h2>
-        <p className="text-xs text-gray-400">
-          Anda saat ini masuk sebagai <strong>{user.role.toUpperCase()}</strong> ({user.name}). Untuk melakukan pembelian, beralihlah ke akun Buyer.
+        <h1 className="font-display uppercase text-2xl">Khusus akun Buyer</h1>
+        <p className="text-sm text-ink-2">
+          Anda sedang masuk sebagai <strong>{user.role}</strong> ({user.name}). Beralih ke akun Buyer untuk berbelanja.
         </p>
         <button
+          type="button"
           onClick={() => switchAccount('buyer')}
-          className="w-full py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider"
+          className="w-full min-h-11 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
         >
-          Beralih ke Akun Buyer (Dylan)
+          Beralih ke akun Buyer (Dylan)
         </button>
       </div>
     );
@@ -196,28 +194,44 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="py-24 text-center text-xs text-gray-400 font-mono animate-pulse">
-        Memuat keranjang belanja...
+      <div className="py-24 text-center text-sm text-ink-2">
+        Memuat daftar barang di keranjang belanja Anda...
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-md mx-auto my-12 p-6 rounded-xl bg-surface border border-accent text-center space-y-3">
+        <p className="font-semibold text-sm text-accent">{loadError}</p>
+        <p className="text-xs text-ink-2">Pastikan koneksi database PostgreSQL aktif lalu muat ulang.</p>
+        <button
+          type="button"
+          onClick={loadCart}
+          className="min-h-11 px-5 rounded-md bg-ink text-canvas text-xs font-semibold"
+        >
+          Coba muat ulang
+        </button>
       </div>
     );
   }
 
   if (cart.items.length === 0) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4 p-8 rounded-2xl bg-[#121722] border border-[#20293A]">
-        <div className="w-14 h-14 rounded-full bg-[#0A0D14] border border-[#20293A] text-gray-500 flex items-center justify-center mx-auto">
-          <ShoppingBag className="w-6 h-6" />
+      <div className="max-w-md mx-auto my-12 text-center space-y-4 p-8 rounded-xl bg-surface border border-line">
+        <div className="w-12 h-12 rounded-full bg-surface-2 text-ink-2 flex items-center justify-center mx-auto">
+          <ShoppingBag className="w-6 h-6" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-bold text-white font-sans">Keranjang Belanja Kosong</h2>
-        <p className="text-xs text-gray-400 max-w-xs mx-auto">
-          Belum ada item gear atau jersey yang Anda tambahkan ke keranjang.
+        <h1 className="font-display uppercase text-2xl">Keranjang masih kosong</h1>
+        <p className="text-sm text-ink-2">
+          Anda belum menambahkan sepatu atau pakaian ke keranjang belanja.
         </p>
         <div className="pt-2">
           <Link
             href="/katalog"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF1E27] text-white font-black text-xs hover:bg-[#FFD000] hover:text-black transition-all uppercase tracking-wider shadow-md shadow-[#FF1E27]/20"
+            className="inline-flex items-center justify-center min-h-11 px-6 rounded-md bg-ink text-canvas font-semibold text-sm hover:opacity-85"
           >
-            Jelajahi Katalog Turnamen <ArrowRight className="w-3.5 h-3.5" />
+            Lihat katalog produk
           </Link>
         </div>
       </div>
@@ -226,21 +240,21 @@ export default function CartPage() {
 
   return (
     <div className="space-y-8 py-4">
-      <div className="flex items-center justify-between border-b border-[#20293A] pb-4">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5 font-sans">
-            <ShoppingBag className="w-6 h-6 text-[#FF1E27]" />
-            Keranjang Belanja ({cart.totalItems} Item)
+          <h1 className="font-display uppercase text-3xl sm:text-4xl">
+            Keranjang Belanja ({cart.totalItems})
           </h1>
-          <p className="text-xs text-gray-400 mt-1 font-mono">
-            Periksa item pilihan Anda sebelum menyelesaikan checkout turnamen.
+          <p className="text-sm text-ink-2 mt-1">
+            Periksa ukuran dan jumlah barang sebelum menyelesaikan pesanan.
           </p>
         </div>
         <button
+          type="button"
           onClick={handleClearCart}
-          className="text-xs text-rose-400 hover:text-rose-300 hover:underline font-mono"
+          className="min-h-11 px-3 text-xs font-semibold text-accent hover:underline"
         >
-          Kosongkan Keranjang
+          Kosongkan keranjang
         </button>
       </div>
 

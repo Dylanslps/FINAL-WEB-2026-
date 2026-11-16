@@ -1,146 +1,81 @@
-# VALIANT PRO // Official Tournament Gear Marketplace
+# STRIDE | Toko Sneaker dan Fashion
+
 > **Tugas Akhir Praktikum Pemrograman Web 2026**  
-> Aplikasi E-Commerce Multi-Role Berbasis Next.js App Router, PostgreSQL (Raw SQL), dan Tailwind CSS (BTR Red & Vitality Hornet Gold Aesthetic).
+> Aplikasi E-Commerce Multi-Role berbasis Next.js App Router, PostgreSQL (Raw SQL), dan Tailwind CSS v4.
 
 ---
 
-## 🎯 Gambaran Umum Proyek
+## Gambaran Umum Proyek
 
-**VALIANT PRO** adalah platform e-commerce marketplace perlengkapan turnamen esports multi-katalog (*mechanical keyboards, gaming mice, audio gear, apparel jersey, dan rig hardware*). Desain antarmuka mengadopsi nuansa visual turnamen khas **BTR (Bigetron by Vitality)**: perpaduan warna Crimson Red (`#FF1E27`) khas Robot Merah dan aksen Hornet Gold (`#FFD000`). Proyek ini dibangun dari nol (*from scratch*) tanpa ORM guna memenuhi kriteria praktikum: performa query tinggi menggunakan PostgreSQL raw parameterized SQL, penanganan transaksi stok atomik, serta alur otentikasi multi-peran (*Multi-Role Lifecycle*).
+**STRIDE** adalah platform marketplace sneaker, pakaian, tas, jam tangan, kacamata, dan perhiasan dengan arsitektur empat peran pengguna (*Public/Guest, Buyer, Seller, Admin*). Seluruh arah desain, token warna, tipografi, dan koreografi animasi hero terdokumentasi di `.agents/design/DESIGN.md`.
 
-Katalog produk secara otomatis ditarik dan diselaraskan dari internet public API (**DummyJSON Products API**) dengan visual gambar riil berkualitas tinggi.
+Katalog produk ditarik sekali lewat skrip seed Node.js (`scripts/seed-fashion.mjs`) dari **DummyJSON Products API** (10 kategori fashion & sepatu) dan **Fake Store API** ke PostgreSQL agar Seller tetap dapat melakukan CRUD produk dan aplikasi tidak bergantung pada koneksi API eksternal saat presentasi.
 
 ---
 
-## ⚡ Fitur Utama & Arsitektur Multi-Role
-
-Sistem mendukung 4 tingkat akses peran dengan batas wewenang yang ketat:
+## Fitur Utama & Arsitektur Multi-Role
 
 | Peran | Status Akun | Hak Akses & Fitur |
 | :--- | :--- | :--- |
-| **Public / Guest** | N/A | Eksplorasi katalog, filter kategori, pencarian ILIKE, melihat ulasan dan rating produk Baymard. |
-| **Buyer (Pembeli)** | `approved` | Keranjang belanja (*upsert* stok otomatis), checkout transaksi atomik PostgreSQL (`BEGIN`...`COMMIT`/`ROLLBACK`), riwayat pesanan dengan pelacak status, dan pemberian ulasan bintang 1-5 (hanya untuk pesanan berstatus *Selesai*). |
-| **Seller (Penjual)** | `pending` | Mengisi form toko saat pendaftaran. Akun dibatasi di halaman status menunggu verifikasi (*Pending Review*) hingga disetujui Admin. Jika ditolak, tersedia opsi hapus akun mandiri. |
-| **Seller (Penjual)** | `approved` | Mengelola toko, manajemen katalog produk (CRUD lengkap dengan gambar internet), dan memproses pesanan masuk (*Menunggu Pembayaran* ➔ *Diproses* ➔ *Selesai*). |
-| **Super Admin** | `approved` | Pusat kendali utama (*Command Center*): Verifikasi/Tolak pendaftaran seller, moderasi katalog lintas toko, manajemen akun seluruh platform (dengan proteksi *self-delete*), dan CRUD kategori turnamen. |
+| **Public / Guest** | N/A | Eksplorasi hero showcase 3D interaktif, filter 8 kategori, pencarian `ILIKE`, detail produk, distribusi rating dan ulasan. |
+| **Buyer (Pembeli)** | `approved` | Keranjang belanja (*upsert* kuantitas & ukuran), checkout transaksi atomik PostgreSQL (`BEGIN`...`COMMIT`/`ROLLBACK`), pelacak status pesanan, dan ulasan bintang 1 sampai 5 khusus pesanan berstatus *Selesai*. |
+| **Seller (Penjual)** | `pending` / `rejected` | Mengajukan toko saat pendaftaran. Akun diarahkan ke halaman peninjauan (*Pending Approval*) hingga disetujui Admin. Jika ditolak, tersedia tombol hapus akun mandiri (*Delete Account*). |
+| **Seller (Penjual)** | `approved` | Mengelola profil toko, CRUD katalog produk, dan memproses pesanan masuk (*Menunggu Pembayaran* -> *Diproses* -> *Selesai*). |
+| **Admin** | `approved` | Verifikasi pengajuan seller (*Approve* / *Reject*), manajemen pengguna (dengan proteksi *self-delete*), CRUD kategori, dan moderasi produk lintas toko. |
 
 ---
 
-## 🛠️ Tech Stack & Konfigurasi
+## Tech Stack
 
-- **Frontend & Routing:** Next.js 15 (App Router, React JSX)
-- **Styling & UI:** Tailwind CSS v4 (Tema Esports Dark Palette `#0A0D14`, Neon Accents `#00F0FF`, `#FF5E00`, `#7928CA`)
-- **Database:** PostgreSQL 15+ (Local via pgAdmin 4)
-- **Database Driver:** `pg` (node-postgres) dengan `pg.Pool` & Parameterized Queries (`$1, $2, ...`)
-- **Data Source & Assets:** DummyJSON API & Unsplash Remote CDN
-- **Icons:** Lucide React
+- **Frontend & Routing:** Next.js 15 (App Router, React 19 JSX)
+- **Styling & Tema:** Tailwind CSS v4 dengan sistem token CSS Variables (tema terang & gelap serta hero showcase adaptif)
+- **Tipografi:** Anton (Display) & Archivo (Sans)
+- **Database:** PostgreSQL dengan `pg` (`pg.Pool`) dan Parameterized Queries (`$1, $2, ...`)
+- **Sumber Data Seed:** DummyJSON API & Fake Store API
 
 ---
 
-## 📋 Akun Uji Coba Cepat (Demo Testing Accounts)
+## Akun Uji Coba Cepat (1-Click Switcher)
 
-Tersedia fitur **1-Click Test Account Switcher** di bagian navigasi atas (Navbar) dan halaman `/login` untuk memudahkan penguji/dosen mengecek seluruh alur peran secara instan:
+Tersedia pengalih peran 1 klik di menu akun pada Navbar dan halaman `/login`:
 
-| Role | Email | Password | Kegunaan Uji Coba |
+| Peran | Email | Password | Kegunaan Uji Coba |
 | :--- | :--- | :--- | :--- |
-| **Super Admin** | `admin@esports.com` | `admin123` | Uji coba verifikasi seller, moderasi produk & user |
-| **Seller** | `seller1@apexgear.com` | `seller123` | Toko Apex Pro Gear (Kelola CRUD produk & pesanan masuk) |
+| **Admin** | `admin@stride.id` | `admin123` | Verifikasi seller pending, moderasi produk, kategori & user |
+| **Seller (Approved)** | `seller1@stride.id` | `seller123` | Toko Sole Vault Jakarta (CRUD produk & proses pesanan masuk) |
+| **Seller (Pending)** | `seller3@pending.com` | `seller123` | Uji halaman menunggu verifikasi admin |
 | **Buyer** | `buyer@gmail.com` | `buyer123` | Keranjang belanja, checkout transaksi, dan ulasan bintang |
 
 ---
 
-## 🚀 Panduan Instalasi & Menjalankan Proyek
+## Panduan Instalasi & Menjalankan Proyek
 
-### 1. Prasyarat Sistem
-- Node.js versi 18.18+ atau 20+
-- PostgreSQL server (aktif di `localhost:5432`)
-- pgAdmin 4 (opsional untuk GUI database)
-
-### 2. Kloning Repositori
+### 1. Instalasi Dependensi
 ```bash
-git clone https://github.com/Dylanslps/FINAL-WEB-2026-.git
-cd FINAL-WEB-2026-
 npm install
 ```
 
-### 3. Konfigurasi Database (pgAdmin 4)
-1. Buka **pgAdmin 4**, buat database baru bernama:
-   ```sql
-   final_esports_db
+### 2. Konfigurasi Database PostgreSQL
+1. Buat database di PostgreSQL (misalnya `final_esports_db`) dan sesuaikan `.env.local`.
+2. Jalankan skema DDL dari file `database/schema.sql`.
+3. Jalankan seeder untuk menarik produk dari DummyJSON & Fake Store API:
+   ```bash
+   npm run db:seed
    ```
-2. Buka **Query Tool** di database tersebut, lalu buka dan jalankan seluruh query DDL dari file:
-   ```text
-   database/schema.sql
-   ```
-   *Seluruh tabel (`users`, `stores`, `categories`, `products`, `cart_items`, `orders`, `order_items`, `reviews`, `wishlists`) dan index performa akan dibuat secara otomatis.*
 
-### 4. Konfigurasi Variabel Lingkungan (`.env.local`)
-Buat atau sesuaikan file `.env.local` pada direktori root proyek:
-```env
-DATABASE_URL=postgresql://postgres:dylan2007@localhost:5432/final_esports_db
-PGHOST=localhost
-PGPORT=5432
-PGDATABASE=final_esports_db
-PGUSER=postgres
-PGPASSWORD=your_password
-```
-
-### 5. Seeding Data Awal dari Internet API
-Jalankan script seeder otomatis untuk mengisi kategori, akun pengujian, toko resmi, serta produk esports dari DummyJSON API:
-```bash
-npm run db:seed
-```
-
-### 6. Menjalankan Server Pengembangan
+### 3. Menjalankan Server Pengembangan
 ```bash
 npm run dev
 ```
-Buka browser dan akses: **`http://localhost:3000`**
+Buka **`http://localhost:3000`** di browser.
 
 ---
 
-## 🗄️ Struktur Direktori Proyek
+## Mengganti Gambar 3D Hero
 
-```text
-├── database/
-│   └── schema.sql             # Skema DDL relasional & index PostgreSQL
-├── scripts/
-│   └── seed-esports.mjs       # Seeder otomatis via DummyJSON API
-├── src/
-│   ├── app/
-│   │   ├── admin/dashboard/   # Dashboard Super Admin
-│   │   ├── api/               # API Routes (auth, cart, orders, reviews, seller, admin)
-│   │   ├── cart/              # Keranjang belanja & formulir pengiriman
-│   │   ├── katalog/           # Eksplorasi katalog, pencarian, dan filter
-│   │   ├── login/             # Login multi-role dengan 1-click test bar
-│   │   ├── orders/            # Riwayat pesanan pembeli
-│   │   │   └── [id]/          # Pelacak pesanan (stepper) & form review bintang
-│   │   ├── produk/[slug]/     # Halaman detail produk & ringkasan rating Baymard
-│   │   ├── register/          # Registrasi multi-role (Buyer vs Seller)
-│   │   ├── seller/
-│   │   │   ├── dashboard/     # Dashboard Seller (CRUD produk & pesanan)
-│   │   │   └── pending/       # Halaman peninjauan & opsi hapus akun ditolak
-│   │   ├── layout.jsx         # Root layout, Navbar, Footer, Context Providers
-│   │   └── page.jsx           # Landing page / Homepage turnamen
-│   ├── components/            # Komponen UI modular (Navbar, Footer, Card, Modal, etc.)
-│   ├── context/               # AuthContext & CartContext untuk sinkronisasi state
-│   └── lib/                   # Database pool helper & Raw SQL service modules
-├── package.json
-└── README.md
-```
+Saat ini hero memakai tiga gambar render 3D sepatu berlatar transparan di `public/hero/`:
+- `public/hero/slide-1.webp`
+- `public/hero/slide-2.webp`
+- `public/hero/slide-3.webp`
 
----
-
-## 🛡️ Keamanan & Kualitas Implementasi
-
-1. **Anti SQL-Injection:** 100% interaksi database menggunakan parameter query (`$1, $2, ...`), tanpa konkatenasi string SQL mentah.
-2. **Integritas Stok & Transaksi:** Transaksi checkout dijalankan di dalam blok transaksi atomik (`BEGIN` ➔ verifikasi stok ➔ insert pesanan & rincian ➔ potong stok ➔ bersihkan keranjang ➔ `COMMIT`). Jika stok tidak mencukupi, operasi dibatalkan seketika (`ROLLBACK`).
-3. **Pemberian Ulasan Bersyarat:** Ulasan produk hanya dapat dibuat jika pembeli telah menyelesaikan pesanan (`status = 'Selesai'`).
-4. **Proteksi Akun Administrator:** Logika server melarang keras akun admin menghapus akunnya sendiri demi mencegah kegagalan akses sistem.
-
----
-
-## 👨‍💻 Pengembang
-- **Nama:** Dylan
-- **Mata Kuliah:** Praktikum Pemrograman Web 2026
-- **Tahun:** 2026
+Untuk menggantinya dengan foto 3D baru, cukup timpa file di `public/hero/` dengan nama yang sama (format PNG/WebP latar transparan, rasio 1:1) atau ubah konfigurasi di `src/lib/hero-slides.js`.

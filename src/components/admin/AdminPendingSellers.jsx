@@ -3,11 +3,11 @@ import { Store, CheckCircle2, XCircle } from 'lucide-react';
 export default function AdminPendingSellers({ pendingSellers, onApprove, onReject, isSubmitting }) {
   if (pendingSellers.length === 0) {
     return (
-      <div className="p-12 rounded-2xl bg-[#10141D] border border-[#1C2331] text-center space-y-3">
-        <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-        <h3 className="text-sm font-bold text-white">Semua Bersih & Terverifikasi</h3>
-        <p className="text-xs text-gray-400 max-w-sm mx-auto">
-          Tidak ada pengajuan seller yang pending saat ini. Semua toko pendaftar sudah ditinjau.
+      <div className="p-10 rounded-xl bg-surface border border-line text-center space-y-2">
+        <CheckCircle2 className="w-10 h-10 text-ok mx-auto" aria-hidden="true" />
+        <h2 className="text-sm font-semibold">Tidak ada pengajuan seller yang menunggu</h2>
+        <p className="text-xs text-ink-2 max-w-sm mx-auto">
+          Semua pendaftaran toko seller baru telah ditinjau. Pengajuan baru dari halaman Register akan tampil di sini.
         </p>
       </div>
     );
@@ -16,71 +16,74 @@ export default function AdminPendingSellers({ pendingSellers, onApprove, onRejec
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {pendingSellers.map((seller) => (
-        <div
+        <article
           key={seller.id}
-          className="p-5 rounded-2xl bg-[#10141D] border border-amber-500/30 space-y-4 relative overflow-hidden"
+          className="p-5 rounded-xl bg-surface border border-line space-y-4"
         >
-          <div className="absolute top-0 right-0 px-3 py-1 bg-amber-500/20 text-amber-300 text-[10px] font-bold rounded-bl-xl border-l border-b border-amber-500/30 uppercase tracking-wider">
-            Menunggu Verifikasi
+          <div className="flex items-start justify-between gap-2">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Store className="w-4 h-4 text-ink" aria-hidden="true" />
+                <h2 className="font-semibold text-base">
+                  {seller.store_name || 'Toko Tanpa Nama'}
+                </h2>
+              </div>
+              <p className="text-xs text-ink-2">
+                {seller.store_description || 'Belum mengisi deskripsi toko'}
+              </p>
+            </div>
+            <span className="px-2.5 py-0.5 rounded bg-surface-2 text-warn border border-line text-xs font-semibold">
+              Pending
+            </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Store className="w-4 h-4 text-amber-400" />
-              <h3 className="font-bold text-white text-base">
-                {seller.store_name || 'Toko Tanpa Nama'}
-              </h3>
-            </div>
-            <p className="text-xs text-gray-400 italic">
-              &quot;{seller.store_description || 'Belum mengisi deskripsi toko'}&quot;
-            </p>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#151A23] border border-[#262E3D] space-y-1.5 text-xs">
+          <div className="p-3 rounded-lg bg-canvas border border-line space-y-1.5 text-xs">
             <div className="flex justify-between">
-              <span className="text-gray-400">Pemilik:</span>
-              <span className="font-semibold text-gray-200">{seller.name}</span>
+              <span className="text-ink-2">Pemilik</span>
+              <span className="font-semibold">{seller.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Email:</span>
-              <span className="font-mono text-gray-300">{seller.email}</span>
+              <span className="text-ink-2">Email</span>
+              <span>{seller.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">No. Telepon:</span>
-              <span className="font-mono text-gray-300">{seller.phone || '-'}</span>
+              <span className="text-ink-2">Telepon</span>
+              <span>{seller.phone || '-'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Alamat:</span>
-              <span className="text-gray-300 text-right max-w-[200px] truncate">{seller.address || '-'}</span>
+              <span className="text-ink-2">Alamat</span>
+              <span className="text-right max-w-[220px] truncate">{seller.address || '-'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Waktu Daftar:</span>
-              <span className="text-gray-400">
+              <span className="text-ink-2">Waktu daftar</span>
+              <span className="text-ink-2">
                 {new Date(seller.created_at).toLocaleString('id-ID')}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 pt-1">
             <button
+              type="button"
               onClick={() => onApprove(seller.id, seller.store_name || seller.name)}
               disabled={isSubmitting}
-              className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-md shadow-emerald-600/20"
+              className="flex-1 min-h-11 bg-ok text-canvas rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 hover:opacity-85 disabled:opacity-50"
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Setujui Toko</span>
+              <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
+              <span>Setujui toko</span>
             </button>
 
             <button
+              type="button"
               onClick={() => onReject(seller.id, seller.store_name || seller.name)}
               disabled={isSubmitting}
-              className="py-2.5 px-4 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+              className="min-h-11 px-4 bg-surface-2 hover:bg-line text-accent border border-line rounded-md text-xs font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
-              <XCircle className="w-4 h-4" />
+              <XCircle className="w-4 h-4" aria-hidden="true" />
               <span>Tolak</span>
             </button>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   );

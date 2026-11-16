@@ -116,7 +116,7 @@ export async function createSellerProduct(sellerId, {
     Number(price),
     Number(stock),
     imageUrl.trim(),
-    brand.trim() || 'Custom Esports',
+    brand.trim() || 'Stride Studio',
     Boolean(isFeatured),
   ]);
 
