@@ -4,7 +4,11 @@ const { Pool } = pg;
 
 let pool;
 
-if (!global._pgPool) {
+if (!global._pgPool || global._pgConnString !== process.env.DATABASE_URL) {
+  if (global._pgPool) {
+    global._pgPool.end().catch(() => {});
+  }
+  global._pgConnString = process.env.DATABASE_URL;
   global._pgPool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,

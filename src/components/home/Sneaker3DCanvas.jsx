@@ -190,6 +190,8 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
 
         const wrapper = new THREE.Group();
         wrapper.scale.setScalar(scale);
+        // Posisi 3/4 tiga dimensi agar volume 3D sol, toe-box, dan kerah terlihat jelas
+        wrapper.rotation.set(0.14, -0.38, 0.0);
         wrapper.add(model);
         airforceGroup.add(wrapper);
         airforceGroup.visible = stateRef.current.theme === 'light';
@@ -231,11 +233,13 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
       const px = reducedMotion ? 0 : st.pointer.x;
       const py = reducedMotion ? 0 : st.pointer.y;
       const floatY = reducedMotion ? 0 : Math.sin(t * 2.1) * 0.045;
+      const idleOrbitY = reducedMotion || st.dragging ? 0 : Math.sin(t * 1.35) * 0.34;
+      const idleOrbitX = reducedMotion || st.dragging ? 0 : Math.cos(t * 1.35) * 0.10;
 
       pivot.position.x = st.slideShiftX + px * 0.16;
       pivot.position.y = floatY - py * 0.12;
-      pivot.rotation.x = -py * 0.28 + st.userRot.x;
-      pivot.rotation.y = st.currentSpinY + px * 0.42 + st.userRot.y;
+      pivot.rotation.x = idleOrbitX - py * 0.28 + st.userRot.x;
+      pivot.rotation.y = st.currentSpinY + idleOrbitY + px * 0.42 + st.userRot.y;
       pivot.rotation.z = -st.slideShiftX * 0.14;
 
       const targetTint = TINTS[st.theme] || TINTS.red;

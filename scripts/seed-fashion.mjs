@@ -1,8 +1,30 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import pg from 'pg';
 
 if (!process.env.DATABASE_URL) {
   console.error('[SEED ERROR] DATABASE_URL tidak ditemukan. Pastikan ada di .env.local.');
   process.exit(1);
+}
+
+async function ensureDatabaseExists(connectionString) {
+  const url = new URL(connectionString);
+  const dbName = decodeURIComponent(url.pathname.replace(/^\//, ''));
+  const adminUrl = new URL(connectionString);
+  adminUrl.pathname = '/postgres';
+
+  const adminClient = new pg.Client({ connectionString: adminUrl.toString() });
+  await adminClient.connect();
+  try {
+    const check = await adminClient.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName]);
+    if (check.rowCount === 0) {
+      const safeIdent = `"${dbName.replace(/"/g, '""')}"`;
+      console.log(`[SEED] Membuat database ${safeIdent}...`);
+      await adminClient.query(`CREATE DATABASE ${safeIdent}`);
+    }
+  } finally {
+    await adminClient.end();
+  }
 }
 
 const client = new pg.Client({
@@ -48,14 +70,13 @@ async function fetchJson(url) {
 
 async function runSeed() {
   console.log('[SEED] Memulai inisialisasi database STRIDE & penarikan API (DummyJSON + Fake Store)...');
+  await ensureDatabaseExists(process.env.DATABASE_URL);
   await client.connect();
 
   try {
-    console.log('[SEED] Membersihkan data lama...');
-    await client.query(`
-      TRUNCATE wishlists, reviews, order_items, orders, cart_items, products, categories, stores, users 
-      RESTART IDENTITY CASCADE;
-    `);
+    console.log('[SEED] Menerapkan skema database/schema.sql...');
+    const schemaSql = fs.readFileSync(path.join(process.cwd(), 'database', 'schema.sql'), 'utf8');
+    await client.query(schemaSql);
 
     // 1. Insert Users (Admin, Approved Sellers, Pending Seller, Rejected Seller, Buyer)
     console.log('[SEED] Membuat akun pengguna...');
