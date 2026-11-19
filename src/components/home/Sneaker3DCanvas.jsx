@@ -3,35 +3,36 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
-const VARIant_TEX_INDEX = {
-  red: 1,
-  dark: 3,
-  light: 4,
-};
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 const TINTS = {
   red: new THREE.Color('#FF2A36'),
-  dark: new THREE.Color('#E8E8EC'),
+  dark: new THREE.Color('#353944'),
   light: new THREE.Color('#FFFFFF'),
 };
 
-export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointerOffset = { x: 0, y: 0 } }) {
+export default function Sneaker3DCanvas({
+  theme = 'light',
+  slideIndex = 0,
+  pointerOffset = { x: 0, y: 0 },
+  interactiveDrag = true,
+}) {
   const mountRef = useRef(null);
   const stateRef = useRef({
     theme,
     slideIndex,
+    interactiveDrag,
     pointer: { x: 0, y: 0 },
     dragging: false,
     dragStart: { x: 0, y: 0 },
+    dragVel: { x: 0, y: 0 },
+    lastInteractTime: -10,
     userRot: { x: 0, y: 0 },
     targetSpinY: 0,
     currentSpinY: 0,
     slideShiftX: 0,
     meshes: [],
-    textures: {},
-    khronosGroup: null,
-    airforceGroup: null,
   });
   const [loaded, setLoaded] = useState(false);
 
@@ -41,26 +42,20 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
       st.targetSpinY += Math.PI * 2;
       st.slideShiftX = 1.25;
       st.slideIndex = slideIndex;
+      st.userRot = { x: 0, y: 0 };
+      st.dragVel = { x: 0, y: 0 };
     }
     st.theme = theme;
-
-    // Toggle between AirForceWhite 3D GLB (for light/slide 3) and Khronos Shoe GLB (for red/dark)
-    if (st.airforceGroup && st.khronosGroup) {
-      const useAirForce = theme === 'light';
-      st.airforceGroup.visible = useAirForce;
-      st.khronosGroup.visible = !useAirForce;
-    }
-
-    const tex = st.textures[theme];
-    if (tex && st.meshes.length) {
-      for (const m of st.meshes) {
-        if (m.material.map !== tex) {
-          m.material.map = tex;
-          m.material.needsUpdate = true;
-        }
-      }
-    }
   }, [theme, slideIndex]);
+
+  useEffect(() => {
+    const st = stateRef.current;
+    st.interactiveDrag = interactiveDrag;
+    if (!interactiveDrag) {
+      st.dragging = false;
+      st.dragVel = { x: 0, y: 0 };
+    }
+  }, [interactiveDrag]);
 
   useEffect(() => {
     stateRef.current.pointer = pointerOffset;
@@ -73,101 +68,52 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(0, 0.08, 4.15);
+    const camera = new THREE.PerspectiveCamera(28, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.set(0, 0.12, 4.15);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.22;
+    renderer.toneMappingExposure = 0.88;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333340, 1.85);
+    // Studio IBL reflections for realistic white leather, rubber sole & chrome accents
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    const roomEnv = new RoomEnvironment();
+    const envRT = pmremGenerator.fromScene(roomEnv, 0.04);
+    scene.environment = envRT.texture;
+    scene.environmentIntensity = 0.56;
+    roomEnv.dispose();
+    pmremGenerator.dispose();
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x4b5160, 0.65);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
-    keyLight.position.set(3.5, 5.0, 4.0);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.48);
+    keyLight.position.set(3.2, 4.8, 3.8);
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.9);
-    rimLight.position.set(-4.0, 2.5, -3.5);
+    const rimLight = new THREE.DirectionalLight(0xeef4ff, 1.15);
+    rimLight.position.set(-4.0, 2.4, -3.5);
     scene.add(rimLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 1.15);
-    fillLight.position.set(0, -3.5, 2.5);
+    const fillLight = new THREE.DirectionalLight(0xdbe2ee, 0.6);
+    fillLight.position.set(-2.4, -2.8, 2.6);
     scene.add(fillLight);
 
     const pivot = new THREE.Group();
     scene.add(pivot);
 
-    const khronosGroup = new THREE.Group();
-    const airforceGroup = new THREE.Group();
-    pivot.add(khronosGroup);
-    pivot.add(airforceGroup);
-    stateRef.current.khronosGroup = khronosGroup;
-    stateRef.current.airforceGroup = airforceGroup;
-
     const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
     let disposed = false;
 
-    // 1. Load Khronos 3D sneaker model (/models/shoe.glb)
+    // Load user 3D sneaker model from /models/shoe.glb (with EXT_meshopt_compression + WebP PBR)
     loader.load(
-      '/models/shoe.glb',
-      async (gltf) => {
-        if (disposed) return;
-        const model = gltf.scene;
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scale = 2.55 / maxDim;
-
-        model.position.sub(center);
-        const wrapper = new THREE.Group();
-        wrapper.scale.setScalar(scale);
-        wrapper.rotation.set(0.16, -Math.PI * 0.5, -0.44);
-        wrapper.add(model);
-        khronosGroup.add(wrapper);
-
-        const texMap = {};
-        for (const [k, idx] of Object.entries(VARIant_TEX_INDEX)) {
-          try {
-            const t = await gltf.parser.getDependency('texture', idx);
-            if (t) {
-              t.colorSpace = THREE.SRGBColorSpace;
-              texMap[k] = t;
-            }
-          } catch {}
-        }
-        stateRef.current.textures = texMap;
-
-        const meshes = [];
-        const activeTex = texMap[stateRef.current.theme];
-        model.traverse((child) => {
-          if (child.isMesh && child.material) {
-            child.material = child.material.clone();
-            if (activeTex) child.material.map = activeTex;
-            child.material.color.copy(TINTS[stateRef.current.theme] || TINTS.red);
-            child.material.roughness = 0.42;
-            child.material.metalness = 0.15;
-            child.material.needsUpdate = true;
-            meshes.push(child);
-          }
-        });
-        stateRef.current.meshes = meshes;
-        khronosGroup.visible = stateRef.current.theme !== 'light';
-        setLoaded(true);
-      },
-      undefined,
-      () => {}
-    );
-
-    // 2. Load 3D Air Force White model generated from airforcewhite.png (/models/airforcewhite.glb)
-    loader.load(
-      '/models/airforcewhite.glb',
+      '/models/shoe.glb?v=user1',
       (gltf) => {
         if (disposed) return;
         const model = gltf.scene;
@@ -175,30 +121,41 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scale = 2.35 / maxDim;
+        const scale = 2.26 / maxDim;
 
         model.position.sub(center);
+
+        const meshes = [];
+        const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
         model.traverse((child) => {
           if (child.isMesh && child.material) {
+            child.material = child.material.clone();
             if (child.material.map) {
               child.material.map.colorSpace = THREE.SRGBColorSpace;
+              child.material.map.anisotropy = maxAniso;
             }
-            child.material.roughness = 0.38;
-            child.material.metalness = 0.05;
+            if (child.material.normalMap) {
+              child.material.normalMap.anisotropy = maxAniso;
+            }
+            child.material.color.copy(TINTS[stateRef.current.theme] || TINTS.light);
+            child.material.envMapIntensity = 0.85;
+            child.material.needsUpdate = true;
+            meshes.push(child);
           }
         });
+        stateRef.current.meshes = meshes;
 
         const wrapper = new THREE.Group();
         wrapper.scale.setScalar(scale);
-        // Posisi 3/4 tiga dimensi agar volume 3D sol, toe-box, dan kerah terlihat jelas
-        wrapper.rotation.set(0.14, -0.38, 0.0);
+        wrapper.rotation.set(0.14, -Math.PI * 0.34, 0.04);
         wrapper.add(model);
-        airforceGroup.add(wrapper);
-        airforceGroup.visible = stateRef.current.theme === 'light';
+        pivot.add(wrapper);
         setLoaded(true);
       },
       undefined,
-      () => {}
+      (err) => {
+        console.error('Failed to load /models/shoe.glb:', err);
+      }
     );
 
     const onResize = () => {
@@ -216,6 +173,7 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
     const animate = () => {
       rafId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
+      const nowSec = performance.now() / 1000;
       const st = stateRef.current;
 
       if (reducedMotion) {
@@ -225,24 +183,40 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
         st.currentSpinY += (st.targetSpinY - st.currentSpinY) * 0.1;
         st.slideShiftX += (0 - st.slideShiftX) * 0.11;
         if (!st.dragging) {
-          st.userRot.x *= 0.95;
-          st.userRot.y *= 0.95;
+          if (st.interactiveDrag) {
+            st.userRot.y += st.dragVel.y;
+            st.userRot.x = Math.max(-1.35, Math.min(1.35, st.userRot.x + st.dragVel.x));
+            st.dragVel.x *= 0.90;
+            st.dragVel.y *= 0.90;
+            if (nowSec - st.lastInteractTime > 4.0) {
+              st.userRot.x *= 0.975;
+              st.userRot.y *= 0.975;
+            }
+          } else {
+            st.userRot.x *= 0.90;
+            st.userRot.y *= 0.90;
+          }
         }
       }
 
       const px = reducedMotion ? 0 : st.pointer.x;
       const py = reducedMotion ? 0 : st.pointer.y;
-      const floatY = reducedMotion ? 0 : Math.sin(t * 2.1) * 0.045;
-      const idleOrbitY = reducedMotion || st.dragging ? 0 : Math.sin(t * 1.35) * 0.34;
-      const idleOrbitX = reducedMotion || st.dragging ? 0 : Math.cos(t * 1.35) * 0.10;
+      const recentlyDragged = st.interactiveDrag && nowSec - st.lastInteractTime < 4.0;
+      const floatY = reducedMotion ? 0 : Math.sin(t * 2.0) * 0.05;
+      const idleOrbitY = reducedMotion || st.dragging || recentlyDragged ? 0 : Math.sin(t * 1.1) * 0.28;
+      const idleOrbitX = reducedMotion || st.dragging || recentlyDragged ? 0 : Math.cos(t * 1.1) * 0.07;
 
-      pivot.position.x = st.slideShiftX + px * 0.16;
-      pivot.position.y = floatY - py * 0.12;
-      pivot.rotation.x = idleOrbitX - py * 0.28 + st.userRot.x;
-      pivot.rotation.y = st.currentSpinY + idleOrbitY + px * 0.42 + st.userRot.y;
+      // Stronger cursor tilt in hover-tilt mode (up to ~30 deg Y, ~20 deg X), gentler in drag mode
+      const tiltMultY = st.interactiveDrag ? 0.34 : 0.95;
+      const tiltMultX = st.interactiveDrag ? 0.22 : 0.65;
+
+      pivot.position.x = st.slideShiftX + px * 0.12;
+      pivot.position.y = floatY - py * 0.10;
+      pivot.rotation.x = idleOrbitX - py * tiltMultX + st.userRot.x;
+      pivot.rotation.y = st.currentSpinY + idleOrbitY + px * tiltMultY + st.userRot.y;
       pivot.rotation.z = -st.slideShiftX * 0.14;
 
-      const targetTint = TINTS[st.theme] || TINTS.red;
+      const targetTint = TINTS[st.theme] || TINTS.light;
       for (const m of st.meshes) {
         m.material.color.lerp(targetTint, 0.12);
       }
@@ -255,23 +229,33 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
       disposed = true;
       cancelAnimationFrame(rafId);
       window.removeEventListener('resize', onResize);
+      envRT.dispose();
       renderer.dispose();
     };
   }, []);
 
   const handlePointerDown = (e) => {
-    stateRef.current.dragging = true;
-    stateRef.current.dragStart = { x: e.clientX, y: e.clientY };
+    const st = stateRef.current;
+    if (!st.interactiveDrag) return;
+    st.dragging = true;
+    st.dragStart = { x: e.clientX, y: e.clientY };
+    st.dragVel = { x: 0, y: 0 };
+    st.lastInteractTime = performance.now() / 1000;
     e.currentTarget.setPointerCapture?.(e.pointerId);
   };
 
   const handlePointerMove = (e) => {
-    if (!stateRef.current.dragging) return;
-    const dx = e.clientX - stateRef.current.dragStart.x;
-    const dy = e.clientY - stateRef.current.dragStart.y;
-    stateRef.current.dragStart = { x: e.clientX, y: e.clientY };
-    stateRef.current.userRot.y += dx * 0.012;
-    stateRef.current.userRot.x = Math.max(-0.7, Math.min(0.7, stateRef.current.userRot.x + dy * 0.009));
+    const st = stateRef.current;
+    if (!st.dragging || !st.interactiveDrag) return;
+    const dx = e.clientX - st.dragStart.x;
+    const dy = e.clientY - st.dragStart.y;
+    st.dragStart = { x: e.clientX, y: e.clientY };
+    const vy = dx * 0.011;
+    const vx = dy * 0.009;
+    st.userRot.y += vy;
+    st.userRot.x = Math.max(-1.35, Math.min(1.35, st.userRot.x + vx));
+    st.dragVel = { x: vx * 0.65, y: vy * 0.65 };
+    st.lastInteractTime = performance.now() / 1000;
   };
 
   const handlePointerUp = () => {
@@ -286,10 +270,14 @@ export default function Sneaker3DCanvas({ theme = 'red', slideIndex = 0, pointer
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       role="img"
-      aria-label="Model 3D interaktif sepatu STRIDE, geser untuk memutar 360 derajat"
-      className={`w-full h-full cursor-grab active:cursor-grabbing select-none transition-opacity duration-300 ${
-        loaded ? 'opacity-100' : 'opacity-0'
-      }`}
+      aria-label={
+        interactiveDrag
+          ? 'Model 3D interaktif sepatu STRIDE, geser untuk memutar 360 derajat'
+          : 'Model 3D sepatu STRIDE melayang mengikuti arah kursor'
+      }
+      className={`w-full h-full select-none transition-opacity duration-300 ${
+        interactiveDrag ? 'cursor-grab active:cursor-grabbing touch-none' : 'cursor-pointer'
+      } ${loaded ? 'opacity-100' : 'opacity-0'}`}
     />
   );
 }

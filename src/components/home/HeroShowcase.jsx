@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowUpRight, Box } from 'lucide-react';
-import TiltShoe from '@/components/TiltShoe';
 
 const Sneaker3DCanvas = dynamic(() => import('./Sneaker3DCanvas'), {
   ssr: false,
@@ -55,7 +54,11 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
         <span
           aria-hidden="true"
           style={{ color: 'var(--hero-wm)' }}
-          className={`pointer-events-none select-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-display italic uppercase leading-none tracking-tight whitespace-nowrap text-[clamp(5.5rem,17vw,14.5rem)] ${wmClass}`}
+          className={`pointer-events-none select-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-display italic uppercase leading-none tracking-tight whitespace-nowrap ${
+            slide.watermark.length > 7
+              ? 'text-[clamp(4.4rem,13.5vw,11.8rem)]'
+              : 'text-[clamp(5.5rem,17vw,14.5rem)]'
+          } ${wmClass}`}
         >
           {slide.watermark}
         </span>
@@ -67,22 +70,17 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
           className="anim-floor-in absolute bottom-[4%] left-1/2 -translate-x-1/2 w-[56%] max-w-[420px] h-6 rounded-[50%] blur-xl"
         />
 
-        {mode3D ? (
-          <div className="relative z-10 w-full max-w-[560px] h-[300px] sm:h-[380px]">
+        {mode3D || slide.default3D ? (
+          <div className="relative z-10 w-full max-w-[580px] h-[310px] sm:h-[400px]">
             {phase !== 'out' && (
               <Sneaker3DCanvas
                 theme={slide.theme}
                 slideIndex={slideIndex}
                 pointerOffset={tilt}
+                interactiveDrag={mode3D}
               />
             )}
           </div>
-        ) : slide.image === '/hero/airforcewhite.png' ? (
-          <TiltShoe
-            src={slide.image}
-            alt={slide.product?.name || slide.fallbackName}
-            className={shoeClass}
-          />
         ) : (
           <div
             style={{
@@ -111,9 +109,11 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
 export default function HeroShowcase({ slides }) {
   const [active, setActive] = useState(0);
   const [transition, setTransition] = useState(null); // { from, to }
-  const [mode3D, setMode3D] = useState(false);
+  const [mode3DOverride, setMode3DOverride] = useState(null); // null = ikuti default slide (Slide 3 langsung 3D!)
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const reducedRef = useRef(false);
+
+  const isSlide3D = (slide) => (mode3DOverride !== null ? mode3DOverride : Boolean(slide?.default3D));
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -157,7 +157,9 @@ export default function HeroShowcase({ slides }) {
   const visualIndex = transition ? transition.to : active;
   const baseSlide = slides[transition ? transition.from : active];
   const incomingSlide = transition ? slides[transition.to] : null;
-  const activeTheme = slides[visualIndex].theme;
+  const activeSlide = slides[visualIndex];
+  const activeTheme = activeSlide.theme;
+  const currentMode3D = isSlide3D(activeSlide);
 
   return (
     <section
@@ -173,8 +175,8 @@ export default function HeroShowcase({ slides }) {
       <div className="absolute top-4 right-5 z-40 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => setMode3D((v) => !v)}
-          aria-pressed={mode3D}
+          onClick={() => setMode3DOverride(!currentMode3D)}
+          aria-pressed={currentMode3D}
           style={{
             backgroundColor: 'var(--hero-card-active)',
             borderColor: 'var(--hero-line-active)',
@@ -183,7 +185,7 @@ export default function HeroShowcase({ slides }) {
           className="min-h-10 px-3.5 rounded-full border backdrop-blur-md text-xs font-semibold inline-flex items-center gap-2 transition-all hover:scale-105"
         >
           <Box className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>{mode3D ? 'Mode 3D 360° (Geser Sepatu)' : 'Aktifkan 3D Model 360°'}</span>
+          <span>{currentMode3D ? 'Mode 3D 360° (Geser Sepatu)' : 'Aktifkan 3D Model 360°'}</span>
         </button>
       </div>
 
@@ -193,8 +195,8 @@ export default function HeroShowcase({ slides }) {
           slide={baseSlide}
           phase={transition ? 'out' : 'idle'}
           tilt={tilt}
-          mode3D={mode3D}
-          slideIndex={visualIndex}
+          mode3D={isSlide3D(baseSlide)}
+          slideIndex={transition ? transition.from : active}
         />
       </div>
 
@@ -209,8 +211,8 @@ export default function HeroShowcase({ slides }) {
             slide={incomingSlide}
             phase="in"
             tilt={tilt}
-            mode3D={mode3D}
-            slideIndex={visualIndex}
+            mode3D={isSlide3D(incomingSlide)}
+            slideIndex={transition.to}
           />
         </div>
       )}

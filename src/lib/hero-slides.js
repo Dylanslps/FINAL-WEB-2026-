@@ -1,26 +1,26 @@
-// Konfigurasi 3 slide hero sesuai video referensi (Red, Black, White Air Max).
-// Gambar 3D sepatu di public/hero/slide-1..3.webp dan model 3D GLB di public/models/shoe.glb.
+// Konfigurasi 3 slide hero sneaker ikonik (Nike Air Max 90, Nike Air Max 270, Nike Air Force 1).
+// Gambar studio di public/hero/ dan model 3D GLB di public/models/shoe.glb.
 export const HERO_SLIDES = [
   {
     slug: 'nike-air-jordan-1-red-and-black',
     image: '/hero/slide-1.webp',
     theme: 'red',
-    headline: ['STRIDE', 'AIR MAX'],
+    headline: ['NIKE', 'AIR MAX 90'],
     watermark: 'AIR MAX',
     tagline: ['Feel the future.', 'Move with Air.'],
-    cardTitle: 'Stride Air Max 270',
-    fallbackName: 'Stride Air Max 270 Crimson',
+    cardTitle: 'Nike Air Max 90',
+    fallbackName: 'Nike Air Max 90 Triple Red',
     fallbackPrice: 2399840,
   },
   {
     slug: 'puma-future-rider-trainers',
     image: '/hero/slide-2.webp',
     theme: 'dark',
-    headline: ['STRIDE', 'AIR MAX'],
+    headline: ['NIKE', 'AIR MAX 270'],
     watermark: 'AIR MAX',
-    tagline: ['Feel the future.', 'Move with Air.'],
-    cardTitle: 'Stride Air Max Alpha',
-    fallbackName: 'Stride Air Max Alpha Stealth',
+    tagline: ['Stealth comfort.', 'Built for the street.'],
+    cardTitle: 'Nike Air Max 270',
+    fallbackName: 'Nike Air Max 270 Triple Black',
     fallbackPrice: 1439840,
   },
   {
@@ -28,11 +28,12 @@ export const HERO_SLIDES = [
     image: '/hero/airforcewhite.png',
     thumbnail: '/hero/airforce.png',
     theme: 'light',
-    headline: ['STRIDE', 'AIR MAX'],
-    watermark: 'AIR MAX',
-    tagline: ['Feel the future.', 'Move with Air.'],
-    cardTitle: 'Stride Air Max Excee',
-    fallbackName: 'Stride Air Max Excee White',
+    default3D: true,
+    headline: ['NIKE AIR', 'FORCE 1'],
+    watermark: 'AIR FORCE',
+    tagline: ['Iconic since 1982.', 'Pure Triple White.'],
+    cardTitle: 'Nike Air Force 1',
+    fallbackName: 'Nike Air Force 1 Low White',
     fallbackPrice: 1919840,
   },
 ];
