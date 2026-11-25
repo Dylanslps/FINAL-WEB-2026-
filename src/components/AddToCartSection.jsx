@@ -6,6 +6,15 @@ import { ShoppingBag, Check, AlertCircle, Plus, Minus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 
+const SHOE_SIZES = [
+  { id: '39', eu: 'EU 39', asia: 'Asia 24.5 cm', label: 'EU 39 · Asia 24.5 cm' },
+  { id: '40', eu: 'EU 40', asia: 'Asia 25.0 cm', label: 'EU 40 · Asia 25.0 cm' },
+  { id: '41', eu: 'EU 41', asia: 'Asia 26.0 cm', label: 'EU 41 · Asia 26.0 cm' },
+  { id: '42', eu: 'EU 42', asia: 'Asia 26.5 cm', label: 'EU 42 · Asia 26.5 cm' },
+  { id: '43', eu: 'EU 43', asia: 'Asia 27.5 cm', label: 'EU 43 · Asia 27.5 cm' },
+  { id: '44', eu: 'EU 44', asia: 'Asia 28.0 cm', label: 'EU 44 · Asia 28.0 cm' },
+];
+
 function getProductOptions(product) {
   const catSlug = (product.category_slug || '').toLowerCase();
   const prodSlug = (product.slug || '').toLowerCase();
@@ -14,8 +23,8 @@ function getProductOptions(product) {
   // Khusus Royal Gray LV Air Force 1: satu warna sesuai foto
   if (prodSlug.includes('nike-air-jordan-1-red-and-black') || prodName.includes('lv air force 1')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      variantLabel: 'Pilihan Ukuran (Eropa & Asia)',
+      variants: SHOE_SIZES.map((s) => s.label),
       colors: ['Sesuai Foto'],
     };
   }
@@ -23,8 +32,8 @@ function getProductOptions(product) {
   // Khusus Chrome Hearts Air Force 1: pilihan warna Blue dan Pink
   if (prodSlug.includes('puma-future-rider-trainers') || prodName.includes('chrome hearts')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      variantLabel: 'Pilihan Ukuran (Eropa & Asia)',
+      variants: SHOE_SIZES.map((s) => s.label),
       colors: ['Blue', 'Pink'],
     };
   }
@@ -32,16 +41,16 @@ function getProductOptions(product) {
   // Khusus Nike Air Force 1 '07: pilihan warna Putih dan Hitam saja
   if (prodSlug.includes('sports-sneakers-off-white-red') || prodName.includes('air force 1')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      variantLabel: 'Pilihan Ukuran (Eropa & Asia)',
+      variants: SHOE_SIZES.map((s) => s.label),
       colors: ['Putih', 'Hitam'],
     };
   }
 
   if (catSlug.includes('sepatu') || catSlug.includes('custom')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      variantLabel: 'Pilihan Ukuran (Eropa & Asia)',
+      variants: SHOE_SIZES.map((s) => s.label),
       colors: ['Sesuai Foto'],
     };
   }

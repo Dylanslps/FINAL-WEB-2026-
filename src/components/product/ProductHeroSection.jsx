@@ -6,6 +6,15 @@ import { Star, Store, ShoppingBag, Check, AlertCircle, Plus, Minus } from 'lucid
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 
+export const SHOE_SIZES = [
+  { id: '39', eu: 'EU 39', asia: 'Asia 24.5 cm', label: 'EU 39 · Asia 24.5 cm' },
+  { id: '40', eu: 'EU 40', asia: 'Asia 25.0 cm', label: 'EU 40 · Asia 25.0 cm' },
+  { id: '41', eu: 'EU 41', asia: 'Asia 26.0 cm', label: 'EU 41 · Asia 26.0 cm' },
+  { id: '42', eu: 'EU 42', asia: 'Asia 26.5 cm', label: 'EU 42 · Asia 26.5 cm' },
+  { id: '43', eu: 'EU 43', asia: 'Asia 27.5 cm', label: 'EU 43 · Asia 27.5 cm' },
+  { id: '44', eu: 'EU 44', asia: 'Asia 28.0 cm', label: 'EU 44 · Asia 28.0 cm' },
+];
+
 function getProductOptions(product) {
   const catSlug = (product.category_slug || '').toLowerCase();
   const prodSlug = (product.slug || '').toLowerCase();
@@ -14,8 +23,10 @@ function getProductOptions(product) {
   // Khusus Royal Gray LV Air Force 1: satu warna sesuai foto
   if (prodSlug.includes('nike-air-jordan-1-red-and-black') || prodName.includes('lv air force 1')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      isShoe: true,
+      variantLabel: 'Pilihan Ukuran',
+      variants: SHOE_SIZES.map((s) => s.label),
+      shoeSizes: SHOE_SIZES,
       colors: ['Sesuai Foto'],
       colorImages: {
         'Sesuai Foto': '/hero/lv-af1.png?v=lv1',
@@ -29,8 +40,10 @@ function getProductOptions(product) {
   // Khusus Chrome Hearts Air Force 1: pilihan warna Blue dan Pink
   if (prodSlug.includes('puma-future-rider-trainers') || prodName.includes('chrome hearts')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      isShoe: true,
+      variantLabel: 'Pilihan Ukuran',
+      variants: SHOE_SIZES.map((s) => s.label),
+      shoeSizes: SHOE_SIZES,
       colors: ['Blue', 'Pink'],
       colorImages: {
         'Blue': '/hero/chromehearts.png?v=ch1',
@@ -46,8 +59,10 @@ function getProductOptions(product) {
   // Khusus Nike Air Force 1 '07: pilihan warna Putih dan Hitam saja
   if (prodSlug.includes('sports-sneakers-off-white-red') || prodName.includes('air force 1')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      isShoe: true,
+      variantLabel: 'Pilihan Ukuran',
+      variants: SHOE_SIZES.map((s) => s.label),
+      shoeSizes: SHOE_SIZES,
       colors: ['Putih', 'Hitam'],
       colorImages: {
         'Putih': '/hero/airforcewhite.png?v=af1w1',
@@ -62,8 +77,10 @@ function getProductOptions(product) {
 
   if (catSlug.includes('sepatu') || catSlug.includes('custom')) {
     return {
-      variantLabel: 'Ukuran (EU)',
-      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      isShoe: true,
+      variantLabel: 'Pilihan Ukuran',
+      variants: SHOE_SIZES.map((s) => s.label),
+      shoeSizes: SHOE_SIZES,
       colors: ['Sesuai Foto'],
       colorImages: {},
     };
@@ -103,6 +120,7 @@ export default function ProductHeroSection({ product, ratingSummary }) {
   const { refreshCart } = useCart();
 
   const options = getProductOptions(product);
+  const [sizeStandard, setSizeStandard] = useState('EU'); // 'EU' | 'ASIA'
   const [selectedVariant, setSelectedVariant] = useState(options.variants[0]);
   const [selectedColor, setSelectedColor] = useState(options.colors[0]);
   const [quantity, setQuantity] = useState(1);
@@ -305,31 +323,94 @@ export default function ProductHeroSection({ product, ratingSummary }) {
           )}
         </div>
 
-        {/* Pilihan Ukuran (EU) */}
-        <div className="space-y-2">
+        {/* Pilihan Ukuran (Eropa & Asia) */}
+        <div className="space-y-2.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-ink-2">{options.variantLabel}</span>
-            <strong className="text-ink">{selectedVariant}</strong>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {options.variants.map((variant) => {
-              const isSelected = selectedVariant === variant;
-              return (
+            <div className="flex items-center gap-1.5">
+              <span className="text-ink-2">Ukuran:</span>
+              <strong className="text-ink font-semibold">{selectedVariant}</strong>
+            </div>
+
+            {/* Switcher Standar Ukuran Eropa (EU) vs Asia (CM) */}
+            {options.isShoe && (
+              <div
+                role="group"
+                aria-label="Pilih standar ukuran sepatu"
+                className="inline-flex items-center rounded-lg border border-line bg-surface-2 p-0.5 text-[11px]"
+              >
                 <button
-                  key={variant}
                   type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => setSelectedVariant(variant)}
-                  className={`min-h-11 px-4 rounded-md text-xs font-semibold border transition-colors ${
-                    isSelected
-                      ? 'bg-ink text-canvas border-ink'
-                      : 'bg-surface text-ink border-line hover:bg-surface-2'
+                  onClick={() => setSizeStandard('EU')}
+                  className={`px-2.5 py-1 rounded-md transition-all ${
+                    sizeStandard === 'EU'
+                      ? 'bg-ink text-canvas font-semibold shadow-sm'
+                      : 'text-ink-2 hover:text-ink'
                   }`}
                 >
-                  {variant}
+                  Eropa (EU)
                 </button>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => setSizeStandard('ASIA')}
+                  className={`px-2.5 py-1 rounded-md transition-all ${
+                    sizeStandard === 'ASIA'
+                      ? 'bg-ink text-canvas font-semibold shadow-sm'
+                      : 'text-ink-2 hover:text-ink'
+                  }`}
+                >
+                  Asia (CM)
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            {options.isShoe
+              ? options.shoeSizes.map((size) => {
+                  const isSelected = selectedVariant.includes(size.eu);
+                  return (
+                    <button
+                      key={size.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => setSelectedVariant(size.label)}
+                      className={`min-h-12 px-2.5 py-1.5 rounded-lg border text-center transition-all flex flex-col items-center justify-center ${
+                        isSelected
+                          ? 'bg-ink text-canvas border-ink shadow-sm'
+                          : 'bg-surface text-ink border-line hover:bg-surface-2'
+                      }`}
+                    >
+                      <span className="font-bold text-xs leading-tight">
+                        {sizeStandard === 'ASIA' ? size.asia : size.eu}
+                      </span>
+                      <span
+                        className={`text-[10px] leading-tight ${
+                          isSelected ? 'text-canvas/75' : 'text-ink-2'
+                        }`}
+                      >
+                        {sizeStandard === 'ASIA' ? size.eu : size.asia}
+                      </span>
+                    </button>
+                  );
+                })
+              : options.variants.map((variant) => {
+                  const isSelected = selectedVariant === variant;
+                  return (
+                    <button
+                      key={variant}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => setSelectedVariant(variant)}
+                      className={`min-h-11 px-4 rounded-md text-xs font-semibold border transition-colors ${
+                        isSelected
+                          ? 'bg-ink text-canvas border-ink'
+                          : 'bg-surface text-ink border-line hover:bg-surface-2'
+                      }`}
+                    >
+                      {variant}
+                    </button>
+                  );
+                })}
           </div>
         </div>
 

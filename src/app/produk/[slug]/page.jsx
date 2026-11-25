@@ -18,7 +18,7 @@ function getProductSpecifications(product) {
       { feature: 'Merek', detail: product.brand || 'Stride Studio' },
       { feature: 'Material Atas', detail: 'Kulit premium, artwork & airbrush custom' },
       { feature: 'Outsole', detail: 'Karet anti-selip (Rubber Cupsole)' },
-      { feature: 'Rentang Ukuran', detail: 'EU 39, EU 40, EU 41, EU 42, EU 43, EU 44' },
+      { feature: 'Rentang Ukuran', detail: 'EU 39–44 · Asia 24.5–28.0 cm' },
       { feature: 'Toko Penjual', detail: product.store_name },
     ];
   }
