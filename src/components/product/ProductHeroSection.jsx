@@ -64,7 +64,7 @@ function getProductOptions(product) {
     return {
       variantLabel: 'Ukuran (EU)',
       variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
-      colors: ['Sesuai Foto', 'Hitam / Putih', 'Putih / Merah'],
+      colors: ['Sesuai Foto'],
       colorImages: {},
     };
   }
@@ -73,7 +73,7 @@ function getProductOptions(product) {
     return {
       variantLabel: 'Ukuran Pakaian',
       variants: ['S', 'M', 'L', 'XL'],
-      colors: ['Sesuai Foto', 'Hitam', 'Putih'],
+      colors: ['Sesuai Foto'],
       colorImages: {},
     };
   }
@@ -333,8 +333,8 @@ export default function ProductHeroSection({ product, ratingSummary }) {
           </div>
         </div>
 
-        {/* Pilihan Warna (Putih dan Hitam) */}
-        {options.colors.length > 1 && (
+        {/* Pilihan Warna */}
+        {options.colors.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-ink-2">Pilihan Warna</span>

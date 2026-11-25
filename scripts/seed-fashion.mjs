@@ -203,7 +203,10 @@ async function runSeed() {
 
     for (const p of rawItems) {
       let slug = p.baseSlug;
-      if (p.apiSourceId === 88) {
+      if (p.apiSourceId === 89) {
+        slug = 'nike-baseball-cleats';
+        p.imageUrl = '/hero/nike-baseball-cleats.png';
+      } else if (p.apiSourceId === 88) {
         slug = 'nike-air-jordan-1-red-and-black';
         p.catSlug = 'custom-shoes';
         p.name = 'Royal Gray LV Air Force 1';
@@ -225,8 +228,13 @@ async function runSeed() {
         p.brand = 'Nike';
         p.imageUrl = '/hero/af1-pair-front.png';
         p.desc = "The radiance lives on in the Nike Air Force 1 '07, the basketball icon that puts a fresh spin on what you know best: crisp leather, clean style, and legendary Air cushioning.";
-      } else if (p.apiSourceId === 92 && usedSlugs.has('sports-sneakers-off-white-red')) {
-        slug = 'sports-sneakers-off-white-red-v2';
+      } else if (p.apiSourceId === 92) {
+        slug = 'nike-dunk-low-retro-panda';
+        p.name = 'Nike Dunk Low Retro Panda';
+        p.brand = 'Nike';
+        p.price = 2199000.00;
+        p.imageUrl = '/hero/dunk-panda-pair.png';
+        p.desc = 'The Nike Dunk Low Retro Panda brings classic 80s hoops style back to the streets with crisp leather overlays and iconic black and white color-blocking.';
       }
       if (usedSlugs.has(slug)) {
         slug = `${slug}-${p.apiSourceId}`;
