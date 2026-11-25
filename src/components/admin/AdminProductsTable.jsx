@@ -1,33 +1,46 @@
 import Link from 'next/link';
-import { Search, ExternalLink, Trash2 } from 'lucide-react';
+import { Search, ExternalLink, Trash2, Plus, Edit3 } from 'lucide-react';
 
 export default function AdminProductsTable({
   products,
   productSearch,
   setProductSearch,
+  onAddProduct,
+  onEditProduct,
   onDeleteProduct,
 }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="font-semibold text-base">Moderasi Katalog Produk</h2>
+          <h2 className="font-semibold text-base">Manajemen & Moderasi Produk</h2>
           <p className="text-xs text-ink-2">
-            Tinjau seluruh produk lintas toko dan hapus produk yang melanggar ketentuan.
+            Kelola katalog seluruh toko: tambah produk, ganti toko penjual, kategori, harga, dan stok.
           </p>
         </div>
 
-        <div className="relative w-full sm:w-72">
-          <label htmlFor="admin-product-search" className="sr-only">Cari produk atau toko</label>
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-2" aria-hidden="true" />
-          <input
-            id="admin-product-search"
-            type="search"
-            placeholder="Cari produk atau toko..."
-            value={productSearch}
-            onChange={(e) => setProductSearch(e.target.value)}
-            className="w-full h-11 pl-9 pr-3 rounded-md bg-surface border border-line focus:border-ink text-xs text-ink placeholder:text-ink-2 outline-none"
-          />
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-72">
+            <label htmlFor="admin-product-search" className="sr-only">Cari produk atau toko</label>
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-2" aria-hidden="true" />
+            <input
+              id="admin-product-search"
+              type="search"
+              placeholder="Cari produk atau toko..."
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              className="w-full h-11 pl-9 pr-3 rounded-md bg-surface border border-line focus:border-ink text-xs text-ink placeholder:text-ink-2 outline-none"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={onAddProduct}
+            className="min-h-11 px-4 rounded-md bg-ink text-canvas text-xs font-semibold inline-flex items-center gap-1.5 hover:opacity-85 transition-opacity whitespace-nowrap shadow-sm"
+          >
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            <span>Tambah Produk</span>
+          </button>
         </div>
       </div>
 
@@ -42,7 +55,7 @@ export default function AdminProductsTable({
                 <th className="p-4">Harga</th>
                 <th className="p-4">Stok</th>
                 <th className="p-4">Rating</th>
-                <th className="p-4 text-right">Moderasi</th>
+                <th className="p-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -75,7 +88,7 @@ export default function AdminProductsTable({
                             <span>{p.name}</span>
                             <ExternalLink className="w-3 h-3 text-ink-2" aria-hidden="true" />
                           </Link>
-                          <div className="text-xs text-ink-2">ID #{p.id}</div>
+                          <div className="text-xs text-ink-2">ID #{p.id} · {p.brand || 'Stride Studio'}</div>
                         </div>
                       </div>
                     </td>
@@ -99,14 +112,26 @@ export default function AdminProductsTable({
                       {Number(p.rating_avg || 0).toFixed(1)} / 5
                     </td>
                     <td className="p-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => onDeleteProduct(p)}
-                        className="min-h-9 px-3 rounded-md bg-canvas border border-line hover:border-accent text-ink-2 hover:text-accent text-xs font-semibold inline-flex items-center gap-1.5"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
-                        <span>Hapus</span>
-                      </button>
+                      <div className="inline-flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditProduct(p)}
+                          title="Edit detail produk & atur toko"
+                          className="min-h-9 px-3 rounded-md bg-canvas border border-line hover:border-ink text-ink-2 hover:text-ink text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteProduct(p)}
+                          title="Hapus produk dari katalog"
+                          className="min-h-9 px-3 rounded-md bg-canvas border border-line hover:border-accent text-ink-2 hover:text-accent text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>Hapus</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

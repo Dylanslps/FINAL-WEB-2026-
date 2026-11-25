@@ -131,3 +131,110 @@ export async function deleteInfringingProduct(productId) {
 
   return res.rows[0];
 }
+
+export async function getAllStores() {
+  const sql = `
+    SELECT 
+      s.id,
+      s.name,
+      s.slug,
+      s.seller_id,
+      u.name AS seller_name,
+      u.email AS seller_email
+    FROM stores s
+    JOIN users u ON s.seller_id = u.id
+    ORDER BY s.name ASC;
+  `;
+  const res = await query(sql);
+  return res.rows;
+}
+
+export async function createAdminProduct({
+  storeId,
+  categoryId,
+  name,
+  description = '',
+  price,
+  stock,
+  imageUrl,
+  brand = '',
+  isFeatured = false,
+}) {
+  const baseSlug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  const slug = `${baseSlug}-${Date.now().toString().slice(-4)}`;
+
+  const sql = `
+    INSERT INTO products (
+      store_id, category_id, name, slug, description, price, stock, image_url, brand, is_featured
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    RETURNING *;
+  `;
+
+  const res = await query(sql, [
+    Number(storeId),
+    Number(categoryId),
+    name.trim(),
+    slug,
+    description.trim(),
+    Number(price),
+    Number(stock),
+    imageUrl.trim(),
+    brand.trim() || 'Stride Studio',
+    Boolean(isFeatured),
+  ]);
+
+  return res.rows[0];
+}
+
+export async function updateAdminProduct(productId, {
+  storeId,
+  categoryId,
+  name,
+  description,
+  price,
+  stock,
+  imageUrl,
+  brand,
+  isFeatured,
+}) {
+  const sql = `
+    UPDATE products
+    SET 
+      store_id = COALESCE($1, store_id),
+      category_id = COALESCE($2, category_id),
+      name = COALESCE($3, name),
+      description = COALESCE($4, description),
+      price = COALESCE($5, price),
+      stock = COALESCE($6, stock),
+      image_url = COALESCE($7, image_url),
+      brand = COALESCE($8, brand),
+      is_featured = COALESCE($9, is_featured),
+      updated_at = NOW()
+    WHERE id = $10
+    RETURNING *;
+  `;
+
+  const res = await query(sql, [
+    storeId ? Number(storeId) : null,
+    categoryId ? Number(categoryId) : null,
+    name ? name.trim() : null,
+    description !== undefined ? description.trim() : null,
+    price !== undefined ? Number(price) : null,
+    stock !== undefined ? Number(stock) : null,
+    imageUrl ? imageUrl.trim() : null,
+    brand !== undefined ? brand.trim() : null,
+    isFeatured !== undefined ? Boolean(isFeatured) : null,
+    Number(productId),
+  ]);
+
+  if (res.rows.length === 0) {
+    throw new Error('Produk tidak ditemukan.');
+  }
+
+  return res.rows[0];
+}

@@ -7,6 +7,9 @@ import {
   rejectSeller,
   deleteUser,
   deleteInfringingProduct,
+  getAllStores,
+  createAdminProduct,
+  updateAdminProduct,
 } from '@/lib/admin';
 import {
   getCategories,
@@ -25,12 +28,13 @@ export async function GET(request) {
   }
 
   try {
-    const [stats, pendingSellers, users, categories, productsResult] = await Promise.all([
+    const [stats, pendingSellers, users, categories, productsResult, stores] = await Promise.all([
       getAdminStats(),
       getPendingSellers(),
       getAdminUsers(),
       getCategories(),
-      getProducts({ limit: 100 }),
+      getProducts({ limit: 150 }),
+      getAllStores(),
     ]);
 
     return NextResponse.json({
@@ -39,6 +43,7 @@ export async function GET(request) {
       users: users || [],
       categories: categories || [],
       products: productsResult?.products || [],
+      stores: stores || [],
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -52,6 +57,17 @@ export async function POST(request) {
 
     if (!adminId) {
       return NextResponse.json({ error: 'adminId wajib disertakan.' }, { status: 400 });
+    }
+
+    if (action === 'create_product') {
+      const product = await createAdminProduct(body);
+      return NextResponse.json({ success: true, product }, { status: 201 });
+    }
+
+    if (action === 'update_product') {
+      const { productId } = body;
+      const product = await updateAdminProduct(productId, body);
+      return NextResponse.json({ success: true, product });
     }
 
     if (action === 'approve_seller') {

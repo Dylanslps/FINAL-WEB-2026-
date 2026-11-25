@@ -9,7 +9,7 @@ import AdminPendingSellers from '@/components/admin/AdminPendingSellers';
 import AdminUsersTable from '@/components/admin/AdminUsersTable';
 import AdminCategoriesTab from '@/components/admin/AdminCategoriesTab';
 import AdminProductsTable from '@/components/admin/AdminProductsTable';
-import { CategoryModal, DeleteConfirmModal } from '@/components/admin/AdminModals';
+import { CategoryModal, DeleteConfirmModal, AdminProductModal } from '@/components/admin/AdminModals';
 
 export default function AdminDashboardPage() {
   const { user, switchAccount } = useAuth();
@@ -29,6 +29,7 @@ export default function AdminDashboardPage() {
     users: [],
     categories: [],
     products: [],
+    stores: [],
   });
 
   const [activeTab, setActiveTab] = useState('pending');
@@ -43,6 +44,20 @@ export default function AdminDashboardPage() {
     id: null,
     name: '',
     slug: '',
+    description: '',
+  });
+
+  const [productModal, setProductModal] = useState({
+    isOpen: false,
+    isEdit: false,
+    id: null,
+    storeId: '',
+    categoryId: '',
+    name: '',
+    price: '',
+    stock: '',
+    imageUrl: '',
+    brand: '',
     description: '',
   });
 
@@ -156,6 +171,81 @@ export default function AdminDashboardPage() {
 
       showToast('success', 'Produk berhasil diturunkan dari katalog.');
       setDeleteConfirm({ isOpen: false, type: null, id: null, title: '' });
+      fetchAdminData();
+    } catch (err) {
+      showToast('error', err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleOpenAddProduct = () => {
+    setProductModal({
+      isOpen: true,
+      isEdit: false,
+      id: null,
+      storeId: data.stores?.[0]?.id ? String(data.stores[0].id) : '',
+      categoryId: data.categories?.[0]?.id ? String(data.categories[0].id) : '',
+      name: '',
+      price: '',
+      stock: '20',
+      imageUrl: 'https://cdn.dummyjson.com/product-images/mens-shoes/nike-air-jordan-1-red-and-black/1.webp',
+      brand: 'Stride Studio',
+      description: '',
+    });
+  };
+
+  const handleOpenEditProduct = (p) => {
+    setProductModal({
+      isOpen: true,
+      isEdit: true,
+      id: p.id,
+      storeId: String(p.store_id || data.stores?.[0]?.id || ''),
+      categoryId: String(p.category_id || data.categories?.[0]?.id || ''),
+      name: p.name || '',
+      price: String(p.price || ''),
+      stock: String(p.stock ?? 0),
+      imageUrl: p.image_url || '',
+      brand: p.brand || '',
+      description: p.description || '',
+    });
+  };
+
+  const handleSaveProduct = async (e) => {
+    e.preventDefault();
+    try {
+      setIsSubmitting(true);
+      const action = productModal.isEdit ? 'update_product' : 'create_product';
+      const payload = {
+        action,
+        adminId: user.id,
+        productId: productModal.id,
+        storeId: Number(productModal.storeId),
+        categoryId: Number(productModal.categoryId),
+        name: productModal.name,
+        price: Number(productModal.price),
+        stock: Number(productModal.stock),
+        imageUrl: productModal.imageUrl,
+        brand: productModal.brand,
+        description: productModal.description,
+      };
+
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Gagal menyimpan produk.');
+
+      showToast(
+        'success',
+        productModal.isEdit
+          ? `Produk "${productModal.name}" berhasil diperbarui.`
+          : `Produk "${productModal.name}" berhasil ditambahkan.`
+      );
+      setProductModal((m) => ({ ...m, isOpen: false }));
       fetchAdminData();
     } catch (err) {
       showToast('error', err.message);
@@ -405,6 +495,8 @@ export default function AdminDashboardPage() {
           products={filteredProducts}
           productSearch={productSearch}
           setProductSearch={setProductSearch}
+          onAddProduct={handleOpenAddProduct}
+          onEditProduct={handleOpenEditProduct}
           onDeleteProduct={(p) =>
             setDeleteConfirm({ isOpen: true, type: 'product', id: p.id, title: `Turunkan produk "${p.name}" dari ${p.store_name}` })
           }
@@ -412,6 +504,15 @@ export default function AdminDashboardPage() {
       )}
 
       <AdminStatsGrid stats={data.stats} />
+
+      <AdminProductModal
+        modal={productModal}
+        setModal={setProductModal}
+        stores={data.stores || []}
+        categories={data.categories || []}
+        onSave={handleSaveProduct}
+        isSubmitting={isSubmitting}
+      />
 
       <CategoryModal
         modal={categoryModal}
