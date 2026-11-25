@@ -223,7 +223,7 @@ async function runSeed() {
         slug = 'sports-sneakers-off-white-red';
         p.name = "Nike Air Force 1 '07";
         p.brand = 'Nike';
-        p.imageUrl = '/hero/airforcewhite.png';
+        p.imageUrl = '/hero/af1-pair-front.png';
         p.desc = "The radiance lives on in the Nike Air Force 1 '07, the basketball icon that puts a fresh spin on what you know best: crisp leather, clean style, and legendary Air cushioning.";
       } else if (p.apiSourceId === 92 && usedSlugs.has('sports-sneakers-off-white-red')) {
         slug = 'sports-sneakers-off-white-red-v2';
