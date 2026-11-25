@@ -11,17 +11,17 @@ function getProductOptions(product) {
   const prodSlug = (product.slug || '').toLowerCase();
   const prodName = (product.name || '').toLowerCase();
 
-  // Khusus Royal Gray LV Air Force 1: satu warna sesuai foto (Royal Gray / White)
+  // Khusus Royal Gray LV Air Force 1: satu warna sesuai foto
   if (prodSlug.includes('nike-air-jordan-1-red-and-black') || prodName.includes('lv air force 1')) {
     return {
       variantLabel: 'Ukuran (EU)',
       variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
-      colors: ['Royal Gray / White'],
+      colors: ['Sesuai Foto'],
       colorImages: {
-        'Royal Gray / White': '/hero/lv-af1.png?v=lv1',
+        'Sesuai Foto': '/hero/lv-af1.png?v=lv1',
       },
       colorNames: {
-        'Royal Gray / White': 'Royal Gray LV Air Force 1',
+        'Sesuai Foto': 'Royal Gray LV Air Force 1',
       },
     };
   }
