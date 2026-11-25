@@ -184,7 +184,8 @@ FINAL WEB 2026/
 │       ├── cart.js             # Query manipulasi keranjang belanja
 │       ├── orders.js           # Transaksi checkout atomik (BEGIN-COMMIT-ROLLBACK)
 │       └── hero-slides.js      # Konfigurasi metadata slide panggung hero
-├── .env.local                  # Konfigurasi environment variabel lokal (DATABASE_URL)
+├── .env.example              # Template konfigurasi environment (DATABASE_URL, Port)
+├── .env.local                # Konfigurasi environment variabel lokal (diabaikan Git)
 ├── .gitignore                  # Berkas pengecualian Git
 ├── package.json
 └── README.md
@@ -207,22 +208,33 @@ npm install
 ```
 
 ### 3. Konfigurasi Environment Variable
-Buat berkas `.env.local` di direktori utama:
+Salin berkas template `.env.example` menjadi `.env.local`:
+```bash
+# Pengguna Linux / macOS / Git Bash:
+cp .env.example .env.local
+
+# Pengguna Windows (PowerShell):
+Copy-Item .env.example .env.local
+```
+Buka berkas `.env.local` dan sesuaikan password PostgreSQL Anda:
 ```env
 DATABASE_URL=postgresql://postgres:password_anda@localhost:5432/STRIDE
 ```
-*(Sesuaikan username, password, dan nama database dengan pengaturan PostgreSQL Anda).*
+*(Ganti `password_anda` dengan password user `postgres` pada PostgreSQL lokal Anda. Jika port atau username berbeda, sesuaikan juga).*
 
-### 4. Inisialisasi Database
-1. Buat database baru di PostgreSQL dengan nama `STRIDE`:
-   ```sql
-   CREATE DATABASE "STRIDE";
-   ```
-2. Eksekusi skema tabel dari berkas `database/schema.sql` ke database `STRIDE`.
-3. Jalankan skrip seeder untuk mengisi data awal:
-   ```bash
-   npm run db:seed
-   ```
+### 4. Inisialisasi Database Otomatis & Seeder
+Cukup jalankan satu perintah seeder berikut:
+```bash
+npm run db:seed
+```
+> [!NOTE]
+> Skrip seeder (`scripts/seed-fashion.mjs`) secara otomatis:
+> 1. Mendeteksi dan membuat database `STRIDE` di server PostgreSQL Anda jika belum ada.
+> 2. Menerapkan seluruh DDL skema relasional dari `database/schema.sql` (tabel, relasi, constraint, indeks, dan 4 akun demo default).
+> 3. Menarik serta memetakan katalog fashion dari API DummyJSON dan Fake Store ke kategori lokal.
+> 4. Mengonfigurasi produk sneaker unggulan dan model 3D interaktif.
+
+*(Opsional: Jika ingin mengeksekusi manual via GUI pgAdmin 4 / psql CLI, buat database `STRIDE` lalu jalankan berkas `database/schema.sql`).*
 
 ### 5. Menjalankan Server Pengembangan
 ```bash
