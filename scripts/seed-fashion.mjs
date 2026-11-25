@@ -126,6 +126,7 @@ async function runSeed() {
       VALUES 
         ('Sepatu Pria', 'sepatu-pria', 'Sneaker basket, sepatu lari, dan sepatu olahraga pria.'),
         ('Sepatu Wanita', 'sepatu-wanita', 'Sepatu kasual, heels, dan alas kaki harian wanita.'),
+        ('Custom Shoes', 'custom-shoes', 'Koleksi sneaker custom eksklusif, edisi kolaborasi desainer, dan seni artwork terbatas.'),
         ('Pakaian Pria', 'pakaian-pria', 'Kemeja lengan pendek, flanel, kaus, dan jaket pria.'),
         ('Pakaian Wanita', 'pakaian-wanita', 'Atasan harian, dress, dan jaket kasual wanita.'),
         ('Tas', 'tas', 'Tas tangan, ransel, dan tas bahu untuk aktivitas harian.'),
@@ -202,8 +203,28 @@ async function runSeed() {
 
     for (const p of rawItems) {
       let slug = p.baseSlug;
-      if (p.apiSourceId === 91) {
+      if (p.apiSourceId === 88) {
+        slug = 'nike-air-jordan-1-red-and-black';
+        p.catSlug = 'custom-shoes';
+        p.name = 'Royal Gray LV Air Force 1';
+        p.brand = 'Nike';
+        p.price = 6850000.00;
+        p.imageUrl = '/hero/lv-af1.png';
+        p.desc = 'Custom Royal Gray Louis Vuitton x Off-White Nike Air Force 1 Low featuring grey and white LV Monogram leather overlays, contrast black leather Swoosh with gold LV chain charm, "LACET" printed laces, and signature "AIR" cupsole midsole.';
+      } else if (p.apiSourceId === 90) {
+        slug = 'puma-future-rider-trainers';
+        p.catSlug = 'custom-shoes';
+        p.name = 'Blue Chrome Hearts Air Force 1';
+        p.brand = 'Nike';
+        p.price = 4346916.99;
+        p.imageUrl = '/hero/chromehearts.png';
+        p.desc = 'Custom Blue Chrome Hearts Nike Air Force 1 Low featuring ice-blue airbrushed leather, black leather Gothic cross patches, splatter midsole detailing, and signature God Bless heel artwork.';
+      } else if (p.apiSourceId === 91) {
         slug = 'sports-sneakers-off-white-red';
+        p.name = "Nike Air Force 1 '07";
+        p.brand = 'Nike';
+        p.imageUrl = '/hero/airforcewhite.png';
+        p.desc = "The radiance lives on in the Nike Air Force 1 '07, the basketball icon that puts a fresh spin on what you know best: crisp leather, clean style, and legendary Air cushioning.";
       } else if (p.apiSourceId === 92 && usedSlugs.has('sports-sneakers-off-white-red')) {
         slug = 'sports-sneakers-off-white-red-v2';
       }

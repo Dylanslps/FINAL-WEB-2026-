@@ -7,8 +7,16 @@ import { Star, Check } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 
-const formatIDR = (num) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+const formatIDR = (num) => {
+  const n = Number(num);
+  const hasCents = n % 1 !== 0;
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: hasCents ? 2 : 0,
+  }).format(n);
+};
 
 export default function ProductCard({ product }) {
   const router = useRouter();

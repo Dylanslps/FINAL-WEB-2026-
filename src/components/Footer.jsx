@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 const SHOP_LINKS = [
+  { href: '/katalog?kategori=custom-shoes', label: 'Custom Shoes' },
   { href: '/katalog?kategori=sepatu-pria', label: 'Sepatu Pria' },
   { href: '/katalog?kategori=sepatu-wanita', label: 'Sepatu Wanita' },
   { href: '/katalog?kategori=pakaian-pria', label: 'Pakaian Pria' },

@@ -8,8 +8,37 @@ import { useCart } from '@/context/CartContext';
 
 function getProductOptions(product) {
   const catSlug = (product.category_slug || '').toLowerCase();
+  const prodSlug = (product.slug || '').toLowerCase();
+  const prodName = (product.name || '').toLowerCase();
 
-  if (catSlug.includes('sepatu')) {
+  // Khusus Royal Gray LV Air Force 1: satu warna sesuai foto (Royal Gray / White)
+  if (prodSlug.includes('nike-air-jordan-1-red-and-black') || prodName.includes('lv air force 1')) {
+    return {
+      variantLabel: 'Ukuran (EU)',
+      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      colors: ['Royal Gray / White'],
+    };
+  }
+
+  // Khusus Chrome Hearts Air Force 1: pilihan warna Blue dan Pink
+  if (prodSlug.includes('puma-future-rider-trainers') || prodName.includes('chrome hearts')) {
+    return {
+      variantLabel: 'Ukuran (EU)',
+      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      colors: ['Blue', 'Pink'],
+    };
+  }
+
+  // Khusus Nike Air Force 1 '07: pilihan warna Putih dan Hitam saja
+  if (prodSlug.includes('sports-sneakers-off-white-red') || prodName.includes('air force 1')) {
+    return {
+      variantLabel: 'Ukuran (EU)',
+      variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
+      colors: ['Putih', 'Hitam'],
+    };
+  }
+
+  if (catSlug.includes('sepatu') || catSlug.includes('custom')) {
     return {
       variantLabel: 'Ukuran (EU)',
       variants: ['EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'],
@@ -32,8 +61,16 @@ function getProductOptions(product) {
   };
 }
 
-const formatIDR = (num) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+const formatIDR = (num) => {
+  const n = Number(num);
+  const hasCents = n % 1 !== 0;
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: hasCents ? 2 : 0,
+  }).format(n);
+};
 
 export default function AddToCartSection({ product }) {
   const router = useRouter();

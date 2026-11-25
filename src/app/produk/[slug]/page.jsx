@@ -2,21 +2,21 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getProductBySlug, getRelatedProducts } from '@/lib/products';
 import { getProductReviews, getProductRatingSummary } from '@/lib/reviews';
-import AddToCartSection from '@/components/AddToCartSection';
+import ProductHeroSection from '@/components/product/ProductHeroSection';
 import ProductSpecsTable from '@/components/product/ProductSpecsTable';
 import RecommendedProducts from '@/components/product/RecommendedProducts';
-import { Star, Store, ArrowLeft } from 'lucide-react';
+import { Star, ArrowLeft } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 function getProductSpecifications(product) {
   const catSlug = (product.category_slug || '').toLowerCase();
 
-  if (catSlug.includes('sepatu')) {
+  if (catSlug.includes('sepatu') || catSlug.includes('custom')) {
     return [
       { feature: 'Kategori', detail: product.category_name },
       { feature: 'Merek', detail: product.brand || 'Stride Studio' },
-      { feature: 'Material Atas', detail: 'Kulit sintetis & mesh berpori' },
+      { feature: 'Material Atas', detail: 'Kulit premium, artwork & airbrush custom' },
       { feature: 'Outsole', detail: 'Karet anti-selip (Rubber Cupsole)' },
       { feature: 'Rentang Ukuran', detail: 'EU 39, EU 40, EU 41, EU 42, EU 43, EU 44' },
       { feature: 'Toko Penjual', detail: product.store_name },
@@ -76,64 +76,7 @@ export default async function ProductDetailPage({ params }) {
         <span className="text-ink font-medium truncate max-w-xs">{product.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* Galeri gambar produk */}
-        <div className="lg:col-span-6">
-          <div className="relative aspect-square w-full rounded-xl bg-surface-2 border border-line overflow-hidden flex items-center justify-center p-8">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={product.image_url}
-              alt={product.name}
-              width={800}
-              height={800}
-              fetchPriority="high"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </div>
-
-        {/* Informasi produk & pembelian */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-ink-2">
-              {product.brand || product.category_name} · {product.category_name}
-            </p>
-
-            <h1 className="font-display uppercase text-3xl sm:text-4xl leading-tight">
-              {product.name}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
-              <div className="inline-flex items-center gap-1 text-ink">
-                <Star className="w-4 h-4 fill-current" aria-hidden="true" />
-                <span className="font-semibold">{ratingSummary.averageRating.toFixed(1)}</span>
-                <span className="text-ink-2">({ratingSummary.totalReviews} ulasan)</span>
-              </div>
-              <span className="text-ink-2">·</span>
-              <span className={`font-semibold ${product.stock > 0 ? 'text-ok' : 'text-accent'}`}>
-                {product.stock > 0 ? `Stok tersedia: ${product.stock} unit` : 'Stok habis'}
-              </span>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-surface border border-line flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-md bg-surface-2 border border-line flex items-center justify-center">
-                <Store className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-xs text-ink-2">Dijual oleh</p>
-                <p className="font-semibold text-sm">{product.store_name}</p>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-md bg-surface-2 text-ink text-xs font-medium border border-line">
-              Seller Terverifikasi
-            </span>
-          </div>
-
-          <AddToCartSection product={product} />
-        </div>
-      </div>
+      <ProductHeroSection product={product} ratingSummary={ratingSummary} />
 
       <ProductSpecsTable specs={specs} />
 

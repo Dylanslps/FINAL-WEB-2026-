@@ -6,14 +6,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-const TINTS = {
-  red: new THREE.Color('#FF2A36'),
-  dark: new THREE.Color('#353944'),
-  light: new THREE.Color('#FFFFFF'),
-};
+const DEFAULT_MODEL = '/models/shoe.glb?v=user1';
 
 export default function Sneaker3DCanvas({
   theme = 'light',
+  modelUrl = DEFAULT_MODEL,
+  tintColor = '#FFFFFF',
   slideIndex = 0,
   pointerOffset = { x: 0, y: 0 },
   interactiveDrag = true,
@@ -21,6 +19,8 @@ export default function Sneaker3DCanvas({
   const mountRef = useRef(null);
   const stateRef = useRef({
     theme,
+    modelUrl,
+    tintColor: new THREE.Color(tintColor || '#FFFFFF'),
     slideIndex,
     interactiveDrag,
     pointer: { x: 0, y: 0 },
@@ -32,7 +32,8 @@ export default function Sneaker3DCanvas({
     targetSpinY: 0,
     currentSpinY: 0,
     slideShiftX: 0,
-    meshes: [],
+    modelsByUrl: {},
+    loadModelFn: null,
   });
   const [loaded, setLoaded] = useState(false);
 
@@ -46,7 +47,17 @@ export default function Sneaker3DCanvas({
       st.dragVel = { x: 0, y: 0 };
     }
     st.theme = theme;
-  }, [theme, slideIndex]);
+    st.modelUrl = modelUrl || DEFAULT_MODEL;
+    st.tintColor = new THREE.Color(tintColor || '#FFFFFF');
+
+    // Toggle visibility of cached 3D models or load on demand
+    for (const [url, entry] of Object.entries(st.modelsByUrl)) {
+      entry.wrapper.visible = url === st.modelUrl;
+    }
+    if (!st.modelsByUrl[st.modelUrl] && st.loadModelFn) {
+      st.loadModelFn(st.modelUrl);
+    }
+  }, [theme, modelUrl, tintColor, slideIndex]);
 
   useEffect(() => {
     const st = stateRef.current;
@@ -80,7 +91,7 @@ export default function Sneaker3DCanvas({
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Studio IBL reflections for realistic white leather, rubber sole & chrome accents
+    // Studio IBL reflections for realistic leather, rubber sole & Chrome Hearts accents
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     const roomEnv = new RoomEnvironment();
     const envRT = pmremGenerator.fromScene(roomEnv, 0.04);
@@ -110,53 +121,83 @@ export default function Sneaker3DCanvas({
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
     let disposed = false;
+    const loadingUrls = new Set();
 
-    // Load user 3D sneaker model from /models/shoe.glb (with EXT_meshopt_compression + WebP PBR)
-    loader.load(
-      '/models/shoe.glb?v=user1',
-      (gltf) => {
-        if (disposed) return;
-        const model = gltf.scene;
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scale = 2.26 / maxDim;
+    const loadModel = (urlToLoad) => {
+      if (disposed || stateRef.current.modelsByUrl[urlToLoad] || loadingUrls.has(urlToLoad)) return;
+      loadingUrls.add(urlToLoad);
 
-        model.position.sub(center);
+      loader.load(
+        urlToLoad,
+        (gltf) => {
+          loadingUrls.delete(urlToLoad);
+          if (disposed) return;
 
-        const meshes = [];
-        const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-        model.traverse((child) => {
-          if (child.isMesh && child.material) {
-            child.material = child.material.clone();
-            if (child.material.map) {
-              child.material.map.colorSpace = THREE.SRGBColorSpace;
-              child.material.map.anisotropy = maxAniso;
+          const model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z) || 1;
+          const scale = 2.26 / maxDim;
+
+          model.position.sub(center);
+
+          const meshes = [];
+          const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          model.traverse((child) => {
+            if (child.isMesh && child.material) {
+              child.material = child.material.clone();
+              // Support GLBs where shaded texture is stored in emissiveMap (like chrome-hearts-af1.glb)
+              if (!child.material.map && child.material.emissiveMap) {
+                child.material.map = child.material.emissiveMap;
+                child.material.emissive.set('#FFFFFF');
+                child.material.emissiveIntensity = 0.25;
+                child.material.roughness = 0.55;
+                child.material.metalness = 0.08;
+              }
+              if (child.material.map) {
+                child.material.map.colorSpace = THREE.SRGBColorSpace;
+                child.material.map.anisotropy = maxAniso;
+              }
+              if (child.material.normalMap) {
+                child.material.normalMap.anisotropy = maxAniso;
+              }
+              child.material.color.copy(stateRef.current.tintColor);
+              child.material.envMapIntensity = 0.85;
+              child.material.needsUpdate = true;
+              meshes.push(child);
             }
-            if (child.material.normalMap) {
-              child.material.normalMap.anisotropy = maxAniso;
-            }
-            child.material.color.copy(TINTS[stateRef.current.theme] || TINTS.light);
-            child.material.envMapIntensity = 0.85;
-            child.material.needsUpdate = true;
-            meshes.push(child);
+          });
+
+          const wrapper = new THREE.Group();
+          wrapper.scale.setScalar(scale);
+          wrapper.rotation.set(0.14, -Math.PI * 0.34, 0.04);
+          wrapper.add(model);
+          wrapper.visible = urlToLoad === stateRef.current.modelUrl;
+          pivot.add(wrapper);
+
+          stateRef.current.modelsByUrl[urlToLoad] = { wrapper, meshes };
+          for (const [u, entry] of Object.entries(stateRef.current.modelsByUrl)) {
+            entry.wrapper.visible = u === stateRef.current.modelUrl;
           }
-        });
-        stateRef.current.meshes = meshes;
+          setLoaded(true);
+        },
+        undefined,
+        (err) => {
+          loadingUrls.delete(urlToLoad);
+          console.error(`Failed to load ${urlToLoad}:`, err);
+        }
+      );
+    };
 
-        const wrapper = new THREE.Group();
-        wrapper.scale.setScalar(scale);
-        wrapper.rotation.set(0.14, -Math.PI * 0.34, 0.04);
-        wrapper.add(model);
-        pivot.add(wrapper);
-        setLoaded(true);
-      },
-      undefined,
-      (err) => {
-        console.error('Failed to load /models/shoe.glb:', err);
-      }
-    );
+    stateRef.current.modelsByUrl = {};
+    stateRef.current.loadModelFn = loadModel;
+
+    // Preload active model and all three hero GLBs for instant slide switching
+    loadModel(stateRef.current.modelUrl);
+    loadModel('/models/lv-af1.glb?v=lv1');
+    loadModel('/models/chrome-hearts-af1.glb?v=ch1');
+    loadModel('/models/shoe.glb?v=user1');
 
     const onResize = () => {
       if (!container) return;
@@ -206,7 +247,6 @@ export default function Sneaker3DCanvas({
       const idleOrbitY = reducedMotion || st.dragging || recentlyDragged ? 0 : Math.sin(t * 1.1) * 0.28;
       const idleOrbitX = reducedMotion || st.dragging || recentlyDragged ? 0 : Math.cos(t * 1.1) * 0.07;
 
-      // Stronger cursor tilt in hover-tilt mode (up to ~30 deg Y, ~20 deg X), gentler in drag mode
       const tiltMultY = st.interactiveDrag ? 0.34 : 0.95;
       const tiltMultX = st.interactiveDrag ? 0.22 : 0.65;
 
@@ -216,9 +256,11 @@ export default function Sneaker3DCanvas({
       pivot.rotation.y = st.currentSpinY + idleOrbitY + px * tiltMultY + st.userRot.y;
       pivot.rotation.z = -st.slideShiftX * 0.14;
 
-      const targetTint = TINTS[st.theme] || TINTS.light;
-      for (const m of st.meshes) {
-        m.material.color.lerp(targetTint, 0.12);
+      const activeEntry = st.modelsByUrl[st.modelUrl];
+      if (activeEntry) {
+        for (const m of activeEntry.meshes) {
+          m.material.color.lerp(st.tintColor, 0.14);
+        }
       }
 
       renderer.render(scene, camera);
@@ -250,16 +292,17 @@ export default function Sneaker3DCanvas({
     const dx = e.clientX - st.dragStart.x;
     const dy = e.clientY - st.dragStart.y;
     st.dragStart = { x: e.clientX, y: e.clientY };
-    const vy = dx * 0.011;
-    const vx = dy * 0.009;
+    const vy = dx * 0.0095;
+    const vx = dy * 0.008;
     st.userRot.y += vy;
     st.userRot.x = Math.max(-1.35, Math.min(1.35, st.userRot.x + vx));
-    st.dragVel = { x: vx * 0.65, y: vy * 0.65 };
+    st.dragVel = { x: vx, y: vy };
     st.lastInteractTime = performance.now() / 1000;
   };
 
   const handlePointerUp = () => {
     stateRef.current.dragging = false;
+    stateRef.current.lastInteractTime = performance.now() / 1000;
   };
 
   return (
@@ -269,15 +312,10 @@ export default function Sneaker3DCanvas({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      role="img"
-      aria-label={
-        interactiveDrag
-          ? 'Model 3D interaktif sepatu STRIDE, geser untuk memutar 360 derajat'
-          : 'Model 3D sepatu STRIDE melayang mengikuti arah kursor'
-      }
       className={`w-full h-full select-none transition-opacity duration-300 ${
-        interactiveDrag ? 'cursor-grab active:cursor-grabbing touch-none' : 'cursor-pointer'
+        interactiveDrag ? 'cursor-grab active:cursor-grabbing touch-none' : 'pointer-events-none'
       } ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      aria-label="Model 3D Sneaker Interaktif 360 Derajat"
     />
   );
 }

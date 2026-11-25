@@ -9,8 +9,16 @@ const Sneaker3DCanvas = dynamic(() => import('./Sneaker3DCanvas'), {
   ssr: false,
 });
 
-const formatIDR = (num) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+const formatIDR = (num) => {
+  const n = Number(num);
+  const hasCents = n % 1 !== 0;
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: hasCents ? 2 : 0,
+  }).format(n);
+};
 
 // Lapisan panggung (dipakai pada layer dasar dan layer tirai wipe agar teks terbelah dua warna saat wipe melintas)
 function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
@@ -26,9 +34,18 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
     >
       {/* Kiri: Headline Italic Condensed + Subjudul + Tombol CTA sesuai video */}
       <div className="lg:col-span-4 z-10 space-y-4">
-        <div className="font-display italic uppercase leading-[0.9] tracking-tight text-[clamp(3.1rem,6.5vw,5.6rem)]">
-          <span className="block">{slide.headline[0]}</span>
-          <span className="block">{slide.headline[1]}</span>
+        <div
+          className={`font-display italic uppercase leading-[0.9] tracking-tight ${
+            slide.headline.length > 2
+              ? 'text-[clamp(2.5rem,5.2vw,4.5rem)]'
+              : 'text-[clamp(3.1rem,6.5vw,5.6rem)]'
+          }`}
+        >
+          {slide.headline.map((line, idx) => (
+            <span key={idx} className="block">
+              {line}
+            </span>
+          ))}
         </div>
 
         <p style={{ color: 'var(--hero-ink-2)' }} className="text-sm sm:text-base leading-snug font-medium">
@@ -70,21 +87,23 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
           className="anim-floor-in absolute bottom-[4%] left-1/2 -translate-x-1/2 w-[56%] max-w-[420px] h-6 rounded-[50%] blur-xl"
         />
 
-        {mode3D || slide.default3D ? (
+        {mode3D ? (
           <div className="relative z-10 w-full max-w-[580px] h-[310px] sm:h-[400px]">
             {phase !== 'out' && (
               <Sneaker3DCanvas
                 theme={slide.theme}
+                modelUrl={slide.modelUrl}
+                tintColor={slide.tintColor}
                 slideIndex={slideIndex}
                 pointerOffset={tilt}
-                interactiveDrag={mode3D}
+                interactiveDrag={true}
               />
             )}
           </div>
         ) : (
           <div
             style={{
-              transform: `perspective(1100px) rotateY(${tilt.x * 14}deg) rotateX(${-tilt.y * 10}deg) translate3d(${tilt.x * 20}px, ${tilt.y * 14}px, 0)`,
+              transform: `perspective(1100px) rotateY(${tilt.x * 16}deg) rotateX(${-tilt.y * 12}deg) translate3d(${tilt.x * 20}px, ${tilt.y * 14}px, 0)`,
             }}
             className="relative z-10 w-full max-w-[540px] transition-transform duration-200 ease-out will-change-transform"
           >
@@ -96,7 +115,11 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
                 width={900}
                 height={900}
                 fetchPriority="high"
-                className="w-full h-auto max-h-[390px] object-contain mx-auto drop-shadow-[0_28px_32px_rgba(0,0,0,0.45)] select-none"
+                className={`w-full h-auto max-h-[390px] object-contain mx-auto select-none ${
+                  slide.theme === 'light'
+                    ? 'drop-shadow-[0_24px_26px_rgba(0,0,0,0.22)]'
+                    : 'drop-shadow-[0_28px_32px_rgba(0,0,0,0.45)]'
+                }`}
               />
             </div>
           </div>
@@ -109,11 +132,9 @@ function StageLayer({ slide, phase, tilt, mode3D, slideIndex }) {
 export default function HeroShowcase({ slides }) {
   const [active, setActive] = useState(0);
   const [transition, setTransition] = useState(null); // { from, to }
-  const [mode3DOverride, setMode3DOverride] = useState(null); // null = ikuti default slide (Slide 3 langsung 3D!)
+  const [mode3D, setMode3D] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const reducedRef = useRef(false);
-
-  const isSlide3D = (slide) => (mode3DOverride !== null ? mode3DOverride : Boolean(slide?.default3D));
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -159,7 +180,6 @@ export default function HeroShowcase({ slides }) {
   const incomingSlide = transition ? slides[transition.to] : null;
   const activeSlide = slides[visualIndex];
   const activeTheme = activeSlide.theme;
-  const currentMode3D = isSlide3D(activeSlide);
 
   return (
     <section
@@ -171,12 +191,12 @@ export default function HeroShowcase({ slides }) {
       onKeyDown={handleKeyDown}
       className="relative isolate overflow-hidden rounded-[28px] border border-line shadow-2xl select-none"
     >
-      {/* Tombol Mode 3D Interaktif (360° GLB vs Studio 3D Video) */}
+      {/* Tombol Mode 3D Interaktif (360° GLB vs Preview Samping Studio) */}
       <div className="absolute top-4 right-5 z-40 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => setMode3DOverride(!currentMode3D)}
-          aria-pressed={currentMode3D}
+          onClick={() => setMode3D((v) => !v)}
+          aria-pressed={mode3D}
           style={{
             backgroundColor: 'var(--hero-card-active)',
             borderColor: 'var(--hero-line-active)',
@@ -185,7 +205,7 @@ export default function HeroShowcase({ slides }) {
           className="min-h-10 px-3.5 rounded-full border backdrop-blur-md text-xs font-semibold inline-flex items-center gap-2 transition-all hover:scale-105"
         >
           <Box className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>{currentMode3D ? 'Mode 3D 360° (Geser Sepatu)' : 'Aktifkan 3D Model 360°'}</span>
+          <span>{mode3D ? 'Mode 3D 360° (Geser Sepatu)' : 'Aktifkan 3D Model 360°'}</span>
         </button>
       </div>
 
@@ -195,7 +215,7 @@ export default function HeroShowcase({ slides }) {
           slide={baseSlide}
           phase={transition ? 'out' : 'idle'}
           tilt={tilt}
-          mode3D={isSlide3D(baseSlide)}
+          mode3D={mode3D}
           slideIndex={transition ? transition.from : active}
         />
       </div>
@@ -204,14 +224,16 @@ export default function HeroShowcase({ slides }) {
       {incomingSlide && (
         <div
           aria-hidden="true"
-          onAnimationEnd={finishTransition}
+          onAnimationEnd={(e) => {
+            if (e.target === e.currentTarget) finishTransition();
+          }}
           className="anim-curtain-left absolute inset-0 z-20"
         >
           <StageLayer
             slide={incomingSlide}
             phase="in"
             tilt={tilt}
-            mode3D={isSlide3D(incomingSlide)}
+            mode3D={mode3D}
             slideIndex={transition.to}
           />
         </div>
@@ -282,9 +304,7 @@ export default function HeroShowcase({ slides }) {
                         alt=""
                         width={140}
                         height={140}
-                        className={`w-16 h-16 object-contain drop-shadow-md ${
-                          s.thumbnail ? 'scale-125' : ''
-                        }`}
+                        className="w-16 h-16 object-contain drop-shadow-md"
                       />
                     </div>
 
