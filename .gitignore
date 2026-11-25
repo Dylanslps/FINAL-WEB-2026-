@@ -66,6 +66,10 @@ Thumbs.db:encryptable
 .project
 .settings/
 
+# AI Agent & Assistant Tool Configurations (Local Only)
+.agents/
+.claude/
+
 # Secrets & Certificates
 *.pem
 *.key
